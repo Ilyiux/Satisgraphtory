@@ -1,0 +1,10 @@
+package buildings;
+
+import java.io.Serializable;
+
+public enum BuildingType implements Serializable {
+    WATER_EXTRACTOR, OIL_EXTRACTOR, RESOURCE_WELL_PRESSURIZER,
+    MINER,
+    CONSTRUCTOR, ASSEMBLER, MANUFACTURER, PACKAGER, REFINERY, BLENDER, PARTICLE_ACCELERATOR,
+    SMELTER, FOUNDRY
+}
