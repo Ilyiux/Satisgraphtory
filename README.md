@@ -5,13 +5,13 @@ Made in Java, UI in pure Swing
 ## Buildings
 Add buildings from the menu on the left.
 
-##### Producers
+### Producers
 All buildings ranging from miners/extractors to power buildings to the bottomless box, which generates any amount of any item.
 
-##### Crafters
+### Crafters
 All buildings that craft recipes.
 
-##### Logistics
+### Logistics
 All buildings that are the logistics of a factory, Splitters, Mergers, and Pipe Junctions. Also the Ficsit Inc. AWESOME Sink, _just make sure you aren't sinking anything radioactive._
 
 
