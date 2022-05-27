@@ -5,6 +5,7 @@ import main.GraphicsPanel;
 import main.Main;
 import main.PointDouble;
 import main.Screen;
+import recipes.Material;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -16,6 +17,8 @@ import java.io.IOException;
 public class Splitter extends Building {
 
     private BufferedImage image;
+
+    private boolean isEfficient = true;
 
     public Splitter(Point position) {
         this.position = position;
@@ -40,19 +43,56 @@ public class Splitter extends Building {
         outPipeRate.clear();
         outPipeType.clear();
 
+        for (int c = 0; c < maxOutConveyors; c++) {
+            outConveyorRate.add(-1.0);
+            outConveyorType.add(null);
+        }
+        for (int p = 0; p < maxOutPipes; p++) {
+            outPipeRate.add(-1.0);
+            outPipeType.add(null);
+        }
+
+        double amount = 0;
+        Material type = null;
         for (Conveyor c : inConveyors) {
             if (!c.invalidState) {
-                for (int i = 0; i < outConveyors.size(); i++) {
-                    outConveyorRate.add(c.rate / outConveyors.size());
-                    outConveyorType.add(c.type);
-                }
+                type = c.type;
+                amount += c.rate;
             }
         }
 
-        for (int c = outConveyorRate.size(); c < maxOutConveyors; c++)
-            outConveyorRate.add(-1.0);
-        for (int p = outPipeRate.size(); p < maxOutPipes; p++)
-            outPipeRate.add(-1.0);
+        double totalOut = 0;
+        isEfficient = true;
+        for (Conveyor c : outConveyors) {
+            totalOut += c.maxRate;
+        }
+        if (amount > totalOut) isEfficient = false;
+
+        int full = 0;
+        do {
+            boolean anyFull = false;
+            double maxPer = amount / (outConveyors.size() - full);
+            for (int i = 0; i < outConveyors.size(); i++) {
+                if (outConveyors.get(i).maxRate < maxPer && outConveyorRate.get(i) == -1) {
+                    anyFull = true;
+                    full++;
+                    amount -= outConveyors.get(i).maxRate;
+                    outConveyorRate.set(i, (double) outConveyors.get(i).maxRate);
+                    outConveyorType.set(i, type);
+                }
+            }
+
+            if (!anyFull) {
+                double remainderPer = amount / (outConveyors.size() - full);
+                for (int i = 0; i < outConveyors.size(); i++) {
+                    if (outConveyorRate.get(i) == -1) {
+                        full ++;
+                        outConveyorRate.set(i, remainderPer);
+                        outConveyorType.set(i, type);
+                    }
+                }
+            }
+        } while (amount > 0 && full < outConveyors.size());
     }
 
     public void clicked(GraphicsPanel gp, int mx, int my) {
@@ -106,7 +146,11 @@ public class Splitter extends Building {
 
         g2d.drawImage(image, start.x, start.y, end.x - start.x, end.y - start.y, null);
 
-        g2d.setColor(Color.GREEN);
+        if (isEfficient) {
+            g2d.setColor(Color.GREEN);
+        } else {
+            g2d.setColor(Color.RED);
+        }
         if (greyedOut) g2d.setColor(Color.GRAY);
         g2d.drawRoundRect(start.x, start.y, end.x - start.x, end.y - start.y, (int) (Screen.getZoom() / 10), (int) (Screen.getZoom() / 10));
 

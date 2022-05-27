@@ -404,7 +404,7 @@ public class FuelGenerator extends Building {
         g2d.drawString("/min", menuTopLeft.x + 160, menuTopLeft.y + 120);
     }
 
-    private enum FuelPossibilities {
+    public enum FuelPossibilities {
         UNSET, FUEL, TURBOFUEL
     }
 }

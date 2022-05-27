@@ -6,7 +6,6 @@ import recipes.Material;
 import main.PointDouble;
 
 public class Connector extends WorldObject {
-    public int maxTier;
     public int tier;
 
     public PointDouble lineCenter;

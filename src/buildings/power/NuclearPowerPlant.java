@@ -433,7 +433,7 @@ public class NuclearPowerPlant extends Building {
         g2d.drawString("/min", menuTopLeft.x + 160, menuTopLeft.y + 120);
     }
 
-    private enum FuelPossibilities {
+    public enum FuelPossibilities {
         UNSET, URANIUM_FUEL_ROD, PLUTONIUM_FUEL_ROD
     }
 }

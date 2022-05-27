@@ -424,7 +424,7 @@ public class ResourceWellExtractor extends Building {
         g2d.drawString("/min", menuTopLeft.x + 160, menuTopLeft.y + 150);
     }
 
-    private enum NodePossibilities {
+    public enum NodePossibilities {
         UNSET, CRUDE_OIL, WATER, NITROGEN_GAS
     }
 }

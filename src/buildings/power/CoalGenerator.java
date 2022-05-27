@@ -421,7 +421,7 @@ public class CoalGenerator extends Building {
         g2d.drawString("/min", menuTopLeft.x + 160, menuTopLeft.y + 120);
     }
 
-    private enum FuelPossibilities {
+    public enum FuelPossibilities {
         UNSET, COAL, COMPACTED_COAL, PETROLEUM_COKE
     }
 }

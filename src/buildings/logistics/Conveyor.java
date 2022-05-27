@@ -10,8 +10,6 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 
 public class Conveyor extends Connector {
-    public int tier = 1;
-
     public Conveyor(Building start, Building end, int tier) {
         startBuilding = start;
         endBuilding = end;

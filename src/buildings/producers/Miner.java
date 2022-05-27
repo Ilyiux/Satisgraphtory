@@ -21,7 +21,7 @@ public class Miner extends Building {
     public Purity purity = Purity.IMPURE;
     public NodePossibilities nodeType = NodePossibilities.UNSET;
 
-    private int tier;
+    public int tier;
 
     public double baseItemRate;
     public double itemRate;
@@ -509,7 +509,7 @@ public class Miner extends Building {
         g2d.drawString("/min", menuTopLeft.x + 160, menuTopLeft.y + 180);
     }
 
-    private enum NodePossibilities {
+    public enum NodePossibilities {
         UNSET, COPPER_ORE, IRON_ORE, CATERIUM_ORE, BAUXITE, URANIUM, LIMESTONE, SAM_ORE, COAL, SULFUR, RAW_QUARTZ
     }
 }
