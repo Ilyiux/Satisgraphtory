@@ -234,11 +234,6 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
         buildings.add(0, building);
     }
 
-    private void openSaveMenu() {
-        inSaveMenu = true;
-        save("C:/Users/Sam/Documents/github/Satisgraphtory/test_saves/save.stgs");
-    }
-
     private void save(String location) {
         StringBuilder saveData = new StringBuilder();
 
@@ -843,7 +838,7 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
                     leftMouseDown = false;
                 }
                 if (keyEvent.getKeyCode() == KeyEvent.VK_S) {
-                    openSaveMenu();
+                    inSaveMenu = true;
                 }
                 if (keyEvent.getKeyCode() == KeyEvent.VK_L) {
                     inLoadMenu = true;
@@ -1040,7 +1035,7 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
 
                     // save
                     if (mx > 10 && mx < getWidth() / 16 - 10 && my > getHeight() - 50 && my < getHeight() - 10) {
-                        openSaveMenu();
+                        inSaveMenu = true;
                     }
 
                     // load
