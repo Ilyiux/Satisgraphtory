@@ -513,19 +513,17 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
 
         // BUTTONS
         g2d.setFont(new Font("Bahnschrift", Font.PLAIN, 20));
-        int bWidth = getWidth() / 8 - 20;
-        int bHeight = 40;
         Color onColor = new Color(100, 105, 100);
         Color offColor = new Color(70, 75, 70);
 
         g2d.setColor(menuState == MenuState.NEW_GENERATOR ? onColor : offColor);
-        g2d.fillRoundRect(10, 10, bWidth, bHeight, 10, 10);
+        g2d.fillRoundRect(10, 10, (getWidth() / 8 - 20), 40, 10, 10);
         g2d.setColor(menuState == MenuState.NEW_SMELTER ? onColor : offColor);
-        g2d.fillRoundRect(10, 60, bWidth, bHeight, 10, 10);
+        g2d.fillRoundRect(10, 60, (getWidth() / 8 - 20), 40, 10, 10);
         g2d.setColor(menuState == MenuState.NEW_CRAFTER ? onColor : offColor);
-        g2d.fillRoundRect(10, 110, bWidth, bHeight, 10, 10);
+        g2d.fillRoundRect(10, 110, (getWidth() / 8 - 20), 40, 10, 10);
         g2d.setColor(menuState == MenuState.NEW_LOGISTIC ? onColor : offColor);
-        g2d.fillRoundRect(10, 160, bWidth, bHeight, 10, 10);
+        g2d.fillRoundRect(10, 160, (getWidth() / 8 - 20), 40, 10, 10);
 
         g2d.setColor(new Color(150, 155, 150));
         g2d.drawString("GENERATORS", 25, 38);
@@ -539,21 +537,21 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
         // more menu buttons
         if (menuState == MenuState.NEW_GENERATOR) {
             g2d.setColor(isClickActive(0) ? onColor : offColor);
-            g2d.fillRoundRect(10, 230, bWidth, bHeight, 10, 10);
+            g2d.fillRoundRect(10, 230, (getWidth() / 8 - 20), 40, 10, 10);
             g2d.setColor(isClickActive(1) ? onColor : offColor);
-            g2d.fillRoundRect(10, 280, bWidth, bHeight, 10, 10);
+            g2d.fillRoundRect(10, 280, (getWidth() / 8 - 20), 40, 10, 10);
             g2d.setColor(isClickActive(2) ? onColor : offColor);
-            g2d.fillRoundRect(10, 330, bWidth, bHeight + 20, 10, 10);
+            g2d.fillRoundRect(10, 330, (getWidth() / 8 - 20), 40 + 20, 10, 10);
             g2d.setColor(isClickActive(3) ? onColor : offColor);
-            g2d.fillRoundRect(10, 400, bWidth, bHeight, 10, 10);
+            g2d.fillRoundRect(10, 400, (getWidth() / 8 - 20), 40, 10, 10);
             g2d.setColor(isClickActive(4) ? onColor : offColor);
-            g2d.fillRoundRect(10, 450, bWidth, bHeight, 10, 10);
+            g2d.fillRoundRect(10, 450, (getWidth() / 8 - 20), 40, 10, 10);
             g2d.setColor(isClickActive(5) ? onColor : offColor);
-            g2d.fillRoundRect(10, 500, bWidth, bHeight, 10, 10);
+            g2d.fillRoundRect(10, 500, (getWidth() / 8 - 20), 40, 10, 10);
             g2d.setColor(isClickActive(6) ? onColor : offColor);
-            g2d.fillRoundRect(10, 550, bWidth, bHeight, 10, 10);
+            g2d.fillRoundRect(10, 550, (getWidth() / 8 - 20), 40, 10, 10);
             g2d.setColor(isClickActive(7) ? onColor : offColor);
-            g2d.fillRoundRect(10, 600, bWidth, bHeight, 10, 10);
+            g2d.fillRoundRect(10, 600, (getWidth() / 8 - 20), 40, 10, 10);
 
             g2d.setColor(new Color(150, 155, 150));
             g2d.drawString("WATER EXTRACTOR", 25, 258);
@@ -570,9 +568,9 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
             g2d.setColor(new Color(70, 75, 70));
 
             g2d.setColor(isClickActive(0) ? onColor : offColor);
-            g2d.fillRoundRect(10, 230, bWidth, bHeight, 10, 10);
+            g2d.fillRoundRect(10, 230, (getWidth() / 8 - 20), 40, 10, 10);
             g2d.setColor(isClickActive(1) ? onColor : offColor);
-            g2d.fillRoundRect(10, 280, bWidth, bHeight, 10, 10);
+            g2d.fillRoundRect(10, 280, (getWidth() / 8 - 20), 40, 10, 10);
 
             g2d.setColor(new Color(150, 155, 150));
             g2d.drawString("SMELTER", 25, 258);
@@ -582,19 +580,19 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
             g2d.setColor(new Color(70, 75, 70));
 
             g2d.setColor(isClickActive(0) ? onColor : offColor);
-            g2d.fillRoundRect(10, 230, bWidth, bHeight, 10, 10);
+            g2d.fillRoundRect(10, 230, (getWidth() / 8 - 20), 40, 10, 10);
             g2d.setColor(isClickActive(1) ? onColor : offColor);
-            g2d.fillRoundRect(10, 280, bWidth, bHeight, 10, 10);
+            g2d.fillRoundRect(10, 280, (getWidth() / 8 - 20), 40, 10, 10);
             g2d.setColor(isClickActive(2) ? onColor : offColor);
-            g2d.fillRoundRect(10, 330, bWidth, bHeight, 10, 10);
+            g2d.fillRoundRect(10, 330, (getWidth() / 8 - 20), 40, 10, 10);
             g2d.setColor(isClickActive(3) ? onColor : offColor);
-            g2d.fillRoundRect(10, 380, bWidth, bHeight, 10, 10);
+            g2d.fillRoundRect(10, 380, (getWidth() / 8 - 20), 40, 10, 10);
             g2d.setColor(isClickActive(4) ? onColor : offColor);
-            g2d.fillRoundRect(10, 430, bWidth, bHeight, 10, 10);
+            g2d.fillRoundRect(10, 430, (getWidth() / 8 - 20), 40, 10, 10);
             g2d.setColor(isClickActive(5) ? onColor : offColor);
-            g2d.fillRoundRect(10, 480, bWidth, bHeight, 10, 10);
+            g2d.fillRoundRect(10, 480, (getWidth() / 8 - 20), 40, 10, 10);
             g2d.setColor(isClickActive(6) ? onColor : offColor);
-            g2d.fillRoundRect(10, 530, bWidth, bHeight + 20, 10, 10);
+            g2d.fillRoundRect(10, 530, (getWidth() / 8 - 20), 40 + 20, 10, 10);
 
             g2d.setColor(new Color(150, 155, 150));
             g2d.drawString("CONSTRUCTOR", 25, 258);
@@ -610,13 +608,13 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
             g2d.setColor(new Color(70, 75, 70));
 
             g2d.setColor(isClickActive(0) ? onColor : offColor);
-            g2d.fillRoundRect(10, 230, bWidth, bHeight, 10, 10);
+            g2d.fillRoundRect(10, 230, (getWidth() / 8 - 20), 40, 10, 10);
             g2d.setColor(isClickActive(1) ? onColor : offColor);
-            g2d.fillRoundRect(10, 280, bWidth, bHeight, 10, 10);
+            g2d.fillRoundRect(10, 280, (getWidth() / 8 - 20), 40, 10, 10);
             g2d.setColor(isClickActive(2) ? onColor : offColor);
-            g2d.fillRoundRect(10, 330, bWidth, bHeight, 10, 10);
+            g2d.fillRoundRect(10, 330, (getWidth() / 8 - 20), 40, 10, 10);
             g2d.setColor(isClickActive(3) ? onColor : offColor);
-            g2d.fillRoundRect(10, 380, bWidth, bHeight, 10, 10);
+            g2d.fillRoundRect(10, 380, (getWidth() / 8 - 20), 40, 10, 10);
 
             g2d.setColor(new Color(150, 155, 150));
             g2d.drawString("SPLITTER", 25, 258);
@@ -625,25 +623,31 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
             g2d.drawString("AWESOME SINK", 25, 408);
         }
 
-        g2d.setColor(new Color(70, 75, 70));
+        g2d.setColor(new Color(150, 155, 150));
 
-        g2d.drawRoundRect(10, getHeight() - bHeight - 210, bHeight, bHeight, 10, 10);
-        g2d.drawRoundRect(10 + bWidth - bHeight, getHeight() - bHeight - 210, bHeight, bHeight, 10, 10);
-        g2d.drawString("Conveyor Tier", 10, getHeight() - bHeight - 222);
-        g2d.drawString("-", 25, getHeight() - bHeight - 182);
-        g2d.drawString("+", getWidth() / 8 - 35, getHeight() - bHeight - 182);
-        g2d.drawString(String.valueOf(defaultConveyorTier), bWidth / 2, getHeight() - bHeight - 182);
-        g2d.drawRoundRect(10, getHeight() - bHeight - 110, bHeight, bHeight, 10, 10);
-        g2d.drawRoundRect(10 + bWidth - bHeight, getHeight() - bHeight - 110, bHeight, bHeight, 10, 10);
-        g2d.drawString("Pipe Tier", 10, getHeight() - bHeight - 122);
-        g2d.drawString("-", 25, getHeight() - bHeight - 82);
-        g2d.drawString("+", getWidth() / 8 - 35, getHeight() - bHeight - 82);
-        g2d.drawString(String.valueOf(defaultPipeTier), bWidth / 2, getHeight() - bHeight - 82);
+        g2d.drawRoundRect(10, getHeight() - 40 - 240, 40, 40, 10, 10);
+        g2d.drawRoundRect(10 + (getWidth() / 8 - 20) - 40, getHeight() - 40 - 240, 40, 40, 10, 10);
+        g2d.drawString("Conveyor Tier", 10, getHeight() - 40 - 252);
+        g2d.drawString("-", 25, getHeight() - 40 - 212);
+        g2d.drawString("+", getWidth() / 8 - 35, getHeight() - 40 - 212);
+        g2d.drawString(String.valueOf(defaultConveyorTier), (getWidth() / 8 - 20) / 2, getHeight() - 40 - 212);
 
-        g2d.drawRoundRect(10, getHeight() - bHeight - 60, bWidth, bHeight, 10, 10);
-        g2d.drawString("Reset Origin", 25, getHeight() - bHeight - 32);
-        g2d.drawRoundRect(10, getHeight() - bHeight - 10, bWidth, bHeight, 10, 10);
-        g2d.drawString("Reset View", 25, getHeight() - bHeight + 18);
+        g2d.drawRoundRect(10, getHeight() - 40 - 160, 40, 40, 10, 10);
+        g2d.drawRoundRect(10 + (getWidth() / 8 - 20) - 40, getHeight() - 40 - 160, 40, 40, 10, 10);
+        g2d.drawString("Pipe Tier", 10, getHeight() - 40 - 172);
+        g2d.drawString("-", 25, getHeight() - 40 - 132);
+        g2d.drawString("+", getWidth() / 8 - 35, getHeight() - 40 - 132);
+        g2d.drawString(String.valueOf(defaultPipeTier), (getWidth() / 8 - 20) / 2, getHeight() - 40 - 132);
+
+        g2d.drawRoundRect(10, getHeight() - 40 - 110, (getWidth() / 8 - 20), 40, 10, 10);
+        g2d.drawString("Reset Origin", 25, getHeight() - 40 - 82);
+        g2d.drawRoundRect(10, getHeight() - 40 - 60, (getWidth() / 8 - 20), 40, 10, 10);
+        g2d.drawString("Reset View", 25, getHeight() - 40 - 32);
+
+        g2d.drawRoundRect(10, getHeight() - 40 - 10, (getWidth() / 8 - 20) / 2 - 10, 40, 10, 10);
+        g2d.drawString("Save", 25, getHeight() - 40 + 18);
+        g2d.drawRoundRect(10 + (getWidth() / 8 - 20) / 2, getHeight() - 40 - 10, (getWidth() / 8 - 20) / 2, 40, 10, 10);
+        g2d.drawString("Load", 25 + (getWidth() / 8 - 20) / 2, getHeight() - 40 + 18);
 
         g2d.drawString(Math.abs((double)(int)(totalPower * 10000) / 10000) + "mw " + (totalPower <= 0 ? "cost" : "creation"), getWidth() / 8 + 20, getHeight() - 20);
 
@@ -687,12 +691,12 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
                 shiftDown = false;
                 leftMouseDown = false;
             }
-        }
-        if (keyEvent.getKeyCode() == KeyEvent.VK_S) {
-            save("C:/Users/Sam/Documents/github/Satisgraphtory/test_saves/save.stgs");
-        }
-        if (keyEvent.getKeyCode() == KeyEvent.VK_L) {
-            load("C:/Users/Sam/Documents/github/Satisgraphtory/test_saves/save.stgs");
+            if (keyEvent.getKeyCode() == KeyEvent.VK_S) {
+                save("C:/Users/Sam/Documents/github/Satisgraphtory/test_saves/save.stgs");
+            }
+            if (keyEvent.getKeyCode() == KeyEvent.VK_L) {
+                load("C:/Users/Sam/Documents/github/Satisgraphtory/test_saves/save.stgs");
+            }
         }
     }
 
@@ -828,36 +832,46 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
                 }
 
                 // increase default conveyor
-                if (mx > getWidth() / 8 - 50 && mx < getWidth() / 8 - 10 && my > getHeight() - 250 && my < getHeight() - 210) {
+                if (mx > getWidth() / 8 - 50 && mx < getWidth() / 8 - 10 && my > getHeight() - 280 && my < getHeight() - 240) {
                     defaultConveyorTier ++;
                     if (defaultConveyorTier > 5) defaultConveyorTier = 5;
                 }
                 // decrease default conveyor
-                if (mx > 10 && mx < 50 && my > getHeight() - 250 && my < getHeight() - 210) {
+                if (mx > 10 && mx < 50 && my > getHeight() - 280 && my < getHeight() - 240) {
                     defaultConveyorTier --;
                     if (defaultConveyorTier < 1) defaultConveyorTier = 1;
                 }
                 // increase default pipe
-                if (mx > getWidth() / 8 - 50  && mx < getWidth() / 8 - 10 && my > getHeight() - 150 && my < getHeight() - 110) {
+                if (mx > getWidth() / 8 - 50  && mx < getWidth() / 8 - 10 && my > getHeight() - 200 && my < getHeight() - 160) {
                     defaultPipeTier ++;
                     if (defaultPipeTier > 2) defaultPipeTier = 2;
                 }
                 // decrease default pipe
-                if (mx > 10 && mx < 50 && my > getHeight() - 150 && my < getHeight() - 110) {
+                if (mx > 10 && mx < 50 && my > getHeight() - 200 && my < getHeight() - 160) {
                     defaultPipeTier --;
                     if (defaultPipeTier < 1) defaultPipeTier = 1;
                 }
 
                 // set origin
-                if (mx > 10 && mx < getWidth() / 8 - 10 && my > getHeight() - 100 && my < getHeight() - 60) {
+                if (mx > 10 && mx < getWidth() / 8 - 10 && my > getHeight() - 150 && my < getHeight() - 110) {
                     PointDouble screenCenter = Screen.getCenter();
                     origin = new Point((int) Math.floor(screenCenter.x), (int) Math.floor(screenCenter.y));
                 }
 
                 // reset view
-                if (mx > 10 && mx < getWidth() / 8 - 10 && my > getHeight() - 50 && my < getHeight() - 10) {
+                if (mx > 10 && mx < getWidth() / 8 - 10 && my > getHeight() - 100 && my < getHeight() - 60) {
                     Screen.setCenter(new PointDouble(origin.x, origin.y));
                     Screen.setZoom(100);
+                }
+
+                // save
+                if (mx > 10 && mx < getWidth() / 16 - 10 && my > getHeight() - 50 && my < getHeight() - 10) {
+                    System.out.println("save");
+                }
+
+                // load
+                if (mx > getWidth() / 16 && mx < getWidth() / 8 - 10 && my > getHeight() - 50 && my < getHeight() - 10) {
+                    System.out.println("load");
                 }
             }
         }
