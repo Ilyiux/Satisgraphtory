@@ -1,6 +1,7 @@
 # Satisgraphtory
 A factory graph, for Satisfactory
-Made in Java, UI in pure Swing
+
+_Made in Java, UI in pure Swing_
 
 ## Buildings
 Add buildings from the menu on the left.
