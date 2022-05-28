@@ -716,13 +716,18 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
             g2d.setColor(Color.WHITE);
             g2d.drawString("Save", sc.x - 190, sc.y - 80);
 
+            g2d.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
+            g2d.setColor(new Color(60, 63, 60));
+            g2d.fillRoundRect(sc.x + 105, sc.y - 92, 90, 15, 4, 4);
+            g2d.setColor(new Color(150, 155, 150));
+            g2d.drawString("Reset Directory", sc.x + 108, sc.y - 80);
+
             g2d.setColor(new Color(20, 22, 20));
             g2d.fillRoundRect(sc.x - 190, sc.y - 60, 380, 20, 7, 7);
             g2d.setColor(new Color(150, 155, 150));
             if (editingSaveLoadDir) g2d.drawRoundRect(sc.x - 190, sc.y - 60, 380, 20, 7, 7);
 
             g2d.setColor(saveLoadDirValid ? Color.WHITE : Color.RED);
-            g2d.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
             boolean showEditCursor = ((int)(System.currentTimeMillis() / 500) % 2) == 0 && editingSaveLoadDir;
             g2d.drawString(saveLoadDir + (showEditCursor ? "|" : ""), sc.x - 185, sc.y - 45);
 
@@ -755,6 +760,12 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
             g2d.setColor(Color.WHITE);
             g2d.drawString("Load", sc.x - 190, sc.y - 80);
 
+            g2d.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
+            g2d.setColor(new Color(60, 63, 60));
+            g2d.fillRoundRect(sc.x + 105, sc.y - 92, 90, 15, 4, 4);
+            g2d.setColor(new Color(150, 155, 150));
+            g2d.drawString("Reset Directory", sc.x + 108, sc.y - 80);
+
             g2d.setColor(new Color(20, 22, 20));
             g2d.fillRoundRect(sc.x - 190, sc.y - 60, 380, 20, 7, 7);
             g2d.setColor(new Color(150, 155, 150));
@@ -783,6 +794,12 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
                     g2d.fillRoundRect(sc.x - 190 + (index / 4 * 100), sc.y - 25 + (index % 4 * 30), 90, 20, 5, 5);
                     g2d.setColor(Color.WHITE);
                     g2d.drawString(s, sc.x - 187 + (index / 4 * 100), sc.y - 11 + (index % 4 * 30));
+                }
+
+                if (validSaves.size() == 0) {
+                    g2d.setColor(new Color(100, 103, 100));
+                    g2d.setFont(new Font("Bahnschrift", Font.ITALIC, 12));
+                    g2d.drawString("Directory has no Satisgraphtory saves", sc.x - 100, sc.y + 6);
                 }
             }
         }
@@ -1130,6 +1147,11 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
                 if (mx < sc.x - 200 || mx > sc.x + 200 || my < sc.y - 100 || my > sc.y + 100) {
                     inLoadMenu = false;
                     inSaveMenu = false;
+                }
+
+                if (mx > sc.x + 105 && mx < sc.x + 195 && my > sc.y - 92 && my < sc.y - 77) {
+                    saveLoadDir = System.getProperty("user.dir");
+                    saveLoadDirValid = true;
                 }
 
                 if (saveLoadDirValid) {
