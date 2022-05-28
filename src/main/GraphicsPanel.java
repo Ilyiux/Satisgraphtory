@@ -874,11 +874,15 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
 
     @Override
     public void mouseWheelMoved(MouseWheelEvent mouseWheelEvent) {
+        Point mousePos = MouseInfo.getPointerInfo().getLocation();
+        Point screenPos = getLocationOnScreen();
+        int mx = mousePos.x - screenPos.x;
+        int my = mousePos.y - screenPos.y;
         if (inMenuObject) {
             menuObject.scrolled(this, mouseWheelEvent.getWheelRotation());
         }
         if (!inMenuObject) {
-            Screen.zoom(mouseWheelEvent.getWheelRotation());
+            Screen.zoom(mouseWheelEvent.getWheelRotation(), mx, my);
         }
     }
 }

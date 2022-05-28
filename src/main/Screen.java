@@ -23,10 +23,16 @@ public class Screen {
         return (int) (l * zoom);
     }
 
-    public static void zoom(int scrollAmount) {
+    public static void zoom(int scrollAmount, int mx, int my) {
         zoom += -5 * scrollAmount;
         if (zoom < 5) zoom = 5;
         if (zoom > 120) zoom = 120;
+        Point mp = convertToWorldPoint(new Point(mx, my));
+        Point cp = convertToWorldPoint(new Point(GraphicsPanel.WIDTH / 2, GraphicsPanel.HEIGHT / 2));
+        if (scrollAmount < 0 && zoom < 120) {
+            center.x -= (mp.x - cp.x) * (1 - 120.0 / (double)zoom) * 0.1;
+            center.y -= (mp.y - cp.y) * (1 - 120.0 / (double)zoom) * 0.1;
+        }
     }
 
     public static void setZoom(int amount) {
