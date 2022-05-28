@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -48,6 +50,14 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
 
     boolean inMenuObject = false;
     WorldObject menuObject;
+
+    boolean inSaveMenu = false;
+    boolean inLoadMenu = false;
+    String saveLoadDir = "";
+    boolean saveLoadDirValid = false;
+    boolean editingSaveLoadDir = false;
+    String saveName = "";
+    boolean editingSaveName = false;
 
     private int defaultConveyorTier = 1;
     private int defaultPipeTier = 1;
@@ -112,6 +122,8 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
         ImageManager.loadMaterialImages();
 
         emptyClickList();
+        saveLoadDir = System.getProperty("user.dir");
+        saveLoadDirValid = Files.exists(Paths.get(saveLoadDir));
     }
 
     // called before draw
@@ -208,10 +220,13 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
     }
 
     public void deleteConnector(Connector connector) {
-        connector.startBuilding.outConveyors.remove(connector);
-        connector.startBuilding.outPipes.remove(connector);
-        connector.endBuilding.inConveyors.remove(connector);
-        connector.endBuilding.inPipes.remove(connector);
+        if (connector instanceof Conveyor) {
+            connector.endBuilding.inConveyors.remove(connector);
+            connector.startBuilding.outConveyors.remove(connector);
+        } else if (connector instanceof Pipe) {
+            connector.endBuilding.inPipes.remove(connector);
+            connector.startBuilding.outPipes.remove(connector);
+        }
         connectors.remove(connector);
     }
 
@@ -219,7 +234,12 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
         buildings.add(0, building);
     }
 
-    public void save(String location) {
+    private void openSaveMenu() {
+        inSaveMenu = true;
+        save("C:/Users/Sam/Documents/github/Satisgraphtory/test_saves/save.stgs");
+    }
+
+    private void save(String location) {
         StringBuilder saveData = new StringBuilder();
 
         for (Building b : buildings) {
@@ -314,7 +334,7 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
         }
     }
 
-    public void load(String location) {
+    private void load(String location) {
         ArrayList<String> buildingLines = new ArrayList<>();
         ArrayList<String> connectorLines = new ArrayList<>();
 
@@ -350,47 +370,47 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
             if (id.equals("asm")) { // assembler
                 double overclock = Double.parseDouble(data[2]);
                 boolean setRecipe = Boolean.parseBoolean(data[3]);
-                Recipe recipe = Recipes.recipes.get(Integer.parseInt(data[4]));
+                Recipe recipe = !setRecipe ? null : Recipes.recipes.get(Integer.parseInt(data[4]));
                 bu = new Assembler(new Point(posX, posY), setRecipe, recipe, overclock);
             } else if (id.equals("ble")) { // blender
                 double overclock = Double.parseDouble(data[2]);
                 boolean setRecipe = Boolean.parseBoolean(data[3]);
-                Recipe recipe = Recipes.recipes.get(Integer.parseInt(data[4]));
+                Recipe recipe = !setRecipe ? null : Recipes.recipes.get(Integer.parseInt(data[4]));
                 bu = new Blender(new Point(posX, posY), setRecipe, recipe, overclock);
             } else if (id.equals("con")) { // constructor
                 double overclock = Double.parseDouble(data[2]);
                 boolean setRecipe = Boolean.parseBoolean(data[3]);
-                Recipe recipe = Recipes.recipes.get(Integer.parseInt(data[4]));
+                Recipe recipe = !setRecipe ? null : Recipes.recipes.get(Integer.parseInt(data[4]));
                 bu = new Constructor(new Point(posX, posY), setRecipe, recipe, overclock);
             } else if (id.equals("fnd")) { // foundry
                 double overclock = Double.parseDouble(data[2]);
                 boolean setRecipe = Boolean.parseBoolean(data[3]);
-                Recipe recipe = Recipes.recipes.get(Integer.parseInt(data[4]));
+                Recipe recipe = !setRecipe ? null : Recipes.recipes.get(Integer.parseInt(data[4]));
                 bu = new Foundry(new Point(posX, posY), setRecipe, recipe, overclock);
             } else if (id.equals("man")) { // manufacturer
                 double overclock = Double.parseDouble(data[2]);
                 boolean setRecipe = Boolean.parseBoolean(data[3]);
-                Recipe recipe = Recipes.recipes.get(Integer.parseInt(data[4]));
+                Recipe recipe = !setRecipe ? null : Recipes.recipes.get(Integer.parseInt(data[4]));
                 bu = new Manufacturer(new Point(posX, posY), setRecipe, recipe, overclock);
             } else if (id.equals("pck")) { // packager
                 double overclock = Double.parseDouble(data[2]);
                 boolean setRecipe = Boolean.parseBoolean(data[3]);
-                Recipe recipe = Recipes.recipes.get(Integer.parseInt(data[4]));
+                Recipe recipe = !setRecipe ? null : Recipes.recipes.get(Integer.parseInt(data[4]));
                 bu = new Packager(new Point(posX, posY), setRecipe, recipe, overclock);
             } else if (id.equals("prt")) { // particle accelerator
                 double overclock = Double.parseDouble(data[2]);
                 boolean setRecipe = Boolean.parseBoolean(data[3]);
-                Recipe recipe = Recipes.recipes.get(Integer.parseInt(data[4]));
+                Recipe recipe = !setRecipe ? null : Recipes.recipes.get(Integer.parseInt(data[4]));
                 bu = new ParticleAccelerator(new Point(posX, posY), setRecipe, recipe, overclock);
             } else if (id.equals("rfn")) { // refinery
                 double overclock = Double.parseDouble(data[2]);
                 boolean setRecipe = Boolean.parseBoolean(data[3]);
-                Recipe recipe = Recipes.recipes.get(Integer.parseInt(data[4]));
+                Recipe recipe = !setRecipe ? null : Recipes.recipes.get(Integer.parseInt(data[4]));
                 bu = new Refinery(new Point(posX, posY), setRecipe, recipe, overclock);
             } else if (id.equals("sme")) { // smelter
                 double overclock = Double.parseDouble(data[2]);
                 boolean setRecipe = Boolean.parseBoolean(data[3]);
-                Recipe recipe = Recipes.recipes.get(Integer.parseInt(data[4]));
+                Recipe recipe = !setRecipe ? null : Recipes.recipes.get(Integer.parseInt(data[4]));
                 bu = new Smelter(new Point(posX, posY), setRecipe, recipe, overclock);
             } else if (id.equals("spl")) { // splitter
                 bu = new Splitter(new Point(posX, posY));
@@ -414,7 +434,7 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
                 bu = new NuclearPowerPlant(new Point(posX, posY), overclock, fuelType);
             } else if (id.equals("box")) { // bottomless box
                 boolean materialSet = Boolean.parseBoolean(data[2]);
-                Material material = Material.values()[Integer.parseInt(data[3])];
+                Material material = !materialSet ? null : Material.values()[Integer.parseInt(data[3])];
                 bu = new BottomlessBox(new Point(posX, posY), materialSet, material);
             } else if (id.equals("min")) { // miner
                 double overclock = Double.parseDouble(data[2]);
@@ -433,7 +453,7 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
                 bu = new ResourceWellExtractor(new Point(posX, posY), purity, overclock, nodeType);
             } else if (id.equals("wat")) { // water extractor
                 double overclock = Double.parseDouble(data[2]);
-                bu = new WaterExtractor(new Point(posX, posY));
+                bu = new WaterExtractor(new Point(posX, posY), overclock);
             } else {
                 System.out.println("Error while reading save '" + location + "'");
             }
@@ -649,66 +669,172 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
         g2d.drawRoundRect(10 + (getWidth() / 8 - 20) / 2, getHeight() - 40 - 10, (getWidth() / 8 - 20) / 2, 40, 10, 10);
         g2d.drawString("Load", 25 + (getWidth() / 8 - 20) / 2, getHeight() - 40 + 18);
 
-        g2d.drawString(Math.abs((double)(int)(totalPower * 10000) / 10000) + "mw " + (totalPower <= 0 ? "cost" : "creation"), getWidth() / 8 + 20, getHeight() - 20);
+        g2d.drawString(Math.abs((double)(int)(totalPower * 10000) / 10000) + "mw " + (totalPower <= 0 ? "consumption" : "production"), getWidth() / 8 + 20, getHeight() - 20);
+
+        Point sc = new Point(WIDTH / 2, HEIGHT / 2);
+        g2d.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
+        if (inSaveMenu) {
+            g2d.setColor(new Color(0, 0, 0, 63));
+            g2d.fillRect(0, 0, GraphicsPanel.WIDTH, GraphicsPanel.HEIGHT);
+
+            g2d.setColor(new Color(30, 32, 30));
+            g2d.fillRoundRect(sc.x - 200, sc.y - 100, 400, 200, 10, 10);
+            g2d.setColor(new Color(90, 95, 90));
+            g2d.drawRoundRect(sc.x - 200, sc.y - 100, 400, 200, 10, 10);
+            g2d.drawLine(sc.x - 190, sc.y - 70, sc.x + 190, sc.y - 70);
+
+            g2d.setColor(Color.WHITE);
+            g2d.drawString("Save", sc.x - 190, sc.y - 80);
+
+            g2d.setColor(new Color(20, 22, 20));
+            g2d.fillRoundRect(sc.x - 190, sc.y - 60, 380, 20, 7, 7);
+            g2d.setColor(new Color(150, 155, 150));
+            if (editingSaveLoadDir) g2d.drawRoundRect(sc.x - 190, sc.y - 60, 380, 20, 7, 7);
+
+            g2d.setColor(saveLoadDirValid ? Color.WHITE : Color.RED);
+            g2d.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
+            boolean showEditCursor = ((int)(System.currentTimeMillis() / 500) % 2) == 0 && editingSaveLoadDir;
+            g2d.drawString(saveLoadDir + (showEditCursor ? "|" : ""), sc.x - 185, sc.y - 45);
+
+            g2d.setColor(new Color(20, 22, 20));
+            g2d.fillRoundRect(sc.x - 150, sc.y - 30, 340, 20, 7, 7);
+            g2d.setColor(new Color(150, 155, 150));
+            if (editingSaveName) g2d.drawRoundRect(sc.x - 150, sc.y - 30, 340, 20, 7, 7);
+
+            g2d.setColor(Color.WHITE);
+            g2d.drawString("Name: ", sc.x - 190, sc.y - 15);
+            boolean showNameCursor = ((int)(System.currentTimeMillis() / 500) % 2) == 0 && editingSaveName;
+            g2d.drawString(saveName + (showNameCursor ? "|" : ""), sc.x - 145, sc.y - 15);
+
+            g2d.setColor(saveLoadDirValid && saveName.length() > 0 ? new Color(60, 230, 60) : new Color(230, 60, 60));
+            g2d.fillRoundRect(sc.x + 110, sc.y + 60, 80, 30, 6, 6);
+            g2d.setColor(new Color(30, 32, 30));
+            g2d.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
+            g2d.drawString("Save", sc.x + 132, sc.y + 80);
+        }
+        if (inLoadMenu) {
+            g2d.setColor(new Color(0, 0, 0, 63));
+            g2d.fillRect(0, 0, GraphicsPanel.WIDTH, GraphicsPanel.HEIGHT);
+
+            g2d.setColor(new Color(30, 32, 30));
+            g2d.fillRoundRect(sc.x - 200, sc.y - 100, 400, 200, 10, 10);
+            g2d.setColor(new Color(90, 95, 90));
+            g2d.drawRoundRect(sc.x - 200, sc.y - 100, 400, 200, 10, 10);
+            g2d.drawLine(sc.x - 190, sc.y - 70, sc.x + 190, sc.y - 70);
+
+            g2d.setColor(Color.WHITE);
+            g2d.drawString("Load", sc.x - 190, sc.y - 80);
+
+            g2d.setColor(new Color(20, 22, 20));
+            g2d.fillRoundRect(sc.x - 190, sc.y - 60, 380, 20, 7, 7);
+            g2d.setColor(new Color(150, 155, 150));
+            if (editingSaveLoadDir) g2d.drawRoundRect(sc.x - 190, sc.y - 60, 380, 20, 7, 7);
+
+            g2d.setColor(saveLoadDirValid ? Color.WHITE : Color.RED);
+            g2d.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
+            boolean showEditCursor = ((int)(System.currentTimeMillis() / 500) % 2) == 0 && editingSaveLoadDir;
+            g2d.drawString(saveLoadDir + (showEditCursor ? "|" : ""), sc.x - 185, sc.y - 45);
+
+            if (saveLoadDirValid) {
+                String[] allSaves = new File(saveLoadDir).list();
+                ArrayList<String> validSaves = new ArrayList<>();
+                assert allSaves != null;
+                for (String s : allSaves) {
+                    String[] split = s.split("\\.");
+                    String[] body = new String[split.length - 1];
+                    System.arraycopy(split, 0, body, 0, split.length - 1);
+                    if (split[split.length - 1].equals("stgs")) validSaves.add(String.join("", body));
+                }
+
+                g2d.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
+                for (String s : validSaves) {
+                    int index = validSaves.indexOf(s);
+                    g2d.setColor(new Color(40, 43, 40));
+                    g2d.fillRoundRect(sc.x - 190 + (index / 4 * 100), sc.y - 25 + (index % 4 * 30), 90, 20, 5, 5);
+                    g2d.setColor(Color.WHITE);
+                    g2d.drawString(s, sc.x - 187 + (index / 4 * 100), sc.y - 11 + (index % 4 * 30));
+                }
+            }
+        }
 
         g.dispose();
     }
 
     @Override
-    public void focusGained(FocusEvent focusEvent) {
-
-    }
+    public void focusGained(FocusEvent focusEvent) {}
 
     @Override
-    public void focusLost(FocusEvent focusEvent) {
-
-    }
+    public void focusLost(FocusEvent focusEvent) {}
 
     @Override
     public void keyTyped(KeyEvent keyEvent) {}
 
     @Override
     public void keyPressed(KeyEvent keyEvent) {
-        if (inMenuObject) {
-            menuObject.typed(this, keyEvent.getKeyCode());
-        }
-        if (!inMenuObject) {
-            if (keyEvent.getKeyCode() == KeyEvent.VK_C) {
-                PointDouble screenCenter = Screen.getCenter();
-                origin = new Point((int) Math.floor(screenCenter.x), (int) Math.floor(screenCenter.y));
+        if (!inSaveMenu && !inLoadMenu) {
+            if (inMenuObject) {
+                menuObject.typed(this, keyEvent.getKeyCode());
             }
-            if (keyEvent.getKeyCode() == KeyEvent.VK_F) {
-                Screen.setCenter(new PointDouble(origin.x, origin.y));
-                Screen.setZoom(100);
-            }
+            if (!inMenuObject) {
+                if (keyEvent.getKeyCode() == KeyEvent.VK_C) {
+                    PointDouble screenCenter = Screen.getCenter();
+                    origin = new Point((int) Math.floor(screenCenter.x), (int) Math.floor(screenCenter.y));
+                }
+                if (keyEvent.getKeyCode() == KeyEvent.VK_F) {
+                    Screen.setCenter(new PointDouble(origin.x, origin.y));
+                    Screen.setZoom(100);
+                }
 
-            if (keyEvent.getKeyCode() == KeyEvent.VK_SHIFT && !inMenuObject) {
-                shiftDown = true;
-                ctrlDown = false;
-                leftMouseDown = false;
-            }if (keyEvent.getKeyCode() == KeyEvent.VK_CONTROL && !inMenuObject) {
-                ctrlDown = true;
-                shiftDown = false;
-                leftMouseDown = false;
+                if (keyEvent.getKeyCode() == KeyEvent.VK_SHIFT && !inMenuObject) {
+                    shiftDown = true;
+                    ctrlDown = false;
+                    leftMouseDown = false;
+                }
+                if (keyEvent.getKeyCode() == KeyEvent.VK_CONTROL && !inMenuObject) {
+                    ctrlDown = true;
+                    shiftDown = false;
+                    leftMouseDown = false;
+                }
+                if (keyEvent.getKeyCode() == KeyEvent.VK_S) {
+                    openSaveMenu();
+                }
+                if (keyEvent.getKeyCode() == KeyEvent.VK_L) {
+                    inLoadMenu = true;
+                }
             }
-            if (keyEvent.getKeyCode() == KeyEvent.VK_S) {
-                save("C:/Users/Sam/Documents/github/Satisgraphtory/test_saves/save.stgs");
+        } else {
+            if (editingSaveLoadDir) {
+                if (keyEvent.getKeyCode() == KeyEvent.VK_BACK_SPACE || keyEvent.getKeyCode() == KeyEvent.VK_DELETE) {
+                    if (saveLoadDir.length() > 0)
+                        saveLoadDir = saveLoadDir.substring(0, saveLoadDir.length() - 1);
+                    saveLoadDirValid = Files.exists(Paths.get(saveLoadDir));
+                } else if (!keyEvent.isActionKey() && keyEvent.getKeyCode() != KeyEvent.VK_SHIFT && keyEvent.getKeyCode() != KeyEvent.VK_CONTROL && keyEvent.getKeyCode() != KeyEvent.VK_ALT && keyEvent.getKeyCode() != KeyEvent.VK_ESCAPE && keyEvent.getKeyCode() != KeyEvent.VK_ENTER && keyEvent.getKeyChar() != '/' && keyEvent.getKeyChar() != '|' && keyEvent.getKeyChar() != '<' && keyEvent.getKeyChar() != '>' && keyEvent.getKeyChar() != '?' && keyEvent.getKeyChar() != '"' && keyEvent.getKeyChar() != '*') {
+                    saveLoadDir += keyEvent.getKeyChar();
+                    saveLoadDirValid = Files.exists(Paths.get(saveLoadDir));
+                }
             }
-            if (keyEvent.getKeyCode() == KeyEvent.VK_L) {
-                load("C:/Users/Sam/Documents/github/Satisgraphtory/test_saves/save.stgs");
+            if (editingSaveName) {
+                if (keyEvent.getKeyCode() == KeyEvent.VK_BACK_SPACE || keyEvent.getKeyCode() == KeyEvent.VK_DELETE) {
+                    if (saveName.length() > 0)
+                        saveName = saveName.substring(0, saveName.length() - 1);
+                } else if (!keyEvent.isActionKey() && keyEvent.getKeyCode() != KeyEvent.VK_SHIFT && keyEvent.getKeyCode() != KeyEvent.VK_CONTROL && keyEvent.getKeyCode() != KeyEvent.VK_ALT && keyEvent.getKeyCode() != KeyEvent.VK_ESCAPE && keyEvent.getKeyCode() != KeyEvent.VK_ENTER && keyEvent.getKeyChar() != '/' && keyEvent.getKeyChar() != '\\' && keyEvent.getKeyChar() != '|' && keyEvent.getKeyChar() != ':' && keyEvent.getKeyChar() != '<' && keyEvent.getKeyChar() != '>' && keyEvent.getKeyChar() != '?' && keyEvent.getKeyChar() != '"' && keyEvent.getKeyChar() != '*') {
+                    saveName += keyEvent.getKeyChar();
+                }
             }
         }
     }
 
     @Override
     public void keyReleased(KeyEvent keyEvent) {
-        if (keyEvent.getKeyCode() == KeyEvent.VK_SHIFT) {
-            shiftDown = false;
-            firstConnection = true;
-        }
-        if (keyEvent.getKeyCode() == KeyEvent.VK_CONTROL) {
-            ctrlDown = false;
-            firstConnection = true;
+        if (!inSaveMenu && !inLoadMenu) {
+            if (keyEvent.getKeyCode() == KeyEvent.VK_SHIFT) {
+                shiftDown = false;
+                firstConnection = true;
+            }
+            if (keyEvent.getKeyCode() == KeyEvent.VK_CONTROL) {
+                ctrlDown = false;
+                firstConnection = true;
+            }
         }
     }
 
@@ -719,159 +845,161 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
         int mx = mousePos.x - screenPos.x;
         int my = mousePos.y - screenPos.y;
 
-        if (!shiftDown && !ctrlDown) {
-            if (mouseEvent.getButton() == MouseEvent.BUTTON1) {
-                if (mx > 10 && mx < getWidth() / 8 - 10 && my > 10 && my < 50) {
-                    menuState = MenuState.NEW_GENERATOR;
-                    emptyClickList();
-                }
-                if (mx > 10 && mx < getWidth() / 8 - 10 && my > 60 && my < 100) {
-                    menuState = MenuState.NEW_SMELTER;
-                    emptyClickList();
-                }
-                if (mx > 10 && mx < getWidth() / 8 - 10 && my > 110 && my < 150) {
-                    menuState = MenuState.NEW_CRAFTER;
-                    emptyClickList();
-                }
-                if (mx > 10 && mx < getWidth() / 8 - 10 && my > 160 && my < 200) {
-                    menuState = MenuState.NEW_LOGISTIC;
-                    emptyClickList();
-                }
+        if (!inSaveMenu && !inLoadMenu) {
+            if (!shiftDown && !ctrlDown) {
+                if (mouseEvent.getButton() == MouseEvent.BUTTON1) {
+                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 10 && my < 50) {
+                        menuState = MenuState.NEW_GENERATOR;
+                        emptyClickList();
+                    }
+                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 60 && my < 100) {
+                        menuState = MenuState.NEW_SMELTER;
+                        emptyClickList();
+                    }
+                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 110 && my < 150) {
+                        menuState = MenuState.NEW_CRAFTER;
+                        emptyClickList();
+                    }
+                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 160 && my < 200) {
+                        menuState = MenuState.NEW_LOGISTIC;
+                        emptyClickList();
+                    }
 
-                if (menuState == MenuState.NEW_GENERATOR) {
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 230 && my < 270) {// new water extractor
-                        buildings.add(0, new WaterExtractor(origin));
-                        setClickList(0);
+                    if (menuState == MenuState.NEW_GENERATOR) {
+                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 230 && my < 270) {// new water extractor
+                            buildings.add(0, new WaterExtractor(origin));
+                            setClickList(0);
+                        }
+                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 280 && my < 320) {// new oil extractor
+                            buildings.add(0, new OilExtractor(origin));
+                            setClickList(1);
+                        }
+                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 330 && my < 390) {// new resource well extractor
+                            buildings.add(0, new ResourceWellExtractor(origin));
+                            setClickList(2);
+                        }
+                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 400 && my < 440) {// new miner
+                            buildings.add(0, new Miner(origin));
+                            setClickList(3);
+                        }
+                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 450 && my < 490) {// new coal generator
+                            buildings.add(0, new CoalGenerator(origin));
+                            setClickList(4);
+                        }
+                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 500 && my < 540) {// new fuel generator
+                            buildings.add(0, new FuelGenerator(origin));
+                            setClickList(5);
+                        }
+                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 550 && my < 590) {// new nuclear power plant
+                            buildings.add(0, new NuclearPowerPlant(origin));
+                            setClickList(6);
+                        }
+                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 600 && my < 640) {// new generator
+                            buildings.add(0, new BottomlessBox(origin));
+                            setClickList(7);
+                        }
                     }
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 280 && my < 320) {// new oil extractor
-                        buildings.add(0, new OilExtractor(origin));
-                        setClickList(1);
+                    if (menuState == MenuState.NEW_SMELTER) {
+                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 230 && my < 270) {// new smelter
+                            buildings.add(0, new Smelter(origin));
+                            setClickList(0);
+                        }
+                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 280 && my < 320) {// new foundry
+                            buildings.add(0, new Foundry(origin));
+                            setClickList(1);
+                        }
                     }
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 330 && my < 390) {// new resource well extractor
-                        buildings.add(0, new ResourceWellExtractor(origin));
-                        setClickList(2);
+                    if (menuState == MenuState.NEW_CRAFTER) {
+                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 230 && my < 270) {// new constructor
+                            buildings.add(0, new Constructor(origin));
+                            setClickList(0);
+                        }
+                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 280 && my < 320) {// new assembler
+                            buildings.add(0, new Assembler(origin));
+                            setClickList(1);
+                        }
+                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 330 && my < 370) {// new manufacturer
+                            buildings.add(0, new Manufacturer(origin));
+                            setClickList(2);
+                        }
+                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 380 && my < 420) {// new packager
+                            buildings.add(0, new Packager(origin));
+                            setClickList(3);
+                        }
+                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 430 && my < 470) {// new refinery
+                            buildings.add(0, new Refinery(origin));
+                            setClickList(4);
+                        }
+                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 480 && my < 520) {// new blender
+                            buildings.add(0, new Blender(origin));
+                            setClickList(5);
+                        }
+                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 530 && my < 590) {// new particle accelerator
+                            buildings.add(0, new ParticleAccelerator(origin));
+                            setClickList(6);
+                        }
                     }
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 400 && my < 440) {// new miner
-                        buildings.add(0, new Miner(origin));
-                        setClickList(3);
+                    if (menuState == MenuState.NEW_LOGISTIC) {
+                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 230 && my < 270) {// new splitter
+                            buildings.add(0, new Splitter(origin));
+                            setClickList(0);
+                        }
+                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 280 && my < 320) {// new merger
+                            buildings.add(0, new Merger(origin));
+                            setClickList(1);
+                        }
+                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 330 && my < 370) {// new junction
+                            buildings.add(0, new Junction(origin));
+                            setClickList(2);
+                        }
+                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 380 && my < 420) {// new awesome sink
+                            buildings.add(0, new AwesomeSink(origin));
+                            setClickList(3);
+                        }
                     }
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 450 && my < 490) {// new coal generator
-                        buildings.add(0, new CoalGenerator(origin));
-                        setClickList(4);
-                    }
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 500 && my < 540) {// new fuel generator
-                        buildings.add(0, new FuelGenerator(origin));
-                        setClickList(5);
-                    }
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 550 && my < 590) {// new nuclear power plant
-                        buildings.add(0, new NuclearPowerPlant(origin));
-                        setClickList(6);
-                    }
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 600 && my < 640) {// new generator
-                        buildings.add(0, new BottomlessBox(origin));
-                        setClickList(7);
-                    }
-                }
-                if (menuState == MenuState.NEW_SMELTER) {
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 230 && my < 270) {// new smelter
-                        buildings.add(0, new Smelter(origin));
-                        setClickList(0);
-                    }
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 280 && my < 320) {// new foundry
-                        buildings.add(0, new Foundry(origin));
-                        setClickList(1);
-                    }
-                }
-                if (menuState == MenuState.NEW_CRAFTER) {
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 230 && my < 270) {// new constructor
-                        buildings.add(0, new Constructor(origin));
-                        setClickList(0);
-                    }
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 280 && my < 320) {// new assembler
-                        buildings.add(0, new Assembler(origin));
-                        setClickList(1);
-                    }
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 330 && my < 370) {// new manufacturer
-                        buildings.add(0, new Manufacturer(origin));
-                        setClickList(2);
-                    }
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 380 && my < 420) {// new packager
-                        buildings.add(0, new Packager(origin));
-                        setClickList(3);
-                    }
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 430 && my < 470) {// new refinery
-                        buildings.add(0, new Refinery(origin));
-                        setClickList(4);
-                    }
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 480 && my < 520) {// new blender
-                        buildings.add(0, new Blender(origin));
-                        setClickList(5);
-                    }
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 530 && my < 590) {// new particle accelerator
-                        buildings.add(0, new ParticleAccelerator(origin));
-                        setClickList(6);
-                    }
-                }
-                if (menuState == MenuState.NEW_LOGISTIC) {
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 230 && my < 270) {// new splitter
-                        buildings.add(0, new Splitter(origin));
-                        setClickList(0);
-                    }
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 280 && my < 320) {// new merger
-                        buildings.add(0, new Merger(origin));
-                        setClickList(1);
-                    }
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 330 && my < 370) {// new junction
-                        buildings.add(0, new Junction(origin));
-                        setClickList(2);
-                    }
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 380 && my < 420) {// new awesome sink
-                        buildings.add(0, new AwesomeSink(origin));
-                        setClickList(3);
-                    }
-                }
 
-                // increase default conveyor
-                if (mx > getWidth() / 8 - 50 && mx < getWidth() / 8 - 10 && my > getHeight() - 280 && my < getHeight() - 240) {
-                    defaultConveyorTier ++;
-                    if (defaultConveyorTier > 5) defaultConveyorTier = 5;
-                }
-                // decrease default conveyor
-                if (mx > 10 && mx < 50 && my > getHeight() - 280 && my < getHeight() - 240) {
-                    defaultConveyorTier --;
-                    if (defaultConveyorTier < 1) defaultConveyorTier = 1;
-                }
-                // increase default pipe
-                if (mx > getWidth() / 8 - 50  && mx < getWidth() / 8 - 10 && my > getHeight() - 200 && my < getHeight() - 160) {
-                    defaultPipeTier ++;
-                    if (defaultPipeTier > 2) defaultPipeTier = 2;
-                }
-                // decrease default pipe
-                if (mx > 10 && mx < 50 && my > getHeight() - 200 && my < getHeight() - 160) {
-                    defaultPipeTier --;
-                    if (defaultPipeTier < 1) defaultPipeTier = 1;
-                }
+                    // increase default conveyor
+                    if (mx > getWidth() / 8 - 50 && mx < getWidth() / 8 - 10 && my > getHeight() - 280 && my < getHeight() - 240) {
+                        defaultConveyorTier++;
+                        if (defaultConveyorTier > 5) defaultConveyorTier = 5;
+                    }
+                    // decrease default conveyor
+                    if (mx > 10 && mx < 50 && my > getHeight() - 280 && my < getHeight() - 240) {
+                        defaultConveyorTier--;
+                        if (defaultConveyorTier < 1) defaultConveyorTier = 1;
+                    }
+                    // increase default pipe
+                    if (mx > getWidth() / 8 - 50 && mx < getWidth() / 8 - 10 && my > getHeight() - 200 && my < getHeight() - 160) {
+                        defaultPipeTier++;
+                        if (defaultPipeTier > 2) defaultPipeTier = 2;
+                    }
+                    // decrease default pipe
+                    if (mx > 10 && mx < 50 && my > getHeight() - 200 && my < getHeight() - 160) {
+                        defaultPipeTier--;
+                        if (defaultPipeTier < 1) defaultPipeTier = 1;
+                    }
 
-                // set origin
-                if (mx > 10 && mx < getWidth() / 8 - 10 && my > getHeight() - 150 && my < getHeight() - 110) {
-                    PointDouble screenCenter = Screen.getCenter();
-                    origin = new Point((int) Math.floor(screenCenter.x), (int) Math.floor(screenCenter.y));
-                }
+                    // set origin
+                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > getHeight() - 150 && my < getHeight() - 110) {
+                        PointDouble screenCenter = Screen.getCenter();
+                        origin = new Point((int) Math.floor(screenCenter.x), (int) Math.floor(screenCenter.y));
+                    }
 
-                // reset view
-                if (mx > 10 && mx < getWidth() / 8 - 10 && my > getHeight() - 100 && my < getHeight() - 60) {
-                    Screen.setCenter(new PointDouble(origin.x, origin.y));
-                    Screen.setZoom(100);
-                }
+                    // reset view
+                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > getHeight() - 100 && my < getHeight() - 60) {
+                        Screen.setCenter(new PointDouble(origin.x, origin.y));
+                        Screen.setZoom(100);
+                    }
 
-                // save
-                if (mx > 10 && mx < getWidth() / 16 - 10 && my > getHeight() - 50 && my < getHeight() - 10) {
-                    System.out.println("save");
-                }
+                    // save
+                    if (mx > 10 && mx < getWidth() / 16 - 10 && my > getHeight() - 50 && my < getHeight() - 10) {
+                        openSaveMenu();
+                    }
 
-                // load
-                if (mx > getWidth() / 16 && mx < getWidth() / 8 - 10 && my > getHeight() - 50 && my < getHeight() - 10) {
-                    System.out.println("load");
+                    // load
+                    if (mx > getWidth() / 16 && mx < getWidth() / 8 - 10 && my > getHeight() - 50 && my < getHeight() - 10) {
+                        inLoadMenu = true;
+                    }
                 }
             }
         }
@@ -884,78 +1012,131 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
         int mx = mousePos.x - screenPos.x;
         int my = mousePos.y - screenPos.y;
 
-        if (inMenuObject && !shiftDown && !ctrlDown) {
-            if (mouseEvent.getButton() == MouseEvent.BUTTON1) {
-                menuObject.clicked(this, mx, my);
+        if (!inSaveMenu && !inLoadMenu) {
+            if (inMenuObject && !shiftDown && !ctrlDown) {
+                if (mouseEvent.getButton() == MouseEvent.BUTTON1) {
+                    menuObject.clicked(this, mx, my);
+                }
             }
-        }
-        if (!inMenuObject) {
-            if (mouseEvent.getButton() == MouseEvent.BUTTON2 && mx > getWidth() / 8) {
-                midMouseDown = true;
-                midMousePos = new Point(mx, my);
-            }
-            if (mouseEvent.getButton() == MouseEvent.BUTTON1 && mx > getWidth() / 8 && !shiftDown && !ctrlDown) {
-                leftMouseDown = true;
-                int bIndex = getBuildingIndexUnderMouse(mx, my);
-                if (bIndex != -1) dragBuilding = buildings.get(bIndex);
-                else leftMouseDown = false;
-            }
-            if (mouseEvent.getButton() == MouseEvent.BUTTON3 && mx > getWidth() / 8 && !shiftDown && !ctrlDown) {
-                int cIndex = getConnectorIndexUnderMouse(mx, my);
-                if (cIndex != -1) {
-                    menuObject = connectors.get(cIndex);
-                    inMenuObject = true;
-                } else {
+            if (!inMenuObject) {
+                if (mouseEvent.getButton() == MouseEvent.BUTTON2 && mx > getWidth() / 8) {
+                    midMouseDown = true;
+                    midMousePos = new Point(mx, my);
+                }
+                if (mouseEvent.getButton() == MouseEvent.BUTTON1 && mx > getWidth() / 8 && !shiftDown && !ctrlDown) {
+                    leftMouseDown = true;
                     int bIndex = getBuildingIndexUnderMouse(mx, my);
-                    if (bIndex != -1) {
-                        menuObject = buildings.get(bIndex);
+                    if (bIndex != -1) dragBuilding = buildings.get(bIndex);
+                    else leftMouseDown = false;
+                }
+                if (mouseEvent.getButton() == MouseEvent.BUTTON3 && mx > getWidth() / 8 && !shiftDown && !ctrlDown) {
+                    int cIndex = getConnectorIndexUnderMouse(mx, my);
+                    if (cIndex != -1) {
+                        menuObject = connectors.get(cIndex);
                         inMenuObject = true;
+                    } else {
+                        int bIndex = getBuildingIndexUnderMouse(mx, my);
+                        if (bIndex != -1) {
+                            menuObject = buildings.get(bIndex);
+                            inMenuObject = true;
+                        }
                     }
                 }
             }
-        }
-        if (shiftDown) {
-            int bIndex = getBuildingIndexUnderMouse(mx, my);
-            if (bIndex != -1) {
-                if (firstConnection) {
-                    if (buildings.get(bIndex).outConveyors.size() < buildings.get(bIndex).maxOutConveyors) {
-                        firstConnection = false;
-                        tempConnectionType = ConnectionType.CONVEYOR;
-                        tempConnectionStart = buildings.get(bIndex);
-                    }
-                } else {
-                    if (buildings.get(bIndex).inConveyors.size() < buildings.get(bIndex).maxInConveyors && buildings.get(bIndex) != tempConnectionStart) {
-                        firstConnection = true;
-                        Conveyor newConveyor = new Conveyor(tempConnectionStart, buildings.get(bIndex), defaultConveyorTier);
+            if (shiftDown) {
+                int bIndex = getBuildingIndexUnderMouse(mx, my);
+                if (bIndex != -1) {
+                    if (firstConnection) {
+                        if (buildings.get(bIndex).outConveyors.size() < buildings.get(bIndex).maxOutConveyors) {
+                            firstConnection = false;
+                            tempConnectionType = ConnectionType.CONVEYOR;
+                            tempConnectionStart = buildings.get(bIndex);
+                        }
+                    } else {
+                        if (buildings.get(bIndex).inConveyors.size() < buildings.get(bIndex).maxInConveyors && buildings.get(bIndex) != tempConnectionStart) {
+                            firstConnection = true;
+                            Conveyor newConveyor = new Conveyor(tempConnectionStart, buildings.get(bIndex), defaultConveyorTier);
 
-                        tempConnectionStart.outConveyors.add(newConveyor);
-                        buildings.get(bIndex).inConveyors.add(newConveyor);
+                            tempConnectionStart.outConveyors.add(newConveyor);
+                            buildings.get(bIndex).inConveyors.add(newConveyor);
 
-                        connectors.add(newConveyor);
+                            connectors.add(newConveyor);
+                        }
                     }
                 }
             }
-        }
-        if (ctrlDown) {
-            int bIndex = getBuildingIndexUnderMouse(mx, my);
-            if (bIndex != -1) {
-                if (firstConnection) {
-                    if (buildings.get(bIndex).outPipes.size() < buildings.get(bIndex).maxOutPipes) {
-                        firstConnection = false;
-                        tempConnectionType = ConnectionType.PIPE;
-                        tempConnectionStart = buildings.get(bIndex);
-                    }
-                } else {
-                    if (buildings.get(bIndex).inPipes.size() < buildings.get(bIndex).maxInPipes && buildings.get(bIndex) != tempConnectionStart) {
-                        firstConnection = true;
-                        Pipe newPipe = new Pipe(tempConnectionStart, buildings.get(bIndex), defaultPipeTier);
+            if (ctrlDown) {
+                int bIndex = getBuildingIndexUnderMouse(mx, my);
+                if (bIndex != -1) {
+                    if (firstConnection) {
+                        if (buildings.get(bIndex).outPipes.size() < buildings.get(bIndex).maxOutPipes) {
+                            firstConnection = false;
+                            tempConnectionType = ConnectionType.PIPE;
+                            tempConnectionStart = buildings.get(bIndex);
+                        }
+                    } else {
+                        if (buildings.get(bIndex).inPipes.size() < buildings.get(bIndex).maxInPipes && buildings.get(bIndex) != tempConnectionStart) {
+                            firstConnection = true;
+                            Pipe newPipe = new Pipe(tempConnectionStart, buildings.get(bIndex), defaultPipeTier);
 
-                        tempConnectionStart.outPipes.add(newPipe);
-                        buildings.get(bIndex).inPipes.add(newPipe);
+                            tempConnectionStart.outPipes.add(newPipe);
+                            buildings.get(bIndex).inPipes.add(newPipe);
 
-                        connectors.add(newPipe);
+                            connectors.add(newPipe);
+                        }
                     }
                 }
+            }
+        } else {
+            Point sc = new Point(WIDTH / 2, HEIGHT / 2);
+            if (!editingSaveLoadDir && !editingSaveName) {
+                if (mx > sc.x - 190 && mx < sc.x + 190 && my > sc.y - 60 && my < sc.y - 40)
+                    editingSaveLoadDir = true;
+
+                if (inSaveMenu && mx > sc.x - 190 && mx < sc.x + 190 && my > sc.y - 30 && my < sc.y - 10)
+                    editingSaveName = true;
+
+
+                if (mx < sc.x - 200 || mx > sc.x + 200 || my < sc.y - 100 || my > sc.y + 100) {
+                    inLoadMenu = false;
+                    inSaveMenu = false;
+                }
+
+                if (saveLoadDirValid) {
+                    String[] allSaves = new File(saveLoadDir).list();
+                    ArrayList<String> validSaves = new ArrayList<>();
+                    assert allSaves != null;
+                    for (String s : allSaves) {
+                        String[] split = s.split("\\.");
+                        String[] body = new String[split.length - 1];
+                        System.arraycopy(split, 0, body, 0, split.length - 1);
+                        if (split[split.length - 1].equals("stgs")) validSaves.add(String.join("", body));
+                    }
+
+                    for (int i = 0; i < validSaves.size(); i++) {
+                        if (mx > sc.x - 190 + (i / 4 * 100) && mx < sc.x - 100 + (i / 4 * 100) && my > sc.y - 25 + (i % 4 * 30) && my < sc.y - 5 + (i % 4 * 30)) {
+                            if (saveLoadDir.endsWith("\\")) {
+                                load(saveLoadDir + validSaves.get(i) + ".stgs");
+                            } else {
+                                load(saveLoadDir + "\\" + validSaves.get(i) + ".stgs");
+                            }
+                            inLoadMenu = false;
+                            break;
+                        }
+                    }
+
+                    if (inSaveMenu && saveName.length() > 0 && mx > sc.x + 110 && mx < sc.x + 190 && my > sc.y + 60 && my < sc.y + 90) {
+                        if (saveLoadDir.endsWith("\\")) {
+                            save(saveLoadDir + saveName + ".stgs");
+                        } else {
+                            save(saveLoadDir + "\\" + saveName + ".stgs");
+                        }
+                        inSaveMenu = false;
+                    }
+                }
+            } else {
+                editingSaveName = false;
+                editingSaveLoadDir = false;
             }
         }
     }
@@ -982,11 +1163,13 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
         Point screenPos = getLocationOnScreen();
         int mx = mousePos.x - screenPos.x;
         int my = mousePos.y - screenPos.y;
-        if (inMenuObject) {
-            menuObject.scrolled(this, mouseWheelEvent.getWheelRotation());
-        }
-        if (!inMenuObject) {
-            Screen.zoom(mouseWheelEvent.getWheelRotation(), mx, my);
+        if (!inSaveMenu && !inLoadMenu) {
+            if (inMenuObject) {
+                menuObject.scrolled(this, mouseWheelEvent.getWheelRotation());
+            }
+            if (!inMenuObject) {
+                Screen.zoom(mouseWheelEvent.getWheelRotation(), mx, my);
+            }
         }
     }
 }
