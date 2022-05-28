@@ -106,7 +106,7 @@ public class Manufacturer extends Building {
         if (recipeSet) {
             isEfficient = true;
             for (Material m : recipe.input.keySet()) {
-                double amount = (60 / recipe.craftTime) * recipe.input.get(m);
+                double amount = (60 / recipe.craftTime) * recipe.input.get(m) * (overclock / 100);
                 boolean hasItem = false;
                 for (Conveyor c : inConveyors) {
                     if (!c.invalidState) {
