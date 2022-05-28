@@ -245,67 +245,80 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
         for (Building b : buildings) {
             String data = "b ";
 
-            if (b instanceof Assembler) {
-                data += ("asm " + b.position.x + " " + b.position.y + " ");
-                data += (((Assembler) b).overclock + " " + ((Assembler) b).recipeSet + " " + Recipes.recipes.indexOf(((Assembler) b).recipe));
-            } else if (b instanceof Blender) {
-                data += ("ble " + b.position.x + " " + b.position.y + " ");
-                data += (((Blender) b).overclock + " " + ((Blender) b).recipeSet + " " + Recipes.recipes.indexOf(((Blender) b).recipe));
-            } else if (b instanceof Constructor) {
-                data += ("con " + b.position.x + " " + b.position.y + " ");
-                data += (((Constructor) b).overclock + " " + ((Constructor) b).recipeSet + " " + Recipes.recipes.indexOf(((Constructor) b).recipe));
-            } else if (b instanceof Foundry) {
-                data += ("fnd " + b.position.x + " " + b.position.y + " ");
-                data += (((Foundry) b).overclock + " " + ((Foundry) b).recipeSet + " " + Recipes.recipes.indexOf(((Foundry) b).recipe));
-            } else if (b instanceof Manufacturer) {
-                data += ("man " + b.position.x + " " + b.position.y + " ");
-                data += (((Manufacturer) b).overclock + " " + ((Manufacturer) b).recipeSet + " " + Recipes.recipes.indexOf(((Manufacturer) b).recipe));
-            } else if (b instanceof Packager) {
-                data += ("pck " + b.position.x + " " + b.position.y + " ");
-                data += (((Packager) b).overclock + " " + ((Packager) b).recipeSet + " " + Recipes.recipes.indexOf(((Packager) b).recipe));
-            } else if (b instanceof ParticleAccelerator) {
-                data += ("prt " + b.position.x + " " + b.position.y + " ");
-                data += (((ParticleAccelerator) b).overclock + " " + ((ParticleAccelerator) b).recipeSet + " " + Recipes.recipes.indexOf(((ParticleAccelerator) b).recipe));
-            } else if (b instanceof Refinery) {
-                data += ("rfn " + b.position.x + " " + b.position.y + " ");
-                data += (((Refinery) b).overclock + " " + ((Refinery) b).recipeSet + " " + Recipes.recipes.indexOf(((Refinery) b).recipe));
-            } else if (b instanceof Smelter) {
-                data += ("sme " + b.position.x + " " + b.position.y + " ");
-                data += (((Smelter) b).overclock + " " + ((Smelter) b).recipeSet + " " + Recipes.recipes.indexOf(((Smelter) b).recipe));
-            } else if (b instanceof Splitter) {
-                data += ("spl " + b.position.x + " " + b.position.y);
-            } else if (b instanceof Merger) {
-                data += ("mrg " + b.position.x + " " + b.position.y);
-            } else if (b instanceof Junction) {
-                data += ("jnc " + b.position.x + " " + b.position.y);
-            } else if (b instanceof AwesomeSink) {
-                data += ("awe " + b.position.x + " " + b.position.y);
-            } else if (b instanceof CoalGenerator) {
-                data += ("col " + b.position.x + " " + b.position.y + " ");
-                data += (((CoalGenerator) b).overclock + " " + Arrays.asList(CoalGenerator.FuelPossibilities.values()).indexOf(((CoalGenerator) b).fuelType));
-            } else if (b instanceof FuelGenerator) {
-                data += ("ful " + b.position.x + " " + b.position.y + " ");
-                data += (((FuelGenerator) b).overclock + " " + Arrays.asList(FuelGenerator.FuelPossibilities.values()).indexOf(((FuelGenerator) b).fuelType));
-            } else if (b instanceof NuclearPowerPlant) {
-                data += ("nuc " + b.position.x + " " + b.position.y + " ");
-                data += (((NuclearPowerPlant) b).overclock + " " + Arrays.asList(NuclearPowerPlant.FuelPossibilities.values()).indexOf(((NuclearPowerPlant) b).fuelType));
-            } else if (b instanceof BottomlessBox) {
-                data += ("box " + b.position.x + " " + b.position.y + " ");
-                data += (((BottomlessBox) b).materialSet + " " + Arrays.asList(Material.values()).indexOf(((BottomlessBox) b).material));
-            } else if (b instanceof Miner) {
-                data += ("min " + b.position.x + " " + b.position.y + " ");
-                data += (((Miner) b).overclock + " " + ((Miner) b).tier + " " + Arrays.asList(Purity.values()).indexOf(((Miner) b).purity) + " " + Arrays.asList(Miner.NodePossibilities.values()).indexOf(((Miner) b).nodeType));
-            } else if (b instanceof OilExtractor) {
-                data += ("oil " + b.position.x + " " + b.position.y + " ");
-                data += (((OilExtractor) b).overclock + " " + Arrays.asList(Purity.values()).indexOf(((OilExtractor) b).purity));
-            } else if (b instanceof ResourceWellExtractor) {
-                data += ("res " + b.position.x + " " + b.position.y + " ");
-                data += (((ResourceWellExtractor) b).overclock + " " + Arrays.asList(Purity.values()).indexOf(((ResourceWellExtractor) b).purity) + " " + Arrays.asList(ResourceWellExtractor.NodePossibilities.values()).indexOf(((ResourceWellExtractor) b).nodeType));
-            } else if (b instanceof WaterExtractor) {
-                data += ("wat " + b.position.x + " " + b.position.y + " ");
-                data += (((WaterExtractor) b).overclock);
-            } else {
-                data += ("invalid");
+            switch (b) {
+                case Assembler assembler -> {
+                    data += ("asm " + b.position.x + " " + b.position.y + " ");
+                    data += (assembler.overclock + " " + assembler.recipeSet + " " + Recipes.recipes.indexOf(assembler.recipe));
+                }
+                case Blender blender -> {
+                    data += ("ble " + b.position.x + " " + b.position.y + " ");
+                    data += (blender.overclock + " " + blender.recipeSet + " " + Recipes.recipes.indexOf(blender.recipe));
+                }
+                case Constructor constructor -> {
+                    data += ("con " + b.position.x + " " + b.position.y + " ");
+                    data += (constructor.overclock + " " + constructor.recipeSet + " " + Recipes.recipes.indexOf(constructor.recipe));
+                }
+                case Foundry foundry -> {
+                    data += ("fnd " + b.position.x + " " + b.position.y + " ");
+                    data += (foundry.overclock + " " + foundry.recipeSet + " " + Recipes.recipes.indexOf(foundry.recipe));
+                }
+                case Manufacturer manufacturer -> {
+                    data += ("man " + b.position.x + " " + b.position.y + " ");
+                    data += (manufacturer.overclock + " " + manufacturer.recipeSet + " " + Recipes.recipes.indexOf(manufacturer.recipe));
+                }
+                case Packager packager -> {
+                    data += ("pck " + b.position.x + " " + b.position.y + " ");
+                    data += (packager.overclock + " " + packager.recipeSet + " " + Recipes.recipes.indexOf(packager.recipe));
+                }
+                case ParticleAccelerator particleAccelerator -> {
+                    data += ("prt " + b.position.x + " " + b.position.y + " ");
+                    data += (particleAccelerator.overclock + " " + particleAccelerator.recipeSet + " " + Recipes.recipes.indexOf(particleAccelerator.recipe));
+                }
+                case Refinery refinery -> {
+                    data += ("rfn " + b.position.x + " " + b.position.y + " ");
+                    data += (refinery.overclock + " " + refinery.recipeSet + " " + Recipes.recipes.indexOf(refinery.recipe));
+                }
+                case Smelter smelter -> {
+                    data += ("sme " + b.position.x + " " + b.position.y + " ");
+                    data += (smelter.overclock + " " + smelter.recipeSet + " " + Recipes.recipes.indexOf(smelter.recipe));
+                }
+                case Splitter ignored -> data += ("spl " + b.position.x + " " + b.position.y);
+                case Merger ignored -> data += ("mrg " + b.position.x + " " + b.position.y);
+                case Junction ignored -> data += ("jnc " + b.position.x + " " + b.position.y);
+                case AwesomeSink ignored -> data += ("awe " + b.position.x + " " + b.position.y);
+                case CoalGenerator coalGenerator -> {
+                    data += ("col " + b.position.x + " " + b.position.y + " ");
+                    data += (coalGenerator.overclock + " " + Arrays.asList(CoalGenerator.FuelPossibilities.values()).indexOf(coalGenerator.fuelType));
+                }
+                case FuelGenerator fuelGenerator -> {
+                    data += ("ful " + b.position.x + " " + b.position.y + " ");
+                    data += (fuelGenerator.overclock + " " + Arrays.asList(FuelGenerator.FuelPossibilities.values()).indexOf(fuelGenerator.fuelType));
+                }
+                case NuclearPowerPlant nuclearPowerPlant -> {
+                    data += ("nuc " + b.position.x + " " + b.position.y + " ");
+                    data += (nuclearPowerPlant.overclock + " " + Arrays.asList(NuclearPowerPlant.FuelPossibilities.values()).indexOf(nuclearPowerPlant.fuelType));
+                }
+                case BottomlessBox bottomlessBox -> {
+                    data += ("box " + b.position.x + " " + b.position.y + " ");
+                    data += (bottomlessBox.materialSet + " " + Arrays.asList(Material.values()).indexOf(bottomlessBox.material));
+                }
+                case Miner miner -> {
+                    data += ("min " + b.position.x + " " + b.position.y + " ");
+                    data += (miner.overclock + " " + miner.tier + " " + Arrays.asList(Purity.values()).indexOf(miner.purity) + " " + Arrays.asList(Miner.NodePossibilities.values()).indexOf(miner.nodeType));
+                }
+                case OilExtractor oilExtractor -> {
+                    data += ("oil " + b.position.x + " " + b.position.y + " ");
+                    data += (oilExtractor.overclock + " " + Arrays.asList(Purity.values()).indexOf(oilExtractor.purity));
+                }
+                case ResourceWellExtractor resourceWellExtractor -> {
+                    data += ("res " + b.position.x + " " + b.position.y + " ");
+                    data += (resourceWellExtractor.overclock + " " + Arrays.asList(Purity.values()).indexOf(resourceWellExtractor.purity) + " " + Arrays.asList(ResourceWellExtractor.NodePossibilities.values()).indexOf(resourceWellExtractor.nodeType));
+                }
+                case WaterExtractor waterExtractor -> {
+                    data += ("wat " + b.position.x + " " + b.position.y + " ");
+                    data += (waterExtractor.overclock);
+                }
+                case null, default -> data += ("invalid");
             }
             data += ("\n");
             saveData.append(data);
@@ -367,95 +380,112 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
 
             Building bu = null;
 
-            if (id.equals("asm")) { // assembler
-                double overclock = Double.parseDouble(data[2]);
-                boolean setRecipe = Boolean.parseBoolean(data[3]);
-                Recipe recipe = !setRecipe ? null : Recipes.recipes.get(Integer.parseInt(data[4]));
-                bu = new Assembler(new Point(posX, posY), setRecipe, recipe, overclock);
-            } else if (id.equals("ble")) { // blender
-                double overclock = Double.parseDouble(data[2]);
-                boolean setRecipe = Boolean.parseBoolean(data[3]);
-                Recipe recipe = !setRecipe ? null : Recipes.recipes.get(Integer.parseInt(data[4]));
-                bu = new Blender(new Point(posX, posY), setRecipe, recipe, overclock);
-            } else if (id.equals("con")) { // constructor
-                double overclock = Double.parseDouble(data[2]);
-                boolean setRecipe = Boolean.parseBoolean(data[3]);
-                Recipe recipe = !setRecipe ? null : Recipes.recipes.get(Integer.parseInt(data[4]));
-                bu = new Constructor(new Point(posX, posY), setRecipe, recipe, overclock);
-            } else if (id.equals("fnd")) { // foundry
-                double overclock = Double.parseDouble(data[2]);
-                boolean setRecipe = Boolean.parseBoolean(data[3]);
-                Recipe recipe = !setRecipe ? null : Recipes.recipes.get(Integer.parseInt(data[4]));
-                bu = new Foundry(new Point(posX, posY), setRecipe, recipe, overclock);
-            } else if (id.equals("man")) { // manufacturer
-                double overclock = Double.parseDouble(data[2]);
-                boolean setRecipe = Boolean.parseBoolean(data[3]);
-                Recipe recipe = !setRecipe ? null : Recipes.recipes.get(Integer.parseInt(data[4]));
-                bu = new Manufacturer(new Point(posX, posY), setRecipe, recipe, overclock);
-            } else if (id.equals("pck")) { // packager
-                double overclock = Double.parseDouble(data[2]);
-                boolean setRecipe = Boolean.parseBoolean(data[3]);
-                Recipe recipe = !setRecipe ? null : Recipes.recipes.get(Integer.parseInt(data[4]));
-                bu = new Packager(new Point(posX, posY), setRecipe, recipe, overclock);
-            } else if (id.equals("prt")) { // particle accelerator
-                double overclock = Double.parseDouble(data[2]);
-                boolean setRecipe = Boolean.parseBoolean(data[3]);
-                Recipe recipe = !setRecipe ? null : Recipes.recipes.get(Integer.parseInt(data[4]));
-                bu = new ParticleAccelerator(new Point(posX, posY), setRecipe, recipe, overclock);
-            } else if (id.equals("rfn")) { // refinery
-                double overclock = Double.parseDouble(data[2]);
-                boolean setRecipe = Boolean.parseBoolean(data[3]);
-                Recipe recipe = !setRecipe ? null : Recipes.recipes.get(Integer.parseInt(data[4]));
-                bu = new Refinery(new Point(posX, posY), setRecipe, recipe, overclock);
-            } else if (id.equals("sme")) { // smelter
-                double overclock = Double.parseDouble(data[2]);
-                boolean setRecipe = Boolean.parseBoolean(data[3]);
-                Recipe recipe = !setRecipe ? null : Recipes.recipes.get(Integer.parseInt(data[4]));
-                bu = new Smelter(new Point(posX, posY), setRecipe, recipe, overclock);
-            } else if (id.equals("spl")) { // splitter
-                bu = new Splitter(new Point(posX, posY));
-            } else if (id.equals("mrg")) { // merger
-                bu = new Merger(new Point(posX, posY));
-            } else if (id.equals("jnc")) { // junction
-                bu = new Junction(new Point(posX, posY));
-            } else if (id.equals("awe")) { // awesome sink
-                bu = new AwesomeSink(new Point(posX, posY));
-            } else if (id.equals("col")) { // coal generator
-                double overclock = Double.parseDouble(data[2]);
-                CoalGenerator.FuelPossibilities fuelType = CoalGenerator.FuelPossibilities.values()[Integer.parseInt(data[3])];
-                bu = new CoalGenerator(new Point(posX, posY), overclock, fuelType);
-            } else if (id.equals("ful")) { // fuel generator
-                double overclock = Double.parseDouble(data[2]);
-                FuelGenerator.FuelPossibilities fuelType = FuelGenerator.FuelPossibilities.values()[Integer.parseInt(data[3])];
-                bu = new FuelGenerator(new Point(posX, posY), overclock, fuelType);
-            } else if (id.equals("nuc")) { // nuclear power plant
-                double overclock = Double.parseDouble(data[2]);
-                NuclearPowerPlant.FuelPossibilities fuelType = NuclearPowerPlant.FuelPossibilities.values()[Integer.parseInt(data[3])];
-                bu = new NuclearPowerPlant(new Point(posX, posY), overclock, fuelType);
-            } else if (id.equals("box")) { // bottomless box
-                boolean materialSet = Boolean.parseBoolean(data[2]);
-                Material material = !materialSet ? null : Material.values()[Integer.parseInt(data[3])];
-                bu = new BottomlessBox(new Point(posX, posY), materialSet, material);
-            } else if (id.equals("min")) { // miner
-                double overclock = Double.parseDouble(data[2]);
-                int tier = Integer.parseInt(data[3]);
-                Purity purity = Purity.values()[Integer.parseInt(data[4])];
-                Miner.NodePossibilities nodeType = Miner.NodePossibilities.values()[Integer.parseInt(data[5])];
-                bu = new Miner(new Point(posX, posY), tier, purity, overclock, nodeType);
-            } else if (id.equals("oil")) { // oil extractor
-                double overclock = Double.parseDouble(data[2]);
-                Purity purity = Purity.values()[Integer.parseInt(data[3])];
-                bu = new OilExtractor(new Point(posX, posY), purity, overclock);
-            } else if (id.equals("res")) { // resource well extractor
-                double overclock = Double.parseDouble(data[2]);
-                Purity purity = Purity.values()[Integer.parseInt(data[3])];
-                ResourceWellExtractor.NodePossibilities nodeType = ResourceWellExtractor.NodePossibilities.values()[Integer.parseInt(data[4])];
-                bu = new ResourceWellExtractor(new Point(posX, posY), purity, overclock, nodeType);
-            } else if (id.equals("wat")) { // water extractor
-                double overclock = Double.parseDouble(data[2]);
-                bu = new WaterExtractor(new Point(posX, posY), overclock);
-            } else {
-                System.out.println("Error while reading save '" + location + "'");
+            switch (id) {
+                case "asm" -> { // assembler
+                    double overclock = Double.parseDouble(data[2]);
+                    boolean setRecipe = Boolean.parseBoolean(data[3]);
+                    Recipe recipe = !setRecipe ? null : Recipes.recipes.get(Integer.parseInt(data[4]));
+                    bu = new Assembler(new Point(posX, posY), setRecipe, recipe, overclock);
+                }
+                case "ble" -> { // blender
+                    double overclock = Double.parseDouble(data[2]);
+                    boolean setRecipe = Boolean.parseBoolean(data[3]);
+                    Recipe recipe = !setRecipe ? null : Recipes.recipes.get(Integer.parseInt(data[4]));
+                    bu = new Blender(new Point(posX, posY), setRecipe, recipe, overclock);
+                }
+                case "con" -> { // constructor
+                    double overclock = Double.parseDouble(data[2]);
+                    boolean setRecipe = Boolean.parseBoolean(data[3]);
+                    Recipe recipe = !setRecipe ? null : Recipes.recipes.get(Integer.parseInt(data[4]));
+                    bu = new Constructor(new Point(posX, posY), setRecipe, recipe, overclock);
+                }
+                case "fnd" -> { // foundry
+                    double overclock = Double.parseDouble(data[2]);
+                    boolean setRecipe = Boolean.parseBoolean(data[3]);
+                    Recipe recipe = !setRecipe ? null : Recipes.recipes.get(Integer.parseInt(data[4]));
+                    bu = new Foundry(new Point(posX, posY), setRecipe, recipe, overclock);
+                }
+                case "man" -> { // manufacturer
+                    double overclock = Double.parseDouble(data[2]);
+                    boolean setRecipe = Boolean.parseBoolean(data[3]);
+                    Recipe recipe = !setRecipe ? null : Recipes.recipes.get(Integer.parseInt(data[4]));
+                    bu = new Manufacturer(new Point(posX, posY), setRecipe, recipe, overclock);
+                }
+                case "pck" -> { // packager
+                    double overclock = Double.parseDouble(data[2]);
+                    boolean setRecipe = Boolean.parseBoolean(data[3]);
+                    Recipe recipe = !setRecipe ? null : Recipes.recipes.get(Integer.parseInt(data[4]));
+                    bu = new Packager(new Point(posX, posY), setRecipe, recipe, overclock);
+                }
+                case "prt" -> { // particle accelerator
+                    double overclock = Double.parseDouble(data[2]);
+                    boolean setRecipe = Boolean.parseBoolean(data[3]);
+                    Recipe recipe = !setRecipe ? null : Recipes.recipes.get(Integer.parseInt(data[4]));
+                    bu = new ParticleAccelerator(new Point(posX, posY), setRecipe, recipe, overclock);
+                }
+                case "rfn" -> { // refinery
+                    double overclock = Double.parseDouble(data[2]);
+                    boolean setRecipe = Boolean.parseBoolean(data[3]);
+                    Recipe recipe = !setRecipe ? null : Recipes.recipes.get(Integer.parseInt(data[4]));
+                    bu = new Refinery(new Point(posX, posY), setRecipe, recipe, overclock);
+                }
+                case "sme" -> { // smelter
+                    double overclock = Double.parseDouble(data[2]);
+                    boolean setRecipe = Boolean.parseBoolean(data[3]);
+                    Recipe recipe = !setRecipe ? null : Recipes.recipes.get(Integer.parseInt(data[4]));
+                    bu = new Smelter(new Point(posX, posY), setRecipe, recipe, overclock);
+                }
+                case "spl" ->  // splitter
+                        bu = new Splitter(new Point(posX, posY));
+                case "mrg" ->  // merger
+                        bu = new Merger(new Point(posX, posY));
+                case "jnc" ->  // junction
+                        bu = new Junction(new Point(posX, posY));
+                case "awe" ->  // awesome sink
+                        bu = new AwesomeSink(new Point(posX, posY));
+                case "col" -> { // coal generator
+                    double overclock = Double.parseDouble(data[2]);
+                    CoalGenerator.FuelPossibilities fuelType = CoalGenerator.FuelPossibilities.values()[Integer.parseInt(data[3])];
+                    bu = new CoalGenerator(new Point(posX, posY), overclock, fuelType);
+                }
+                case "ful" -> { // fuel generator
+                    double overclock = Double.parseDouble(data[2]);
+                    FuelGenerator.FuelPossibilities fuelType = FuelGenerator.FuelPossibilities.values()[Integer.parseInt(data[3])];
+                    bu = new FuelGenerator(new Point(posX, posY), overclock, fuelType);
+                }
+                case "nuc" -> { // nuclear power plant
+                    double overclock = Double.parseDouble(data[2]);
+                    NuclearPowerPlant.FuelPossibilities fuelType = NuclearPowerPlant.FuelPossibilities.values()[Integer.parseInt(data[3])];
+                    bu = new NuclearPowerPlant(new Point(posX, posY), overclock, fuelType);
+                }
+                case "box" -> {  // bottomless box
+                    boolean materialSet = Boolean.parseBoolean(data[2]);
+                    Material material = !materialSet ? null : Material.values()[Integer.parseInt(data[3])];
+                    bu = new BottomlessBox(new Point(posX, posY), materialSet, material);
+                }
+                case "min" -> { // miner
+                    double overclock = Double.parseDouble(data[2]);
+                    int tier = Integer.parseInt(data[3]);
+                    Purity purity = Purity.values()[Integer.parseInt(data[4])];
+                    Miner.NodePossibilities nodeType = Miner.NodePossibilities.values()[Integer.parseInt(data[5])];
+                    bu = new Miner(new Point(posX, posY), tier, purity, overclock, nodeType);
+                }
+                case "oil" -> { // oil extractor
+                    double overclock = Double.parseDouble(data[2]);
+                    Purity purity = Purity.values()[Integer.parseInt(data[3])];
+                    bu = new OilExtractor(new Point(posX, posY), purity, overclock);
+                }
+                case "res" -> { // resource well extractor
+                    double overclock = Double.parseDouble(data[2]);
+                    Purity purity = Purity.values()[Integer.parseInt(data[3])];
+                    ResourceWellExtractor.NodePossibilities nodeType = ResourceWellExtractor.NodePossibilities.values()[Integer.parseInt(data[4])];
+                    bu = new ResourceWellExtractor(new Point(posX, posY), purity, overclock, nodeType);
+                }
+                case "wat" -> { // water extractor
+                    double overclock = Double.parseDouble(data[2]);
+                    bu = new WaterExtractor(new Point(posX, posY), overclock);
+                }
+                default -> System.out.println("Error while reading save '" + location + "'");
             }
 
             if (bu != null) {

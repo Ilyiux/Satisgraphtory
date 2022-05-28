@@ -5,19 +5,16 @@ import main.*;
 import recipes.Recipes;
 import recipes.Material;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class BottomlessBox extends Building {
     public boolean materialSet = false;
     public Material material;
-    private ArrayList<Material> possibleMaterials = new ArrayList<>();
+    private final ArrayList<Material> possibleMaterials = new ArrayList<>();
     private int materialScroll = 0;
 
     private boolean editingRate;

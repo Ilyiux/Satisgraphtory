@@ -2,9 +2,7 @@ package main;
 
 import recipes.Material;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 

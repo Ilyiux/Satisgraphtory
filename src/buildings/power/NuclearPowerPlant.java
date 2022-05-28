@@ -8,12 +8,9 @@ import main.GraphicsPanel;
 import main.PointDouble;
 import main.Screen;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
