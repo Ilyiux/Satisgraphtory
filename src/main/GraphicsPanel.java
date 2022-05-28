@@ -55,6 +55,8 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
     ArrayList<Building> buildings = new ArrayList<>();
     ArrayList<Connector> connectors = new ArrayList<>();
 
+    ArrayList<Long> lastButtonClickTimes = new ArrayList<>();
+
     MenuState menuState = MenuState.NEW_GENERATOR;
 
     private enum MenuState {
@@ -108,6 +110,8 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
         Recipes.constructRecipes();
         Materials.constructSink();
         ImageManager.loadMaterialImages();
+
+        emptyClickList();
     }
 
     // called before draw
@@ -136,6 +140,19 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
         for (Building building : buildings) building.update();
 
         updateTotalPower();
+    }
+
+    private void emptyClickList() {
+        lastButtonClickTimes.clear();
+        for (int i = 0; i < 8; i++) lastButtonClickTimes.add((long)0);
+    }
+
+    private void setClickList(int index) {
+        lastButtonClickTimes.set(index, System.currentTimeMillis());
+    }
+
+    private boolean isClickActive(int index) {
+        return lastButtonClickTimes.get(index) + 150 > System.currentTimeMillis();
     }
 
     private void updateTotalPower() {
@@ -521,15 +538,21 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
 
         // more menu buttons
         if (menuState == MenuState.NEW_GENERATOR) {
-            g2d.setColor(new Color(70, 75, 70));
-
+            g2d.setColor(isClickActive(0) ? onColor : offColor);
             g2d.fillRoundRect(10, 230, bWidth, bHeight, 10, 10);
+            g2d.setColor(isClickActive(1) ? onColor : offColor);
             g2d.fillRoundRect(10, 280, bWidth, bHeight, 10, 10);
+            g2d.setColor(isClickActive(2) ? onColor : offColor);
             g2d.fillRoundRect(10, 330, bWidth, bHeight + 20, 10, 10);
+            g2d.setColor(isClickActive(3) ? onColor : offColor);
             g2d.fillRoundRect(10, 400, bWidth, bHeight, 10, 10);
+            g2d.setColor(isClickActive(4) ? onColor : offColor);
             g2d.fillRoundRect(10, 450, bWidth, bHeight, 10, 10);
+            g2d.setColor(isClickActive(5) ? onColor : offColor);
             g2d.fillRoundRect(10, 500, bWidth, bHeight, 10, 10);
+            g2d.setColor(isClickActive(6) ? onColor : offColor);
             g2d.fillRoundRect(10, 550, bWidth, bHeight, 10, 10);
+            g2d.setColor(isClickActive(7) ? onColor : offColor);
             g2d.fillRoundRect(10, 600, bWidth, bHeight, 10, 10);
 
             g2d.setColor(new Color(150, 155, 150));
@@ -546,7 +569,9 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
         if (menuState == MenuState.NEW_SMELTER) {
             g2d.setColor(new Color(70, 75, 70));
 
+            g2d.setColor(isClickActive(0) ? onColor : offColor);
             g2d.fillRoundRect(10, 230, bWidth, bHeight, 10, 10);
+            g2d.setColor(isClickActive(1) ? onColor : offColor);
             g2d.fillRoundRect(10, 280, bWidth, bHeight, 10, 10);
 
             g2d.setColor(new Color(150, 155, 150));
@@ -556,12 +581,19 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
         if (menuState == MenuState.NEW_CRAFTER) {
             g2d.setColor(new Color(70, 75, 70));
 
+            g2d.setColor(isClickActive(0) ? onColor : offColor);
             g2d.fillRoundRect(10, 230, bWidth, bHeight, 10, 10);
+            g2d.setColor(isClickActive(1) ? onColor : offColor);
             g2d.fillRoundRect(10, 280, bWidth, bHeight, 10, 10);
+            g2d.setColor(isClickActive(2) ? onColor : offColor);
             g2d.fillRoundRect(10, 330, bWidth, bHeight, 10, 10);
+            g2d.setColor(isClickActive(3) ? onColor : offColor);
             g2d.fillRoundRect(10, 380, bWidth, bHeight, 10, 10);
+            g2d.setColor(isClickActive(4) ? onColor : offColor);
             g2d.fillRoundRect(10, 430, bWidth, bHeight, 10, 10);
+            g2d.setColor(isClickActive(5) ? onColor : offColor);
             g2d.fillRoundRect(10, 480, bWidth, bHeight, 10, 10);
+            g2d.setColor(isClickActive(6) ? onColor : offColor);
             g2d.fillRoundRect(10, 530, bWidth, bHeight + 20, 10, 10);
 
             g2d.setColor(new Color(150, 155, 150));
@@ -577,9 +609,13 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
         if (menuState == MenuState.NEW_LOGISTIC) {
             g2d.setColor(new Color(70, 75, 70));
 
+            g2d.setColor(isClickActive(0) ? onColor : offColor);
             g2d.fillRoundRect(10, 230, bWidth, bHeight, 10, 10);
+            g2d.setColor(isClickActive(1) ? onColor : offColor);
             g2d.fillRoundRect(10, 280, bWidth, bHeight, 10, 10);
+            g2d.setColor(isClickActive(2) ? onColor : offColor);
             g2d.fillRoundRect(10, 330, bWidth, bHeight, 10, 10);
+            g2d.setColor(isClickActive(3) ? onColor : offColor);
             g2d.fillRoundRect(10, 380, bWidth, bHeight, 10, 10);
 
             g2d.setColor(new Color(150, 155, 150));
@@ -681,60 +717,114 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
 
         if (!shiftDown && !ctrlDown) {
             if (mouseEvent.getButton() == MouseEvent.BUTTON1) {
-                if (mx > 10 && mx < getWidth() / 8 - 10 && my > 10 && my < 50) menuState = MenuState.NEW_GENERATOR;
-                if (mx > 10 && mx < getWidth() / 8 - 10 && my > 60 && my < 100) menuState = MenuState.NEW_SMELTER;
-                if (mx > 10 && mx < getWidth() / 8 - 10 && my > 110 && my < 150) menuState = MenuState.NEW_CRAFTER;
-                if (mx > 10 && mx < getWidth() / 8 - 10 && my > 160 && my < 200) menuState = MenuState.NEW_LOGISTIC;
+                if (mx > 10 && mx < getWidth() / 8 - 10 && my > 10 && my < 50) {
+                    menuState = MenuState.NEW_GENERATOR;
+                    emptyClickList();
+                }
+                if (mx > 10 && mx < getWidth() / 8 - 10 && my > 60 && my < 100) {
+                    menuState = MenuState.NEW_SMELTER;
+                    emptyClickList();
+                }
+                if (mx > 10 && mx < getWidth() / 8 - 10 && my > 110 && my < 150) {
+                    menuState = MenuState.NEW_CRAFTER;
+                    emptyClickList();
+                }
+                if (mx > 10 && mx < getWidth() / 8 - 10 && my > 160 && my < 200) {
+                    menuState = MenuState.NEW_LOGISTIC;
+                    emptyClickList();
+                }
 
                 if (menuState == MenuState.NEW_GENERATOR) {
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 230 && my < 270) // new water extractor
+                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 230 && my < 270) {// new water extractor
                         buildings.add(0, new WaterExtractor(origin));
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 280 && my < 320) // new oil extractor
+                        setClickList(0);
+                    }
+                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 280 && my < 320) {// new oil extractor
                         buildings.add(0, new OilExtractor(origin));
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 330 && my < 390) // new resource well extractor
+                        setClickList(1);
+                    }
+                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 330 && my < 390) {// new resource well extractor
                         buildings.add(0, new ResourceWellExtractor(origin));
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 400 && my < 440) // new miner
+                        setClickList(2);
+                    }
+                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 400 && my < 440) {// new miner
                         buildings.add(0, new Miner(origin));
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 450 && my < 490) // new coal generator
+                        setClickList(3);
+                    }
+                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 450 && my < 490) {// new coal generator
                         buildings.add(0, new CoalGenerator(origin));
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 500 && my < 540) // new fuel generator
+                        setClickList(4);
+                    }
+                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 500 && my < 540) {// new fuel generator
                         buildings.add(0, new FuelGenerator(origin));
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 550 && my < 590) // new nuclear power plant
+                        setClickList(5);
+                    }
+                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 550 && my < 590) {// new nuclear power plant
                         buildings.add(0, new NuclearPowerPlant(origin));
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 600 && my < 640) // new generator
+                        setClickList(6);
+                    }
+                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 600 && my < 640) {// new generator
                         buildings.add(0, new BottomlessBox(origin));
+                        setClickList(7);
+                    }
                 }
                 if (menuState == MenuState.NEW_SMELTER) {
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 230 && my < 270) // new smelter
+                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 230 && my < 270) {// new smelter
                         buildings.add(0, new Smelter(origin));
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 280 && my < 320) // new foundry
+                        setClickList(0);
+                    }
+                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 280 && my < 320) {// new foundry
                         buildings.add(0, new Foundry(origin));
+                        setClickList(1);
+                    }
                 }
                 if (menuState == MenuState.NEW_CRAFTER) {
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 230 && my < 270) // new constructor
+                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 230 && my < 270) {// new constructor
                         buildings.add(0, new Constructor(origin));
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 280 && my < 320) // new assembler
+                        setClickList(0);
+                    }
+                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 280 && my < 320) {// new assembler
                         buildings.add(0, new Assembler(origin));
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 330 && my < 370) // new manufacturer
+                        setClickList(1);
+                    }
+                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 330 && my < 370) {// new manufacturer
                         buildings.add(0, new Manufacturer(origin));
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 380 && my < 420) // new packager
+                        setClickList(2);
+                    }
+                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 380 && my < 420) {// new packager
                         buildings.add(0, new Packager(origin));
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 430 && my < 470) // new refinery
+                        setClickList(3);
+                    }
+                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 430 && my < 470) {// new refinery
                         buildings.add(0, new Refinery(origin));
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 480 && my < 520) // new blender
+                        setClickList(4);
+                    }
+                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 480 && my < 520) {// new blender
                         buildings.add(0, new Blender(origin));
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 530 && my < 590) // new particle accelerator
+                        setClickList(5);
+                    }
+                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 530 && my < 590) {// new particle accelerator
                         buildings.add(0, new ParticleAccelerator(origin));
+                        setClickList(6);
+                    }
                 }
                 if (menuState == MenuState.NEW_LOGISTIC) {
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 230 && my < 270) // new splitter
+                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 230 && my < 270) {// new splitter
                         buildings.add(0, new Splitter(origin));
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 280 && my < 320) // new merger
+                        setClickList(0);
+                    }
+                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 280 && my < 320) {// new merger
                         buildings.add(0, new Merger(origin));
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 330 && my < 370) // new junction
+                        setClickList(1);
+                    }
+                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 330 && my < 370) {// new junction
                         buildings.add(0, new Junction(origin));
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 380 && my < 420) // new awesome sink
+                        setClickList(2);
+                    }
+                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 380 && my < 420) {// new awesome sink
                         buildings.add(0, new AwesomeSink(origin));
+                        setClickList(3);
+                    }
                 }
 
                 // increase default conveyor
