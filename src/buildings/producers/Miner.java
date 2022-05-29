@@ -175,30 +175,30 @@ public class Miner extends Building {
     }
 
     public void clicked(GraphicsPanel gp, int mx, int my) {
-        Point leftMidPoint = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + 0.5));
+        Point leftMidPoint = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + 0.5), gp);
         Point menuTopLeft = new Point(leftMidPoint.x, leftMidPoint.y - 150);
         Point menuBottomRight = new Point(leftMidPoint.x + 200, leftMidPoint.y + 150);
         if (menuTopLeft.y < 0) {
             menuBottomRight.y -= menuTopLeft.y;
             menuTopLeft.y -= menuTopLeft.y;
         }
-        if (menuBottomRight.y > GraphicsPanel.HEIGHT) {
-            menuTopLeft.y -= menuBottomRight.y - GraphicsPanel.HEIGHT;
-            menuBottomRight.y -= menuBottomRight.y - GraphicsPanel.HEIGHT;
+        if (menuBottomRight.y > gp.getHeight()) {
+            menuTopLeft.y -= menuBottomRight.y - gp.getHeight();
+            menuBottomRight.y -= menuBottomRight.y - gp.getHeight();
         }
-        if (menuBottomRight.x > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8) {
+        if (menuBottomRight.x > gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8) {
             menuTopLeft.x -= 200 + Screen.convertLengthToScreenLength(1);
             menuBottomRight.x -= 200 + Screen.convertLengthToScreenLength(1);
         }
-        if (menuBottomRight.x > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8) {
-            menuTopLeft.x -= menuBottomRight.x - (GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8);
-            menuBottomRight.x -= menuBottomRight.x - (GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8);
+        if (menuBottomRight.x > gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8) {
+            menuTopLeft.x -= menuBottomRight.x - (gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8);
+            menuBottomRight.x -= menuBottomRight.x - (gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8);
         }
 
         if (editingOverclock || editingItems) {
             exitClockInput();
         } else {
-            if ((mx < menuTopLeft.x || mx > menuBottomRight.x || my < menuTopLeft.y || my > menuBottomRight.y) && mx < GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8)
+            if ((mx < menuTopLeft.x || mx > menuBottomRight.x || my < menuTopLeft.y || my > menuBottomRight.y) && mx < gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8)
                 gp.closeBuildingMenu();
         }
 
@@ -220,17 +220,21 @@ public class Miner extends Building {
         }
 
         // resource
-        if (mx > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10 && mx < GraphicsPanel.WIDTH - 10 && my > 10 && my < 50) nodeType = NodePossibilities.UNSET;
-        if (mx > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10 && mx < GraphicsPanel.WIDTH - 10 && my > 60 && my < 100) nodeType = NodePossibilities.IRON_ORE;
-        if (mx > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10 && mx < GraphicsPanel.WIDTH - 10 && my > 110 && my < 150) nodeType = NodePossibilities.COPPER_ORE;
-        if (mx > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10 && mx < GraphicsPanel.WIDTH - 10 && my > 160 && my < 200) nodeType = NodePossibilities.COAL;
-        if (mx > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10 && mx < GraphicsPanel.WIDTH - 10 && my > 210 && my < 250) nodeType = NodePossibilities.LIMESTONE;
-        if (mx > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10 && mx < GraphicsPanel.WIDTH - 10 && my > 260 && my < 300) nodeType = NodePossibilities.SULFUR;
-        if (mx > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10 && mx < GraphicsPanel.WIDTH - 10 && my > 310 && my < 350) nodeType = NodePossibilities.CATERIUM_ORE;
-        if (mx > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10 && mx < GraphicsPanel.WIDTH - 10 && my > 360 && my < 400) nodeType = NodePossibilities.RAW_QUARTZ;
-        if (mx > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10 && mx < GraphicsPanel.WIDTH - 10 && my > 410 && my < 450) nodeType = NodePossibilities.BAUXITE;
-        if (mx > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10 && mx < GraphicsPanel.WIDTH - 10 && my > 460 && my < 500) nodeType = NodePossibilities.URANIUM;
-        if (mx > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10 && mx < GraphicsPanel.WIDTH - 10 && my > 510 && my < 550) nodeType = NodePossibilities.SAM_ORE;
+        int buttonHeight = (int)((gp.getHeight() * 1.77777777) / 6 * 0.12);
+        int spacing = buttonHeight / 4;
+        int buttonWidth = (int) ((gp.getHeight() * 1.77777777) / 6 - spacing * 2);
+
+        if (mx > gp.getWidth() - buttonWidth - spacing && mx < gp.getWidth() - spacing && my > spacing && my < (spacing + buttonHeight)) nodeType = NodePossibilities.UNSET;
+        if (mx > gp.getWidth() - buttonWidth - spacing && mx < gp.getWidth() - spacing && my > spacing * 2 + buttonHeight && my < (spacing + buttonHeight) * 2) nodeType = NodePossibilities.IRON_ORE;
+        if (mx > gp.getWidth() - buttonWidth - spacing && mx < gp.getWidth() - spacing && my > spacing * 3 + buttonHeight * 2 && my < (spacing + buttonHeight) * 3) nodeType = NodePossibilities.COPPER_ORE;
+        if (mx > gp.getWidth() - buttonWidth - spacing && mx < gp.getWidth() - spacing && my > spacing * 4 + buttonHeight * 3 && my < (spacing + buttonHeight) * 4) nodeType = NodePossibilities.COAL;
+        if (mx > gp.getWidth() - buttonWidth - spacing && mx < gp.getWidth() - spacing && my > spacing * 5 + buttonHeight * 4 && my < (spacing + buttonHeight) * 5) nodeType = NodePossibilities.LIMESTONE;
+        if (mx > gp.getWidth() - buttonWidth - spacing && mx < gp.getWidth() - spacing && my > spacing * 6 + buttonHeight * 5 && my < (spacing + buttonHeight) * 6) nodeType = NodePossibilities.SULFUR;
+        if (mx > gp.getWidth() - buttonWidth - spacing && mx < gp.getWidth() - spacing && my > spacing * 7 + buttonHeight * 6 && my < (spacing + buttonHeight) * 7) nodeType = NodePossibilities.CATERIUM_ORE;
+        if (mx > gp.getWidth() - buttonWidth - spacing && mx < gp.getWidth() - spacing && my > spacing * 8 + buttonHeight * 7 && my < (spacing + buttonHeight) * 8) nodeType = NodePossibilities.RAW_QUARTZ;
+        if (mx > gp.getWidth() - buttonWidth - spacing && mx < gp.getWidth() - spacing && my > spacing * 9 + buttonHeight * 8 && my < (spacing + buttonHeight) * 9) nodeType = NodePossibilities.BAUXITE;
+        if (mx > gp.getWidth() - buttonWidth - spacing && mx < gp.getWidth() - spacing && my > spacing * 10 + buttonHeight * 9 && my < (spacing + buttonHeight) * 10) nodeType = NodePossibilities.URANIUM;
+        if (mx > gp.getWidth() - buttonWidth - spacing && mx < gp.getWidth() - spacing && my > spacing * 11 + buttonHeight * 10 && my < (spacing + buttonHeight) * 11) nodeType = NodePossibilities.SAM_ORE;
 
         // purity
         if (mx > menuTopLeft.x + 81 && mx < menuTopLeft.x + 96 && my > menuTopLeft.y + 118 && my < menuTopLeft.y + 133) {
@@ -290,9 +294,9 @@ public class Miner extends Building {
         }
     }
 
-    public void draw(boolean greyedOut, Graphics2D g2d) {
-        Point start = Screen.convertToScreenPoint(new PointDouble(position.x, position.y));
-        Point end = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + 1));
+    public void draw(boolean greyedOut, Graphics2D g2d, GraphicsPanel gp) {
+        Point start = Screen.convertToScreenPoint(new PointDouble(position.x, position.y), gp);
+        Point end = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + 1), gp);
 
         BufferedImage image = null;
         if (tier == 1) image = image_mk1;
@@ -310,22 +314,22 @@ public class Miner extends Building {
 
         double size = Screen.convertLengthToScreenLength(0.08);
         for (int ic = 0; ic < maxInConveyors; ic++) {
-            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x, position.y + ((double)(ic + 1) / (maxInConveyors + maxInPipes + 1))));
+            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x, position.y + ((double)(ic + 1) / (maxInConveyors + maxInPipes + 1))), gp);
             g2d.setColor(Color.GRAY);
             g2d.fillRect((int) (pos.x - size / 2), (int) (pos.y - size / 2), (int) size, (int) size);
         }
         for (int ip = 0; ip < maxInPipes; ip++) {
-            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x, position.y + ((double)(ip + maxInConveyors + 1) / (maxInConveyors + maxInPipes + 1))));
+            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x, position.y + ((double)(ip + maxInConveyors + 1) / (maxInConveyors + maxInPipes + 1))), gp);
             g2d.setColor(Color.ORANGE);
             g2d.fillOval((int) (pos.x - size / 2), (int) (pos.y - size / 2), (int) size, (int) size);
         }
         for (int oc = 0; oc < maxOutConveyors; oc++) {
-            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + ((double)(oc + 1) / (maxOutConveyors + maxOutPipes + 1))));
+            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + ((double)(oc + 1) / (maxOutConveyors + maxOutPipes + 1))), gp);
             g2d.setColor(Color.GRAY);
             g2d.fillRect((int) (pos.x - size / 2), (int) (pos.y - size / 2), (int) size, (int) size);
         }
         for (int op = 0; op < maxOutPipes; op++) {
-            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + ((double)(op + maxOutConveyors + 1) / (maxOutConveyors + maxOutPipes + 1))));
+            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + ((double)(op + maxOutConveyors + 1) / (maxOutConveyors + maxOutPipes + 1))), gp);
             g2d.setColor(Color.ORANGE);
             g2d.fillOval((int) (pos.x - size / 2), (int) (pos.y - size / 2), (int) size, (int) size);
         }
@@ -333,40 +337,40 @@ public class Miner extends Building {
         g2d.setColor(Color.WHITE);
         g2d.setFont(new Font("Bahnschrift", Font.PLAIN, Screen.convertLengthToScreenLength(0.15)));
 
-        Point namePos = Screen.convertToScreenPoint(new PointDouble(position.x + 0.05, position.y + 0.15));
+        Point namePos = Screen.convertToScreenPoint(new PointDouble(position.x + 0.05, position.y + 0.15), gp);
         String nameString = "Miner Mk." + tier;
         g2d.drawString(nameString, namePos.x, namePos.y);
 
-        Point ratePos = Screen.convertToScreenPoint(new PointDouble(position.x + 0.05, position.y + 0.95));
+        Point ratePos = Screen.convertToScreenPoint(new PointDouble(position.x + 0.05, position.y + 0.95), gp);
         g2d.drawString(itemRate + "/min", ratePos.x, ratePos.y);
 
-        Point imageStart = Screen.convertToScreenPoint(new PointDouble(position.x + 0.72, position.y + 0.72));
-        Point imageEnd = Screen.convertToScreenPoint(new PointDouble(position.x + 0.97, position.y + 0.97));
+        Point imageStart = Screen.convertToScreenPoint(new PointDouble(position.x + 0.72, position.y + 0.72), gp);
+        Point imageEnd = Screen.convertToScreenPoint(new PointDouble(position.x + 0.97, position.y + 0.97), gp);
         g2d.drawImage(itemIcons.get(nodeType), imageStart.x, imageStart.y, imageEnd.x - imageStart.x, imageEnd.y - imageStart.y, null);
     }
 
-    public void drawMenu(Graphics2D g2d) {
+    public void drawMenu(Graphics2D g2d, GraphicsPanel gp) {
         g2d.setColor(new Color(0, 0, 0, 63));
-        g2d.fillRect(0, 0, GraphicsPanel.WIDTH, GraphicsPanel.HEIGHT);
+        g2d.fillRect(0, 0, gp.getWidth(), gp.getHeight());
 
-        Point leftMidPoint = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + 0.5));
+        Point leftMidPoint = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + 0.5), gp);
         Point menuTopLeft = new Point(leftMidPoint.x, leftMidPoint.y - 150);
         Point menuBottomRight = new Point(leftMidPoint.x + 200, leftMidPoint.y + 150);
         if (menuTopLeft.y < 0) {
             menuBottomRight.y -= menuTopLeft.y;
             menuTopLeft.y -= menuTopLeft.y;
         }
-        if (menuBottomRight.y > GraphicsPanel.HEIGHT) {
-            menuTopLeft.y -= menuBottomRight.y - GraphicsPanel.HEIGHT;
-            menuBottomRight.y -= menuBottomRight.y - GraphicsPanel.HEIGHT;
+        if (menuBottomRight.y > gp.getHeight()) {
+            menuTopLeft.y -= menuBottomRight.y - gp.getHeight();
+            menuBottomRight.y -= menuBottomRight.y - gp.getHeight();
         }
-        if (menuBottomRight.x > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8) {
+        if (menuBottomRight.x > gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8) {
             menuTopLeft.x -= 200 + Screen.convertLengthToScreenLength(1);
             menuBottomRight.x -= 200 + Screen.convertLengthToScreenLength(1);
         }
-        if (menuBottomRight.x > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8) {
-            menuTopLeft.x -= menuBottomRight.x - (GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8);
-            menuBottomRight.x -= menuBottomRight.x - (GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8);
+        if (menuBottomRight.x > gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8) {
+            menuTopLeft.x -= menuBottomRight.x - (gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8);
+            menuBottomRight.x -= menuBottomRight.x - (gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8);
         }
 
         g2d.setColor(new Color(30, 32, 30));
@@ -424,44 +428,50 @@ public class Miner extends Building {
         g2d.drawString(String.valueOf(nodeType).replace("_", " "), menuTopLeft.x + 107, menuTopLeft.y + 100);
         g2d.drawImage(itemIcons.get(nodeType), menuTopLeft.x + 87, menuTopLeft.y + 87, 16, 16, null);
 
+        int buttonHeight = (int)((gp.getHeight() * 1.77777777) / 6 * 0.12);
+        int spacing = buttonHeight / 4;
+        int buttonWidth = (int) ((gp.getHeight() * 1.77777777) / 6 - spacing * 2);
+        int imageSize = spacing * 2;
+        int textSize = buttonHeight / 2;
+
         g2d.setColor(new Color(34, 36, 34));
-        g2d.fillRect(GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8, 0, GraphicsPanel.WIDTH / 8, GraphicsPanel.HEIGHT);
+        g2d.fillRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8, 0, (int)(gp.getHeight() * 1.77777777) / 8, gp.getHeight());
         g2d.setColor(displayBackgroundColor);
-        g2d.fillRoundRect(GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10, 10, GraphicsPanel.WIDTH / 8 - 20, 40, 10, 10);
-        g2d.fillRoundRect(GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10, 60, GraphicsPanel.WIDTH / 8 - 20, 40, 10, 10);
-        g2d.fillRoundRect(GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10, 110, GraphicsPanel.WIDTH / 8 - 20, 40, 10, 10);
-        g2d.fillRoundRect(GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10, 160, GraphicsPanel.WIDTH / 8 - 20, 40, 10, 10);
-        g2d.fillRoundRect(GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10, 210, GraphicsPanel.WIDTH / 8 - 20, 40, 10, 10);
-        g2d.fillRoundRect(GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10, 260, GraphicsPanel.WIDTH / 8 - 20, 40, 10, 10);
-        g2d.fillRoundRect(GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10, 310, GraphicsPanel.WIDTH / 8 - 20, 40, 10, 10);
-        g2d.fillRoundRect(GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10, 360, GraphicsPanel.WIDTH / 8 - 20, 40, 10, 10);
-        g2d.fillRoundRect(GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10, 410, GraphicsPanel.WIDTH / 8 - 20, 40, 10, 10);
-        g2d.fillRoundRect(GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10, 460, GraphicsPanel.WIDTH / 8 - 20, 40, 10, 10);
-        g2d.fillRoundRect(GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10, 510, GraphicsPanel.WIDTH / 8 - 20, 40, 10, 10);
-        g2d.setFont(new Font("Bahnschrift", Font.PLAIN, 20));
+        g2d.fillRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing, spacing, buttonWidth, buttonHeight, 10, 10);
+        g2d.fillRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing, spacing * 2 + buttonHeight, buttonWidth, buttonHeight, 10, 10);
+        g2d.fillRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing, spacing * 3 + buttonHeight * 2, buttonWidth, buttonHeight, 10, 10);
+        g2d.fillRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing, spacing * 4 + buttonHeight * 3, buttonWidth, buttonHeight, 10, 10);
+        g2d.fillRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing, spacing * 5 + buttonHeight * 4, buttonWidth, buttonHeight, 10, 10);
+        g2d.fillRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing, spacing * 6 + buttonHeight * 5, buttonWidth, buttonHeight, 10, 10);
+        g2d.fillRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing, spacing * 7 + buttonHeight * 6, buttonWidth, buttonHeight, 10, 10);
+        g2d.fillRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing, spacing * 8 + buttonHeight * 7, buttonWidth, buttonHeight, 10, 10);
+        g2d.fillRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing, spacing * 9 + buttonHeight * 8, buttonWidth, buttonHeight, 10, 10);
+        g2d.fillRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing, spacing * 10 + buttonHeight * 9, buttonWidth, buttonHeight, 10, 10);
+        g2d.fillRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing, spacing * 11 + buttonHeight * 10, buttonWidth, buttonHeight, 10, 10);
+        g2d.setFont(new Font("Bahnschrift", Font.PLAIN, textSize));
         g2d.setColor(Color.WHITE);
-        g2d.drawString("UNSET", GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 50, 38);
-        g2d.drawImage(itemIcons.get(NodePossibilities.UNSET), GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 20, 20, 20, 20, null);
-        g2d.drawString("IRON", GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 50, 88);
-        g2d.drawImage(itemIcons.get(NodePossibilities.IRON_ORE), GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 20, 70, 20, 20, null);
-        g2d.drawString("COPPER", GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 50, 138);
-        g2d.drawImage(itemIcons.get(NodePossibilities.COPPER_ORE), GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 20, 120, 20, 20, null);
-        g2d.drawString("COAL", GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 50, 188);
-        g2d.drawImage(itemIcons.get(NodePossibilities.COAL), GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 20, 170, 20, 20, null);
-        g2d.drawString("LIMESTONE", GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 50, 238);
-        g2d.drawImage(itemIcons.get(NodePossibilities.LIMESTONE), GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 20, 220, 20, 20, null);
-        g2d.drawString("SULFUR", GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 50, 288);
-        g2d.drawImage(itemIcons.get(NodePossibilities.SULFUR), GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 20, 270, 20, 20, null);
-        g2d.drawString("CATERIUM", GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 50, 338);
-        g2d.drawImage(itemIcons.get(NodePossibilities.CATERIUM_ORE), GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 20, 320, 20, 20, null);
-        g2d.drawString("QUARTZ", GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 50, 388);
-        g2d.drawImage(itemIcons.get(NodePossibilities.RAW_QUARTZ), GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 20, 370, 20, 20, null);
-        g2d.drawString("BAUXITE", GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 50, 438);
-        g2d.drawImage(itemIcons.get(NodePossibilities.BAUXITE), GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 20, 420, 20, 20, null);
-        g2d.drawString("URANIUM", GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 50, 488);
-        g2d.drawImage(itemIcons.get(NodePossibilities.URANIUM), GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 20, 470, 20, 20, null);
-        g2d.drawString("SAM", GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 50, 538);
-        g2d.drawImage(itemIcons.get(NodePossibilities.SAM_ORE), GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 20, 520, 20, 20, null);
+        g2d.drawString("UNSET", gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 5, spacing + buttonHeight - (int)(spacing * 1.2));
+        g2d.drawImage(itemIcons.get(NodePossibilities.UNSET), gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 2, spacing * 2, imageSize, imageSize, null);
+        g2d.drawString("IRON", gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 5, (spacing + buttonHeight) * 2 - (int)(spacing * 1.2));
+        g2d.drawImage(itemIcons.get(NodePossibilities.IRON_ORE), gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 2, spacing * 3 + buttonHeight, imageSize, imageSize, null);
+        g2d.drawString("COPPER", gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 5, (spacing + buttonHeight) * 3 - (int)(spacing * 1.2));
+        g2d.drawImage(itemIcons.get(NodePossibilities.COPPER_ORE), gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 2, spacing * 4 + buttonHeight * 2, imageSize, imageSize, null);
+        g2d.drawString("COAL", gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 5, (spacing + buttonHeight) * 4 - (int)(spacing * 1.2));
+        g2d.drawImage(itemIcons.get(NodePossibilities.COAL), gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 2, spacing * 5 + buttonHeight * 3, imageSize, imageSize, null);
+        g2d.drawString("LIMESTONE", gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 5, (spacing + buttonHeight) * 5 - (int)(spacing * 1.2));
+        g2d.drawImage(itemIcons.get(NodePossibilities.LIMESTONE), gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 2, spacing * 6 + buttonHeight * 4, imageSize, imageSize, null);
+        g2d.drawString("SULFUR", gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 5, (spacing + buttonHeight) * 6 - (int)(spacing * 1.2));
+        g2d.drawImage(itemIcons.get(NodePossibilities.SULFUR), gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 2, spacing * 7 + buttonHeight * 5, imageSize, imageSize, null);
+        g2d.drawString("CATERIUM", gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 5, (spacing + buttonHeight) * 7 - (int)(spacing * 1.2));
+        g2d.drawImage(itemIcons.get(NodePossibilities.CATERIUM_ORE), gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 2, spacing * 8 + buttonHeight * 6, imageSize, imageSize, null);
+        g2d.drawString("QUARTZ", gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 5, (spacing + buttonHeight) * 8 - (int)(spacing * 1.2));
+        g2d.drawImage(itemIcons.get(NodePossibilities.RAW_QUARTZ), gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 2, spacing * 9 + buttonHeight * 7, imageSize, imageSize, null);
+        g2d.drawString("BAUXITE", gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 5, (spacing + buttonHeight) * 9 - (int)(spacing * 1.2));
+        g2d.drawImage(itemIcons.get(NodePossibilities.BAUXITE), gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 2, spacing * 10 + buttonHeight * 8, imageSize, imageSize, null);
+        g2d.drawString("URANIUM", gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 5, (spacing + buttonHeight) * 10 - (int)(spacing * 1.2));
+        g2d.drawImage(itemIcons.get(NodePossibilities.URANIUM), gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 2, spacing * 11 + buttonHeight * 9, imageSize, imageSize, null);
+        g2d.drawString("SAM", gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 5, (spacing + buttonHeight) * 11 - (int)(spacing * 1.2));
+        g2d.drawImage(itemIcons.get(NodePossibilities.SAM_ORE), gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 2, spacing * 12 + buttonHeight * 10, imageSize, imageSize, null);
 
         //purity
         g2d.setFont(new Font("Bahnschrift", Font.BOLD, 16));

@@ -28,7 +28,9 @@ import java.util.Scanner;
 
 public class GraphicsPanel extends JPanel implements Runnable, MouseListener, KeyListener, FocusListener, MouseWheelListener {
     public final static int WIDTH = 1920;
+    public final static int MIN_WIDTH = 800;
     public final static int HEIGHT = 1080;
+    public final static int MIN_HEIGHT = 450;
     private Thread thread;
 
     private boolean midMouseDown = false;
@@ -142,7 +144,7 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
             int mx = mousePos.x - screenPos.x;
             int my = mousePos.y - screenPos.y;
 
-            dragBuilding.position = Screen.convertToWorldPoint(new Point(mx, my));
+            dragBuilding.position = Screen.convertToWorldPoint(new Point(mx, my), this);
         }
 
         for (Building building : buildings) building.menuOpen = false;
@@ -177,8 +179,8 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
     private int getBuildingIndexUnderMouse(int mx, int my) {
         for (int i = 0; i < buildings.size(); i ++) {
             Building building = buildings.get(i);
-            Point bs = Screen.convertToScreenPoint(new PointDouble(building.position.x, building.position.y));
-            Point be = Screen.convertToScreenPoint(new PointDouble(building.position.x + 1, building.position.y + 1));
+            Point bs = Screen.convertToScreenPoint(new PointDouble(building.position.x, building.position.y), this);
+            Point be = Screen.convertToScreenPoint(new PointDouble(building.position.x + 1, building.position.y + 1), this);
             if (bs.x < mx && be.x > mx && bs.y < my && be.y > my) return i;
         }
         return -1;
@@ -187,8 +189,8 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
     private int getConnectorIndexUnderMouse(int mx, int my) {
         for (int i = 0; i < connectors.size(); i ++) {
             Connector connector = connectors.get(i);
-            Point cs = Screen.convertToScreenPoint(new PointDouble(connector.lineCenter.x - 0.25, connector.lineCenter.y - 0.25));
-            Point ce = Screen.convertToScreenPoint(new PointDouble(connector.lineCenter.x + 0.25, connector.lineCenter.y + 0.25));
+            Point cs = Screen.convertToScreenPoint(new PointDouble(connector.lineCenter.x - 0.25, connector.lineCenter.y - 0.25), this);
+            Point ce = Screen.convertToScreenPoint(new PointDouble(connector.lineCenter.x + 0.25, connector.lineCenter.y + 0.25), this);
             if (cs.x < mx && ce.x > mx && cs.y < my && ce.y > my) return i;
         }
         return -1;
@@ -491,26 +493,26 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
         g2d.setRenderingHints(new RenderingHints(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON));
 
         // draw origin
-        g2d.setColor(new Color(28, 30, 28));
-        Point originTopLeft = Screen.convertToScreenPoint(new PointDouble(origin.x, origin.y));
-        Point originBottomRight = Screen.convertToScreenPoint(new PointDouble(origin.x + 1, origin.y + 1));
+        g2d.setColor(new Color(34, 37, 34));
+        Point originTopLeft = Screen.convertToScreenPoint(new PointDouble(origin.x, origin.y), this);
+        Point originBottomRight = Screen.convertToScreenPoint(new PointDouble(origin.x + 1, origin.y + 1), this);
         g2d.drawRect(originTopLeft.x, originTopLeft.y, originBottomRight.x - originTopLeft.x, originBottomRight.y - originTopLeft.y);
 
         // draw all conveyors and pipes
-        for (Connector connector : connectors) connector.draw(shiftDown || ctrlDown, g2d);
+        for (Connector connector : connectors) connector.draw(shiftDown || ctrlDown, g2d, this);
         // draw all buildings
         for (Building building : buildings) {
             boolean convColored = shiftDown && (firstConnection ? (building.outConveyors.size() < building.maxOutConveyors) : ((tempConnectionType == ConnectionType.CONVEYOR) && building.inConveyors.size() < building.maxInConveyors));
             boolean pipeColored = ctrlDown && (firstConnection ? (building.outPipes.size() < building.maxOutPipes) : ((tempConnectionType == ConnectionType.PIPE) && building.inPipes.size() < building.maxInPipes));
-            building.draw((shiftDown || ctrlDown) && !(convColored || pipeColored), g2d); // (shiftDown || ctrlDown) && !(convColored || pipeColored)
+            building.draw((shiftDown || ctrlDown) && !(convColored || pipeColored), g2d, this); // (shiftDown || ctrlDown) && !(convColored || pipeColored)
         }
 
-        if (inMenuObject) menuObject.drawMenu(g2d);
+        if (inMenuObject) menuObject.drawMenu(g2d, this);
 
         // draw a connector if needed
         if ((shiftDown || ctrlDown) && !firstConnection) {
             g2d.setColor(tempConnectionType == ConnectionType.CONVEYOR ? Color.WHITE : Color.ORANGE);
-            Point buildingStart = Screen.convertToScreenPoint(new PointDouble(tempConnectionStart.position.x + 0.5, tempConnectionStart.position.y + 0.5));
+            Point buildingStart = Screen.convertToScreenPoint(new PointDouble(tempConnectionStart.position.x + 0.5, tempConnectionStart.position.y + 0.5), this);
             int hiddenLength = Screen.convertLengthToScreenLength(0.45);
             double hiddenPercent = (double)hiddenLength / (int)Math.sqrt((mx - buildingStart.x)*(mx - buildingStart.x) + (my - buildingStart.y)*(my - buildingStart.y));
             int sx = (int)(buildingStart.x * (1 - hiddenPercent) + mx * hiddenPercent);
@@ -518,155 +520,156 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
             g2d.drawLine(sx, sy, mx, my);
         }
 
+        // BUTTONS
+        int buttonHeight = (int)((getHeight() * 1.77777777) / 8 * 0.16);
+        int spacing = buttonHeight / 4;
+        int buttonWidth = (int) ((getHeight() * 1.77777777) / 8 - spacing * 2);
+        int textSize = buttonHeight / 2;
+
         // left menu background
         g2d.setColor(new Color(40, 44, 40));
-        g2d.fillRect(0, 0, getWidth() / 8, getHeight());
+        g2d.fillRect(0, 0, (int) ((getHeight() * 1.77777777) / 8), getHeight());
 
-        // BUTTONS
-        g2d.setFont(new Font("Bahnschrift", Font.PLAIN, 20));
+        g2d.setFont(new Font("Bahnschrift", Font.PLAIN, textSize));
         Color onColor = new Color(100, 105, 100);
         Color offColor = new Color(70, 75, 70);
 
         g2d.setColor(menuState == MenuState.NEW_GENERATOR ? onColor : offColor);
-        g2d.fillRoundRect(10, 10, (getWidth() / 8 - 20), 40, 10, 10);
+        g2d.fillRoundRect(spacing, spacing, buttonWidth, buttonHeight, 10, 10);
         g2d.setColor(menuState == MenuState.NEW_SMELTER ? onColor : offColor);
-        g2d.fillRoundRect(10, 60, (getWidth() / 8 - 20), 40, 10, 10);
+        g2d.fillRoundRect(spacing, spacing * 2 + buttonHeight, buttonWidth, buttonHeight, 10, 10);
         g2d.setColor(menuState == MenuState.NEW_CRAFTER ? onColor : offColor);
-        g2d.fillRoundRect(10, 110, (getWidth() / 8 - 20), 40, 10, 10);
+        g2d.fillRoundRect(spacing, spacing * 3 + buttonHeight * 2, buttonWidth, buttonHeight, 10, 10);
         g2d.setColor(menuState == MenuState.NEW_LOGISTIC ? onColor : offColor);
-        g2d.fillRoundRect(10, 160, (getWidth() / 8 - 20), 40, 10, 10);
+        g2d.fillRoundRect(spacing, spacing * 4 + buttonHeight * 3, buttonWidth, buttonHeight, 10, 10);
 
         g2d.setColor(new Color(150, 155, 150));
-        g2d.drawString("GENERATORS", 25, 38);
-        g2d.drawString("SMELTERS", 25, 88);
-        g2d.drawString("CRAFTERS", 25, 138);
-        g2d.drawString("LOGISTICS", 25, 188);
+        g2d.drawString("GENERATORS", (int) (spacing * 2.5), (int) (spacing * 3.8));
+        g2d.drawString("SMELTERS", (int) (spacing * 2.5), (int) (spacing * 3.8 + (buttonHeight + spacing)));
+        g2d.drawString("CRAFTERS", (int) (spacing * 2.5), (int) (spacing * 3.8 + (buttonHeight + spacing) * 2));
+        g2d.drawString("LOGISTICS", (int) (spacing * 2.5), (int) (spacing * 3.8 + (buttonHeight + spacing) * 3));
 
-        g2d.setColor(new Color(24, 26, 24));
-        g2d.drawLine(0, 215, getWidth() / 8, 215);
+        g2d.setColor(new Color(30, 33, 30));
+        g2d.drawLine(0, spacing * 5 + buttonHeight * 4, (int) ((getHeight() * 1.7777777) / 8),spacing * 5 + buttonHeight * 4);
 
         // more menu buttons
         if (menuState == MenuState.NEW_GENERATOR) {
             g2d.setColor(isClickActive(0) ? onColor : offColor);
-            g2d.fillRoundRect(10, 230, (getWidth() / 8 - 20), 40, 10, 10);
+            g2d.fillRoundRect(spacing, spacing * 6 + buttonHeight * 4, buttonWidth, buttonHeight, 10, 10);
             g2d.setColor(isClickActive(1) ? onColor : offColor);
-            g2d.fillRoundRect(10, 280, (getWidth() / 8 - 20), 40, 10, 10);
+            g2d.fillRoundRect(spacing, spacing * 7 + buttonHeight * 5, buttonWidth, buttonHeight, 10, 10);
             g2d.setColor(isClickActive(2) ? onColor : offColor);
-            g2d.fillRoundRect(10, 330, (getWidth() / 8 - 20), 40 + 20, 10, 10);
+            g2d.fillRoundRect(spacing, spacing * 8 + buttonHeight * 6, buttonWidth, buttonHeight, 10, 10);
             g2d.setColor(isClickActive(3) ? onColor : offColor);
-            g2d.fillRoundRect(10, 400, (getWidth() / 8 - 20), 40, 10, 10);
+            g2d.fillRoundRect(spacing, spacing * 9 + buttonHeight * 7, buttonWidth, buttonHeight, 10, 10);
             g2d.setColor(isClickActive(4) ? onColor : offColor);
-            g2d.fillRoundRect(10, 450, (getWidth() / 8 - 20), 40, 10, 10);
+            g2d.fillRoundRect(spacing, spacing * 10 + buttonHeight * 8, buttonWidth, buttonHeight, 10, 10);
             g2d.setColor(isClickActive(5) ? onColor : offColor);
-            g2d.fillRoundRect(10, 500, (getWidth() / 8 - 20), 40, 10, 10);
+            g2d.fillRoundRect(spacing, spacing * 11 + buttonHeight * 9, buttonWidth, buttonHeight, 10, 10);
             g2d.setColor(isClickActive(6) ? onColor : offColor);
-            g2d.fillRoundRect(10, 550, (getWidth() / 8 - 20), 40, 10, 10);
+            g2d.fillRoundRect(spacing, spacing * 12 + buttonHeight * 10, buttonWidth, buttonHeight, 10, 10);
             g2d.setColor(isClickActive(7) ? onColor : offColor);
-            g2d.fillRoundRect(10, 600, (getWidth() / 8 - 20), 40, 10, 10);
+            g2d.fillRoundRect(spacing, spacing * 13 + buttonHeight * 11, buttonWidth, buttonHeight, 10, 10);
 
             g2d.setColor(new Color(150, 155, 150));
-            g2d.drawString("WATER EXTRACTOR", 25, 258);
-            g2d.drawString("OIL EXTRACTOR", 25, 308);
-            g2d.drawString("RESOURCE WELL", 25, 358);
-            g2d.drawString("EXTRACTOR", 25, 378);
-            g2d.drawString("MINER", 25, 428);
-            g2d.drawString("COAL GENERATOR", 25, 478);
-            g2d.drawString("FUEL GENERATOR", 25, 528);
-            g2d.drawString("NUCLEAR POWER", 25, 578);
-            g2d.drawString("BOTTOMLESS BOX", 25, 628);
+            g2d.drawString("WATER EXTRACTOR", (int) (spacing * 2.5), (int) (spacing * 3.8 + buttonHeight * 4 + spacing * 5));
+            g2d.drawString("OIL EXTRACTOR", (int) (spacing * 2.5), (int) (spacing * 3.8 + buttonHeight * 5 + spacing * 6));
+            g2d.drawString("RESOURCE WELL", (int) (spacing * 2.5), (int) (spacing * 3.8 + buttonHeight * 6 + spacing * 7));
+            g2d.drawString("MINER", (int) (spacing * 2.5), (int) (spacing * 3.8 + buttonHeight * 7 + spacing * 8));
+            g2d.drawString("COAL GENERATOR", (int) (spacing * 2.5), (int) (spacing * 3.8 + buttonHeight * 8 + spacing * 9));
+            g2d.drawString("FUEL GENERATOR", (int) (spacing * 2.5), (int) (spacing * 3.8 + buttonHeight * 9 + spacing * 10));
+            g2d.drawString("NUCLEAR POWER", (int) (spacing * 2.5), (int) (spacing * 3.8 + buttonHeight * 10 + spacing * 11));
+            g2d.drawString("BOTTOMLESS BOX", (int) (spacing * 2.5), (int) (spacing * 3.8 + buttonHeight * 11 + spacing * 12));
         }
         if (menuState == MenuState.NEW_SMELTER) {
             g2d.setColor(new Color(70, 75, 70));
 
             g2d.setColor(isClickActive(0) ? onColor : offColor);
-            g2d.fillRoundRect(10, 230, (getWidth() / 8 - 20), 40, 10, 10);
+            g2d.fillRoundRect(spacing, spacing * 6 + buttonHeight * 4, buttonWidth, buttonHeight, 10, 10);
             g2d.setColor(isClickActive(1) ? onColor : offColor);
-            g2d.fillRoundRect(10, 280, (getWidth() / 8 - 20), 40, 10, 10);
+            g2d.fillRoundRect(spacing, spacing * 7 + buttonHeight * 5, buttonWidth, buttonHeight, 10, 10);
 
             g2d.setColor(new Color(150, 155, 150));
-            g2d.drawString("SMELTER", 25, 258);
-            g2d.drawString("FOUNDRY", 25, 308);
+            g2d.drawString("SMELTER", (int) (spacing * 2.5), (int) (spacing * 3.8 + buttonHeight * 4 + spacing * 5));
+            g2d.drawString("FOUNDRY", (int) (spacing * 2.5), (int) (spacing * 3.8 + buttonHeight * 5 + spacing * 6));
         }
         if (menuState == MenuState.NEW_CRAFTER) {
             g2d.setColor(new Color(70, 75, 70));
 
             g2d.setColor(isClickActive(0) ? onColor : offColor);
-            g2d.fillRoundRect(10, 230, (getWidth() / 8 - 20), 40, 10, 10);
+            g2d.fillRoundRect(spacing, spacing * 6 + buttonHeight * 4, buttonWidth, buttonHeight, 10, 10);
             g2d.setColor(isClickActive(1) ? onColor : offColor);
-            g2d.fillRoundRect(10, 280, (getWidth() / 8 - 20), 40, 10, 10);
+            g2d.fillRoundRect(spacing, spacing * 7 + buttonHeight * 5, buttonWidth, buttonHeight, 10, 10);
             g2d.setColor(isClickActive(2) ? onColor : offColor);
-            g2d.fillRoundRect(10, 330, (getWidth() / 8 - 20), 40, 10, 10);
+            g2d.fillRoundRect(spacing, spacing * 8 + buttonHeight * 6, buttonWidth, buttonHeight, 10, 10);
             g2d.setColor(isClickActive(3) ? onColor : offColor);
-            g2d.fillRoundRect(10, 380, (getWidth() / 8 - 20), 40, 10, 10);
+            g2d.fillRoundRect(spacing, spacing * 9 + buttonHeight * 7, buttonWidth, buttonHeight, 10, 10);
             g2d.setColor(isClickActive(4) ? onColor : offColor);
-            g2d.fillRoundRect(10, 430, (getWidth() / 8 - 20), 40, 10, 10);
+            g2d.fillRoundRect(spacing, spacing * 10 + buttonHeight * 8, buttonWidth, buttonHeight, 10, 10);
             g2d.setColor(isClickActive(5) ? onColor : offColor);
-            g2d.fillRoundRect(10, 480, (getWidth() / 8 - 20), 40, 10, 10);
+            g2d.fillRoundRect(spacing, spacing * 11 + buttonHeight * 9, buttonWidth, buttonHeight, 10, 10);
             g2d.setColor(isClickActive(6) ? onColor : offColor);
-            g2d.fillRoundRect(10, 530, (getWidth() / 8 - 20), 40 + 20, 10, 10);
+            g2d.fillRoundRect(spacing, spacing * 12 + buttonHeight * 10, buttonWidth, buttonHeight, 10, 10);
 
             g2d.setColor(new Color(150, 155, 150));
-            g2d.drawString("CONSTRUCTOR", 25, 258);
-            g2d.drawString("ASSEMBLER", 25, 308);
-            g2d.drawString("MANUFACTURER", 25, 358);
-            g2d.drawString("PACKAGER", 25, 408);
-            g2d.drawString("REFINERY", 25, 458);
-            g2d.drawString("BLENDER", 25, 508);
-            g2d.drawString("PARTICLE", 25, 558);
-            g2d.drawString("ACCELERATOR", 25, 578);
+            g2d.drawString("CONSTRUCTOR", (int) (spacing * 2.5), (int) (spacing * 3.8 + buttonHeight * 4 + spacing * 5));
+            g2d.drawString("ASSEMBLER", (int) (spacing * 2.5), (int) (spacing * 3.8 + buttonHeight * 5 + spacing * 6));
+            g2d.drawString("MANUFACTURER", (int) (spacing * 2.5), (int) (spacing * 3.8 + buttonHeight * 6 + spacing * 7));
+            g2d.drawString("PACKAGER", (int) (spacing * 2.5), (int) (spacing * 3.8 + buttonHeight * 7 + spacing * 8));
+            g2d.drawString("REFINERY", (int) (spacing * 2.5), (int) (spacing * 3.8 + buttonHeight * 8 + spacing * 9));
+            g2d.drawString("BLENDER", (int) (spacing * 2.5), (int) (spacing * 3.8 + buttonHeight * 9 + spacing * 10));
+            g2d.drawString("PART. ACCELERATOR", (int) (spacing * 2.5), (int) (spacing * 3.8 + buttonHeight * 10 + spacing * 11));
         }
         if (menuState == MenuState.NEW_LOGISTIC) {
             g2d.setColor(new Color(70, 75, 70));
 
             g2d.setColor(isClickActive(0) ? onColor : offColor);
-            g2d.fillRoundRect(10, 230, (getWidth() / 8 - 20), 40, 10, 10);
+            g2d.fillRoundRect(spacing, spacing * 6 + buttonHeight * 4, buttonWidth, buttonHeight, 10, 10);
             g2d.setColor(isClickActive(1) ? onColor : offColor);
-            g2d.fillRoundRect(10, 280, (getWidth() / 8 - 20), 40, 10, 10);
+            g2d.fillRoundRect(spacing, spacing * 7 + buttonHeight * 5, buttonWidth, buttonHeight, 10, 10);
             g2d.setColor(isClickActive(2) ? onColor : offColor);
-            g2d.fillRoundRect(10, 330, (getWidth() / 8 - 20), 40, 10, 10);
+            g2d.fillRoundRect(spacing, spacing * 8 + buttonHeight * 6, buttonWidth, buttonHeight, 10, 10);
             g2d.setColor(isClickActive(3) ? onColor : offColor);
-            g2d.fillRoundRect(10, 380, (getWidth() / 8 - 20), 40, 10, 10);
+            g2d.fillRoundRect(spacing, spacing * 9 + buttonHeight * 7, buttonWidth, buttonHeight, 10, 10);
 
             g2d.setColor(new Color(150, 155, 150));
-            g2d.drawString("SPLITTER", 25, 258);
-            g2d.drawString("MERGER", 25, 308);
-            g2d.drawString("JUNCTION", 25, 358);
-            g2d.drawString("AWESOME SINK", 25, 408);
+            g2d.drawString("SPLITTER", (int) (spacing * 2.5), (int) (spacing * 3.8 + buttonHeight * 4 + spacing * 5));
+            g2d.drawString("MERGER", (int) (spacing * 2.5), (int) (spacing * 3.8 + buttonHeight * 5 + spacing * 6));
+            g2d.drawString("JUNCTION", (int) (spacing * 2.5), (int) (spacing * 3.8 + buttonHeight * 6 + spacing * 7));
+            g2d.drawString("AWESOME SINK", (int) (spacing * 2.5), (int) (spacing * 3.8 + buttonHeight * 7 + spacing * 8));
         }
 
         g2d.setColor(new Color(150, 155, 150));
 
-        g2d.drawRoundRect(10, getHeight() - 40 - 240, 40, 40, 10, 10);
-        g2d.drawRoundRect(10 + (getWidth() / 8 - 20) - 40, getHeight() - 40 - 240, 40, 40, 10, 10);
-        g2d.drawString("Conveyor Tier", 10, getHeight() - 40 - 252);
-        g2d.drawString("-", 25, getHeight() - 40 - 212);
-        g2d.drawString("+", getWidth() / 8 - 35, getHeight() - 40 - 212);
-        g2d.drawString(String.valueOf(defaultConveyorTier), (getWidth() / 8 - 20) / 2, getHeight() - 40 - 212);
+        g2d.drawRoundRect(spacing, getHeight() - buttonHeight * 5 - spacing * 5, buttonWidth / 4, buttonHeight, 10, 10);
+        g2d.drawRoundRect(spacing + buttonWidth - buttonWidth / 4, getHeight() - buttonHeight * 5 - spacing * 5, buttonWidth / 4, buttonHeight, 10, 10);
+        g2d.drawString("-", (int) (spacing * 2.5), (int) (getHeight() - buttonHeight * 4 - spacing * 6.2));
+        g2d.drawString("+", (int) ((getHeight() * 1.77777777) / 8 - spacing * 3.5), (int) (getHeight() - buttonHeight * 4 - spacing * 6.2));
+        g2d.drawString("Conv. Tier: " + defaultConveyorTier, (int) (buttonWidth / 3.138), (int) (getHeight() - buttonHeight * 4 - spacing * 6.2));
 
-        g2d.drawRoundRect(10, getHeight() - 40 - 160, 40, 40, 10, 10);
-        g2d.drawRoundRect(10 + (getWidth() / 8 - 20) - 40, getHeight() - 40 - 160, 40, 40, 10, 10);
-        g2d.drawString("Pipe Tier", 10, getHeight() - 40 - 172);
-        g2d.drawString("-", 25, getHeight() - 40 - 132);
-        g2d.drawString("+", getWidth() / 8 - 35, getHeight() - 40 - 132);
-        g2d.drawString(String.valueOf(defaultPipeTier), (getWidth() / 8 - 20) / 2, getHeight() - 40 - 132);
+        g2d.drawRoundRect(spacing, getHeight() - buttonHeight * 4 - spacing * 4, buttonWidth / 4, buttonHeight, 10, 10);
+        g2d.drawRoundRect(spacing + buttonWidth - buttonWidth / 4, getHeight() - buttonHeight * 4 - spacing * 4, buttonWidth / 4, buttonHeight, 10, 10);
+        g2d.drawString("-", (int) (spacing * 2.5), (int) (getHeight() - buttonHeight * 3 - spacing * 5.2));
+        g2d.drawString("+", (int) ((getHeight() * 1.77777777) / 8 - spacing * 3.5), (int) (getHeight() - buttonHeight * 3 - spacing * 5.2));
+        g2d.drawString("Pipe Tier: " + defaultPipeTier, buttonWidth / 3, (int) (getHeight() - buttonHeight * 3 - spacing * 5.2));
 
-        g2d.drawRoundRect(10, getHeight() - 40 - 110, (getWidth() / 8 - 20), 40, 10, 10);
-        g2d.drawString("Reset Origin", 25, getHeight() - 40 - 82);
-        g2d.drawRoundRect(10, getHeight() - 40 - 60, (getWidth() / 8 - 20), 40, 10, 10);
-        g2d.drawString("Reset View", 25, getHeight() - 40 - 32);
+        g2d.drawRoundRect(spacing, getHeight() - buttonHeight * 3 - spacing * 3, buttonWidth, buttonHeight, 10, 10);
+        g2d.drawString("Reset Origin", (int) (spacing * 2.5), (int) (getHeight() - buttonHeight * 2 - spacing * 4.2));
+        g2d.drawRoundRect(spacing, getHeight() - buttonHeight * 2 - spacing * 2, buttonWidth, buttonHeight, 10, 10);
+        g2d.drawString("Reset View", (int) (spacing * 2.5), (int) (getHeight() - buttonHeight - spacing * 3.2));
 
-        g2d.drawRoundRect(10, getHeight() - 40 - 10, (getWidth() / 8 - 20) / 2 - 10, 40, 10, 10);
-        g2d.drawString("Save", 25, getHeight() - 40 + 18);
-        g2d.drawRoundRect(10 + (getWidth() / 8 - 20) / 2, getHeight() - 40 - 10, (getWidth() / 8 - 20) / 2, 40, 10, 10);
-        g2d.drawString("Load", 25 + (getWidth() / 8 - 20) / 2, getHeight() - 40 + 18);
+        g2d.drawRoundRect(spacing, getHeight() - buttonHeight - spacing, buttonWidth / 2 - spacing, buttonHeight, 10, 10);
+        g2d.drawString("Save", (int) (spacing * 2.5), (int) (getHeight() - buttonHeight + spacing * 1.8));
+        g2d.drawRoundRect(spacing + buttonWidth / 2, getHeight() - buttonHeight - spacing, buttonWidth / 2, buttonHeight, 10, 10);
+        g2d.drawString("Load", (int) (spacing * 2.5) + buttonWidth / 2, (int) (getHeight() - buttonHeight + spacing * 1.8));
 
-        g2d.drawString(Math.abs((double)(int)(totalPower * 10000) / 10000) + "mw " + (totalPower <= 0 ? "consumption" : "production"), getWidth() / 8 + 20, getHeight() - 20);
+        g2d.drawString(Math.abs((double)(int)(totalPower * 10000) / 10000) + "mw " + (totalPower <= 0 ? "consumption" : "production"), (int) ((getHeight() * 1.77777777) / 8 + spacing * 2), getHeight() - spacing * 2);
 
-        Point sc = new Point(WIDTH / 2, HEIGHT / 2);
+        Point sc = new Point(getWidth() / 2, getHeight() / 2);
         g2d.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
         if (inSaveMenu) {
             g2d.setColor(new Color(0, 0, 0, 63));
-            g2d.fillRect(0, 0, GraphicsPanel.WIDTH, GraphicsPanel.HEIGHT);
+            g2d.fillRect(0, 0, getWidth(), getHeight());
 
             g2d.setColor(new Color(30, 32, 30));
             g2d.fillRoundRect(sc.x - 200, sc.y - 100, 400, 200, 10, 10);
@@ -710,7 +713,7 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
         }
         if (inLoadMenu) {
             g2d.setColor(new Color(0, 0, 0, 63));
-            g2d.fillRect(0, 0, GraphicsPanel.WIDTH, GraphicsPanel.HEIGHT);
+            g2d.fillRect(0, 0, getWidth(), getHeight());
 
             g2d.setColor(new Color(30, 32, 30));
             g2d.fillRoundRect(sc.x - 200, sc.y - 100, 400, 200, 10, 10);
@@ -753,6 +756,8 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
                     int index = validSaves.indexOf(s);
                     g2d.setColor(new Color(40, 43, 40));
                     g2d.fillRoundRect(sc.x - 190 + (index / 4 * 100), sc.y - 25 + (index % 4 * 30), 90, 20, 5, 5);
+                    g2d.setColor(new Color(80, 84, 80));
+                    g2d.drawRoundRect(sc.x - 190 + (index / 4 * 100), sc.y - 25 + (index % 4 * 30), 90, 20, 5, 5);
                     g2d.setColor(Color.WHITE);
                     g2d.drawString(s, sc.x - 187 + (index / 4 * 100), sc.y - 11 + (index % 4 * 30));
                 }
@@ -853,159 +858,164 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
         int mx = mousePos.x - screenPos.x;
         int my = mousePos.y - screenPos.y;
 
+        int buttonHeight = (int)((getHeight() * 1.77777777) / 8 * 0.16);
+        int spacing = buttonHeight / 4;
+        int buttonWidth = (int) ((getHeight() * 1.77777777) / 8 - spacing * 2);
+        int textSize = buttonHeight / 2;
+
         if (!inSaveMenu && !inLoadMenu) {
             if (!shiftDown && !ctrlDown) {
                 if (mouseEvent.getButton() == MouseEvent.BUTTON1) {
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 10 && my < 50) {
+                    if (mx > spacing && mx < buttonWidth + spacing && my > spacing && my < spacing + buttonHeight) {
                         menuState = MenuState.NEW_GENERATOR;
                         emptyClickList();
                     }
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 60 && my < 100) {
+                    if (mx > spacing && mx < buttonWidth + spacing && my > spacing * 2 + buttonHeight && my < (spacing + buttonHeight) * 2) {
                         menuState = MenuState.NEW_SMELTER;
                         emptyClickList();
                     }
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 110 && my < 150) {
+                    if (mx > spacing && mx < buttonWidth + spacing && my > spacing * 3 + buttonHeight * 2 && my < (spacing + buttonHeight) * 3) {
                         menuState = MenuState.NEW_CRAFTER;
                         emptyClickList();
                     }
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > 160 && my < 200) {
+                    if (mx > spacing && mx < buttonWidth + spacing && my > spacing * 4 + buttonHeight * 3 && my < (spacing + buttonHeight) * 4) {
                         menuState = MenuState.NEW_LOGISTIC;
                         emptyClickList();
                     }
 
                     if (menuState == MenuState.NEW_GENERATOR) {
-                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 230 && my < 270) {// new water extractor
+                        if (mx > spacing && mx < buttonWidth + spacing && my > spacing * 6 + buttonHeight * 4 && my < spacing * 6 + buttonHeight * 5) {// new water extractor
                             buildings.add(0, new WaterExtractor(origin));
                             setClickList(0);
                         }
-                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 280 && my < 320) {// new oil extractor
+                        if (mx > spacing && mx < buttonWidth + spacing && my > spacing * 7 + buttonHeight * 5 && my < spacing * 7 + buttonHeight * 6) {// new oil extractor
                             buildings.add(0, new OilExtractor(origin));
                             setClickList(1);
                         }
-                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 330 && my < 390) {// new resource well extractor
+                        if (mx > spacing && mx < buttonWidth + spacing && my > spacing * 8 + buttonHeight * 6 && my < spacing * 8 + buttonHeight * 7) {// new resource well extractor
                             buildings.add(0, new ResourceWellExtractor(origin));
                             setClickList(2);
                         }
-                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 400 && my < 440) {// new miner
+                        if (mx > spacing && mx < buttonWidth + spacing && my > spacing * 9 + buttonHeight * 7 && my < spacing * 9 + buttonHeight * 8) {// new miner
                             buildings.add(0, new Miner(origin));
                             setClickList(3);
                         }
-                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 450 && my < 490) {// new coal generator
+                        if (mx > spacing && mx < buttonWidth + spacing && my > spacing * 10 + buttonHeight * 8 && my < spacing * 10 + buttonHeight * 9) {// new coal generator
                             buildings.add(0, new CoalGenerator(origin));
                             setClickList(4);
                         }
-                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 500 && my < 540) {// new fuel generator
+                        if (mx > spacing && mx < buttonWidth + spacing && my > spacing * 11 + buttonHeight * 9 && my < spacing * 11 + buttonHeight * 10) {// new fuel generator
                             buildings.add(0, new FuelGenerator(origin));
                             setClickList(5);
                         }
-                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 550 && my < 590) {// new nuclear power plant
+                        if (mx > spacing && mx < buttonWidth + spacing && my > spacing * 12 + buttonHeight * 10 && my < spacing * 12 + buttonHeight * 11) {// new nuclear power plant
                             buildings.add(0, new NuclearPowerPlant(origin));
                             setClickList(6);
                         }
-                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 600 && my < 640) {// new generator
+                        if (mx > spacing && mx < buttonWidth + spacing && my > spacing * 13 + buttonHeight * 11 && my < spacing * 13 + buttonHeight * 12) {// new generator
                             buildings.add(0, new BottomlessBox(origin));
                             setClickList(7);
                         }
                     }
                     if (menuState == MenuState.NEW_SMELTER) {
-                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 230 && my < 270) {// new smelter
+                        if (mx > spacing && mx < buttonWidth + spacing && my > spacing * 6 + buttonHeight * 4 && my < spacing * 6 + buttonHeight * 5) {// new smelter
                             buildings.add(0, new Smelter(origin));
                             setClickList(0);
                         }
-                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 280 && my < 320) {// new foundry
+                        if (mx > spacing && mx < buttonWidth + spacing && my > spacing * 7 + buttonHeight * 5 && my < spacing * 7 + buttonHeight * 6) {// new foundry
                             buildings.add(0, new Foundry(origin));
                             setClickList(1);
                         }
                     }
                     if (menuState == MenuState.NEW_CRAFTER) {
-                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 230 && my < 270) {// new constructor
+                        if (mx > spacing && mx < buttonWidth + spacing && my > spacing * 6 + buttonHeight * 4 && my < spacing * 6 + buttonHeight * 5) {// new constructor
                             buildings.add(0, new Constructor(origin));
                             setClickList(0);
                         }
-                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 280 && my < 320) {// new assembler
+                        if (mx > spacing && mx < buttonWidth + spacing && my > spacing * 7 + buttonHeight * 5 && my < spacing * 7 + buttonHeight * 6) {// new assembler
                             buildings.add(0, new Assembler(origin));
                             setClickList(1);
                         }
-                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 330 && my < 370) {// new manufacturer
+                        if (mx > spacing && mx < buttonWidth + spacing && my > spacing * 8 + buttonHeight * 6 && my < spacing * 8 + buttonHeight * 7) {// new manufacturer
                             buildings.add(0, new Manufacturer(origin));
                             setClickList(2);
                         }
-                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 380 && my < 420) {// new packager
+                        if (mx > spacing && mx < buttonWidth + spacing && my > spacing * 9 + buttonHeight * 7 && my < spacing * 9 + buttonHeight * 8) {// new packager
                             buildings.add(0, new Packager(origin));
                             setClickList(3);
                         }
-                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 430 && my < 470) {// new refinery
+                        if (mx > spacing && mx < buttonWidth + spacing && my > spacing * 10 + buttonHeight * 8 && my < spacing * 10 + buttonHeight * 9) {// new refinery
                             buildings.add(0, new Refinery(origin));
                             setClickList(4);
                         }
-                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 480 && my < 520) {// new blender
+                        if (mx > spacing && mx < buttonWidth + spacing && my > spacing * 11 + buttonHeight * 9 && my < spacing * 11 + buttonHeight * 10) {// new blender
                             buildings.add(0, new Blender(origin));
                             setClickList(5);
                         }
-                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 530 && my < 590) {// new particle accelerator
+                        if (mx > spacing && mx < buttonWidth + spacing && my > spacing * 12 + buttonHeight * 10 && my < spacing * 12 + buttonHeight * 11) {// new particle accelerator
                             buildings.add(0, new ParticleAccelerator(origin));
                             setClickList(6);
                         }
                     }
                     if (menuState == MenuState.NEW_LOGISTIC) {
-                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 230 && my < 270) {// new splitter
+                        if (mx > spacing && mx < buttonWidth + spacing && my > spacing * 6 + buttonHeight * 4 && my < spacing * 6 + buttonHeight * 5) {// new splitter
                             buildings.add(0, new Splitter(origin));
                             setClickList(0);
                         }
-                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 280 && my < 320) {// new merger
+                        if (mx > spacing && mx < buttonWidth + spacing && my > spacing * 7 + buttonHeight * 5 && my < spacing * 7 + buttonHeight * 6) {// new merger
                             buildings.add(0, new Merger(origin));
                             setClickList(1);
                         }
-                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 330 && my < 370) {// new junction
+                        if (mx > spacing && mx < buttonWidth + spacing && my > spacing * 8 + buttonHeight * 6 && my < spacing * 8 + buttonHeight * 7) {// new junction
                             buildings.add(0, new Junction(origin));
                             setClickList(2);
                         }
-                        if (mx > 10 && mx < getWidth() / 8 - 10 && my > 380 && my < 420) {// new awesome sink
+                        if (mx > spacing && mx < buttonWidth + spacing && my > spacing * 9 + buttonHeight * 7 && my < spacing * 9 + buttonHeight * 8) {// new awesome sink
                             buildings.add(0, new AwesomeSink(origin));
                             setClickList(3);
                         }
                     }
 
                     // increase default conveyor
-                    if (mx > getWidth() / 8 - 50 && mx < getWidth() / 8 - 10 && my > getHeight() - 280 && my < getHeight() - 240) {
+                    if (mx > spacing + buttonWidth - buttonWidth / 4 && mx < spacing + buttonWidth && my > getHeight() - buttonHeight * 5 - spacing * 5 && my < getHeight() - buttonHeight * 4 - spacing * 5) {
                         defaultConveyorTier++;
                         if (defaultConveyorTier > 5) defaultConveyorTier = 5;
                     }
                     // decrease default conveyor
-                    if (mx > 10 && mx < 50 && my > getHeight() - 280 && my < getHeight() - 240) {
+                    if (mx > spacing && mx < spacing + buttonWidth / 4 && my > getHeight() - buttonHeight * 5 - spacing * 5 && my < getHeight() - buttonHeight * 4 - spacing * 5) {
                         defaultConveyorTier--;
                         if (defaultConveyorTier < 1) defaultConveyorTier = 1;
                     }
                     // increase default pipe
-                    if (mx > getWidth() / 8 - 50 && mx < getWidth() / 8 - 10 && my > getHeight() - 200 && my < getHeight() - 160) {
+                    if (mx > spacing + buttonWidth - buttonWidth / 4 && mx < spacing + buttonWidth && my > getHeight() - buttonHeight * 4 - spacing * 4 && my < getHeight() - buttonHeight * 3 - spacing * 4) {
                         defaultPipeTier++;
                         if (defaultPipeTier > 2) defaultPipeTier = 2;
                     }
                     // decrease default pipe
-                    if (mx > 10 && mx < 50 && my > getHeight() - 200 && my < getHeight() - 160) {
+                    if (mx > spacing && mx < spacing + buttonWidth / 4 && my > getHeight() - buttonHeight * 4 - spacing * 4 && my < getHeight() - buttonHeight * 3 - spacing * 4) {
                         defaultPipeTier--;
                         if (defaultPipeTier < 1) defaultPipeTier = 1;
                     }
 
                     // set origin
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > getHeight() - 150 && my < getHeight() - 110) {
+                    if (mx > spacing && mx < buttonWidth + spacing && my > getHeight() - buttonHeight * 3 - spacing * 3 && my < getHeight() - buttonHeight * 2 - spacing * 3) {
                         PointDouble screenCenter = Screen.getCenter();
                         origin = new Point((int) Math.floor(screenCenter.x), (int) Math.floor(screenCenter.y));
                     }
 
                     // reset view
-                    if (mx > 10 && mx < getWidth() / 8 - 10 && my > getHeight() - 100 && my < getHeight() - 60) {
+                    if (mx > spacing && mx < buttonWidth + spacing && my > getHeight() - buttonHeight * 2 - spacing * 2 && my < getHeight() - buttonHeight - spacing * 2) {
                         Screen.setCenter(new PointDouble(origin.x, origin.y));
                         Screen.setZoom(100);
                     }
 
                     // save
-                    if (mx > 10 && mx < getWidth() / 16 - 10 && my > getHeight() - 50 && my < getHeight() - 10) {
+                    if (mx > spacing && mx < buttonWidth / 2 && my > getHeight() - buttonHeight - spacing && my < getHeight() - spacing) {
                         inSaveMenu = true;
                     }
 
                     // load
-                    if (mx > getWidth() / 16 && mx < getWidth() / 8 - 10 && my > getHeight() - 50 && my < getHeight() - 10) {
+                    if (mx > spacing + buttonWidth / 2 && mx < spacing + buttonWidth && my > getHeight() - buttonHeight - spacing && my < getHeight() - spacing) {
                         inLoadMenu = true;
                     }
                 }
@@ -1096,7 +1106,7 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
                 }
             }
         } else {
-            Point sc = new Point(WIDTH / 2, HEIGHT / 2);
+            Point sc = new Point(getWidth() / 2, getHeight() / 2);
             if (!editingSaveLoadDir && !editingSaveName) {
                 if (mx > sc.x - 190 && mx < sc.x + 190 && my > sc.y - 60 && my < sc.y - 40)
                     editingSaveLoadDir = true;
@@ -1177,7 +1187,7 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
                 menuObject.scrolled(this, mouseWheelEvent.getWheelRotation());
             }
             if (!inMenuObject) {
-                Screen.zoom(mouseWheelEvent.getWheelRotation(), mx, my);
+                Screen.zoom(mouseWheelEvent.getWheelRotation(), mx, my, this);
             }
         }
     }

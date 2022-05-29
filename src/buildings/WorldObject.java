@@ -11,11 +11,11 @@ public class WorldObject {
 
     }
 
-    public void draw(boolean greyedOut, Graphics2D g2d) {
+    public void draw(boolean greyedOut, Graphics2D g2d, GraphicsPanel gp) {
 
     }
 
-    public void drawMenu(Graphics2D g2d) {
+    public void drawMenu(Graphics2D g2d, GraphicsPanel gp) {
 
     }
 

@@ -71,18 +71,18 @@ public class Conveyor extends Connector {
     }
 
     public void clicked(GraphicsPanel gp, int mx, int my) {
-        Point leftMidPoint = Screen.convertToScreenPoint(new PointDouble(lineCenter.x + 0.25, lineCenter.y));
+        Point leftMidPoint = Screen.convertToScreenPoint(new PointDouble(lineCenter.x + 0.25, lineCenter.y), gp);
         Point menuTopLeft = new Point(leftMidPoint.x, leftMidPoint.y - 75);
         Point menuBottomRight = new Point(leftMidPoint.x + 200, leftMidPoint.y + 75);
         if (menuTopLeft.y < 0) {
             menuBottomRight.y -= menuTopLeft.y;
             menuTopLeft.y -= menuTopLeft.y;
         }
-        if (menuBottomRight.y > GraphicsPanel.HEIGHT) {
-            menuTopLeft.y -= menuBottomRight.y - GraphicsPanel.HEIGHT;
-            menuBottomRight.y -= menuBottomRight.y - GraphicsPanel.HEIGHT;
+        if (menuBottomRight.y > gp.getHeight()) {
+            menuTopLeft.y -= menuBottomRight.y - gp.getHeight();
+            menuBottomRight.y -= menuBottomRight.y - gp.getHeight();
         }
-        if (menuBottomRight.x > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8) {
+        if (menuBottomRight.x > (int)(gp.getHeight() * 1.77777777) /  - (int)(gp.getHeight() * 1.77777777) / 8) {
             menuTopLeft.x -= 200 + Screen.convertLengthToScreenLength(0.5);
             menuBottomRight.x -= 200 + Screen.convertLengthToScreenLength(0.5);
         }
@@ -102,11 +102,11 @@ public class Conveyor extends Connector {
             if (tier != 5) tier ++;
     }
 
-    public void draw(boolean greyedOut, Graphics2D g2d) {
-        Point startCenter = Screen.convertToScreenPoint(new PointDouble(startBuilding.position.x + 0.5, startBuilding.position.y + 0.5));
-        Point endCenter = Screen.convertToScreenPoint(new PointDouble(endBuilding.position.x + 0.5, endBuilding.position.y + 0.5));
+    public void draw(boolean greyedOut, Graphics2D g2d, GraphicsPanel gp) {
+        Point startCenter = Screen.convertToScreenPoint(new PointDouble(startBuilding.position.x + 0.5, startBuilding.position.y + 0.5), gp);
+        Point endCenter = Screen.convertToScreenPoint(new PointDouble(endBuilding.position.x + 0.5, endBuilding.position.y + 0.5), gp);
 
-        Point center = Screen.convertToScreenPoint(lineCenter);
+        Point center = Screen.convertToScreenPoint(lineCenter, gp);
         int boxSize = (int)(0.25 * Screen.getZoom());
         g2d.setColor(new Color(40, 43, 40));
         g2d.drawRoundRect(center.x - boxSize, center.y - boxSize, boxSize * 2, boxSize * 2, 6, 6);
@@ -183,22 +183,22 @@ public class Conveyor extends Connector {
         }
     }
 
-    public void drawMenu(Graphics2D g2d) {
+    public void drawMenu(Graphics2D g2d, GraphicsPanel gp) {
         g2d.setColor(new Color(0, 0, 0, 63));
-        g2d.fillRect(0, 0, GraphicsPanel.WIDTH, GraphicsPanel.HEIGHT);
+        g2d.fillRect(0, 0, gp.getWidth(), gp.getHeight());
 
-        Point leftMidPoint = Screen.convertToScreenPoint(new PointDouble(lineCenter.x + 0.25, lineCenter.y));
+        Point leftMidPoint = Screen.convertToScreenPoint(new PointDouble(lineCenter.x + 0.25, lineCenter.y), gp);
         Point menuTopLeft = new Point(leftMidPoint.x, leftMidPoint.y - 75);
         Point menuBottomRight = new Point(leftMidPoint.x + 200, leftMidPoint.y + 75);
         if (menuTopLeft.y < 0) {
             menuBottomRight.y -= menuTopLeft.y;
             menuTopLeft.y -= menuTopLeft.y;
         }
-        if (menuBottomRight.y > GraphicsPanel.HEIGHT) {
-            menuTopLeft.y -= menuBottomRight.y - GraphicsPanel.HEIGHT;
-            menuBottomRight.y -= menuBottomRight.y - GraphicsPanel.HEIGHT;
+        if (menuBottomRight.y > gp.getHeight()) {
+            menuTopLeft.y -= menuBottomRight.y - gp.getHeight();
+            menuBottomRight.y -= menuBottomRight.y - gp.getHeight();
         }
-        if (menuBottomRight.x > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8) {
+        if (menuBottomRight.x > (int)(gp.getHeight() * 1.77777777) /  - gp.getWidth() / 8) {
             menuTopLeft.x -= 200 + Screen.convertLengthToScreenLength(0.5);
             menuBottomRight.x -= 200 + Screen.convertLengthToScreenLength(0.5);
         }

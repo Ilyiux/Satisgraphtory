@@ -144,30 +144,30 @@ public class ResourceWellExtractor extends Building {
     }
 
     public void clicked(GraphicsPanel gp, int mx, int my) {
-        Point leftMidPoint = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + 0.5));
+        Point leftMidPoint = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + 0.5), gp);
         Point menuTopLeft = new Point(leftMidPoint.x, leftMidPoint.y - 150);
         Point menuBottomRight = new Point(leftMidPoint.x + 200, leftMidPoint.y + 150);
         if (menuTopLeft.y < 0) {
             menuBottomRight.y -= menuTopLeft.y;
             menuTopLeft.y -= menuTopLeft.y;
         }
-        if (menuBottomRight.y > GraphicsPanel.HEIGHT) {
-            menuTopLeft.y -= menuBottomRight.y - GraphicsPanel.HEIGHT;
-            menuBottomRight.y -= menuBottomRight.y - GraphicsPanel.HEIGHT;
+        if (menuBottomRight.y > gp.getHeight()) {
+            menuTopLeft.y -= menuBottomRight.y - gp.getHeight();
+            menuBottomRight.y -= menuBottomRight.y - gp.getHeight();
         }
-        if (menuBottomRight.x > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8) {
+        if (menuBottomRight.x > gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8) {
             menuTopLeft.x -= 200 + Screen.convertLengthToScreenLength(1);
             menuBottomRight.x -= 200 + Screen.convertLengthToScreenLength(1);
         }
-        if (menuBottomRight.x > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8) {
-            menuTopLeft.x -= menuBottomRight.x - (GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8);
-            menuBottomRight.x -= menuBottomRight.x - (GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8);
+        if (menuBottomRight.x > gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8) {
+            menuTopLeft.x -= menuBottomRight.x - (gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8);
+            menuBottomRight.x -= menuBottomRight.x - (gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8);
         }
 
         if (editingOverclock || editingItems) {
             exitClockInput();
         } else {
-            if ((mx < menuTopLeft.x || mx > menuBottomRight.x || my < menuTopLeft.y || my > menuBottomRight.y) && mx < GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8)
+            if ((mx < menuTopLeft.x || mx > menuBottomRight.x || my < menuTopLeft.y || my > menuBottomRight.y) && mx < gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8)
                 gp.closeBuildingMenu();
         }
 
@@ -181,10 +181,14 @@ public class ResourceWellExtractor extends Building {
         }
 
         // resource
-        if (mx > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10 && mx < GraphicsPanel.WIDTH - 10 && my > 10 && my < 50) nodeType = NodePossibilities.UNSET;
-        if (mx > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10 && mx < GraphicsPanel.WIDTH - 10 && my > 60 && my < 100) nodeType = NodePossibilities.CRUDE_OIL;
-        if (mx > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10 && mx < GraphicsPanel.WIDTH - 10 && my > 110 && my < 150) nodeType = NodePossibilities.WATER;
-        if (mx > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10 && mx < GraphicsPanel.WIDTH - 10 && my > 160 && my < 200) nodeType = NodePossibilities.NITROGEN_GAS;
+        int buttonHeight = (int)((gp.getHeight() * 1.77777777) / 6 * 0.12);
+        int spacing = buttonHeight / 4;
+        int buttonWidth = (int) ((gp.getHeight() * 1.77777777) / 6 - spacing * 2);
+
+        if (mx > gp.getWidth() - buttonWidth - spacing && mx < gp.getWidth() - spacing && my > spacing && my < (spacing + buttonHeight)) nodeType = NodePossibilities.UNSET;
+        if (mx > gp.getWidth() - buttonWidth - spacing && mx < gp.getWidth() - spacing && my > spacing * 2 + buttonHeight && my < (spacing + buttonHeight) * 2) nodeType = NodePossibilities.CRUDE_OIL;
+        if (mx > gp.getWidth() - buttonWidth - spacing && mx < gp.getWidth() - spacing && my > spacing * 3 + buttonHeight * 2 && my < (spacing + buttonHeight) * 3) nodeType = NodePossibilities.WATER;
+        if (mx > gp.getWidth() - buttonWidth - spacing && mx < gp.getWidth() - spacing && my > spacing * 4 + buttonHeight * 3 && my < (spacing + buttonHeight) * 4) nodeType = NodePossibilities.NITROGEN_GAS;
 
         // purity
         if (mx > menuTopLeft.x + 81 && mx < menuTopLeft.x + 96 && my > menuTopLeft.y + 88 && my < menuTopLeft.y + 103) {
@@ -244,9 +248,9 @@ public class ResourceWellExtractor extends Building {
         }
     }
 
-    public void draw(boolean greyedOut, Graphics2D g2d) {
-        Point start = Screen.convertToScreenPoint(new PointDouble(position.x, position.y));
-        Point end = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + 1));
+    public void draw(boolean greyedOut, Graphics2D g2d, GraphicsPanel gp) {
+        Point start = Screen.convertToScreenPoint(new PointDouble(position.x, position.y), gp);
+        Point end = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + 1), gp);
 
         g2d.drawImage(image, start.x, start.y, end.x - start.x, end.y - start.y, null);
 
@@ -260,22 +264,22 @@ public class ResourceWellExtractor extends Building {
 
         double size = Screen.convertLengthToScreenLength(0.08);
         for (int ic = 0; ic < maxInConveyors; ic++) {
-            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x, position.y + ((double)(ic + 1) / (maxInConveyors + maxInPipes + 1))));
+            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x, position.y + ((double)(ic + 1) / (maxInConveyors + maxInPipes + 1))), gp);
             g2d.setColor(Color.GRAY);
             g2d.fillRect((int) (pos.x - size / 2), (int) (pos.y - size / 2), (int) size, (int) size);
         }
         for (int ip = 0; ip < maxInPipes; ip++) {
-            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x, position.y + ((double)(ip + maxInConveyors + 1) / (maxInConveyors + maxInPipes + 1))));
+            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x, position.y + ((double)(ip + maxInConveyors + 1) / (maxInConveyors + maxInPipes + 1))), gp);
             g2d.setColor(Color.ORANGE);
             g2d.fillOval((int) (pos.x - size / 2), (int) (pos.y - size / 2), (int) size, (int) size);
         }
         for (int oc = 0; oc < maxOutConveyors; oc++) {
-            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + ((double)(oc + 1) / (maxOutConveyors + maxOutPipes + 1))));
+            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + ((double)(oc + 1) / (maxOutConveyors + maxOutPipes + 1))), gp);
             g2d.setColor(Color.GRAY);
             g2d.fillRect((int) (pos.x - size / 2), (int) (pos.y - size / 2), (int) size, (int) size);
         }
         for (int op = 0; op < maxOutPipes; op++) {
-            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + ((double)(op + maxOutConveyors + 1) / (maxOutConveyors + maxOutPipes + 1))));
+            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + ((double)(op + maxOutConveyors + 1) / (maxOutConveyors + maxOutPipes + 1))), gp);
             g2d.setColor(Color.ORANGE);
             g2d.fillOval((int) (pos.x - size / 2), (int) (pos.y - size / 2), (int) size, (int) size);
         }
@@ -283,40 +287,40 @@ public class ResourceWellExtractor extends Building {
         g2d.setColor(Color.WHITE);
         g2d.setFont(new Font("Bahnschrift", Font.PLAIN, Screen.convertLengthToScreenLength(0.15)));
 
-        Point namePos = Screen.convertToScreenPoint(new PointDouble(position.x + 0.05, position.y + 0.15));
+        Point namePos = Screen.convertToScreenPoint(new PointDouble(position.x + 0.05, position.y + 0.15), gp);
         String nameString = "Well Extr.";
         g2d.drawString(nameString, namePos.x, namePos.y);
 
-        Point ratePos = Screen.convertToScreenPoint(new PointDouble(position.x + 0.05, position.y + 0.95));
+        Point ratePos = Screen.convertToScreenPoint(new PointDouble(position.x + 0.05, position.y + 0.95), gp);
         g2d.drawString(itemRate + "/min", ratePos.x, ratePos.y);
 
-        Point imageStart = Screen.convertToScreenPoint(new PointDouble(position.x + 0.72, position.y + 0.72));
-        Point imageEnd = Screen.convertToScreenPoint(new PointDouble(position.x + 0.97, position.y + 0.97));
+        Point imageStart = Screen.convertToScreenPoint(new PointDouble(position.x + 0.72, position.y + 0.72), gp);
+        Point imageEnd = Screen.convertToScreenPoint(new PointDouble(position.x + 0.97, position.y + 0.97), gp);
         g2d.drawImage(itemIcons.get(nodeType), imageStart.x, imageStart.y, imageEnd.x - imageStart.x, imageEnd.y - imageStart.y, null);
     }
 
-    public void drawMenu(Graphics2D g2d) {
+    public void drawMenu(Graphics2D g2d, GraphicsPanel gp) {
         g2d.setColor(new Color(0, 0, 0, 63));
-        g2d.fillRect(0, 0, GraphicsPanel.WIDTH, GraphicsPanel.HEIGHT);
+        g2d.fillRect(0, 0, gp.getWidth(), gp.getHeight());
 
-        Point leftMidPoint = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + 0.5));
+        Point leftMidPoint = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + 0.5), gp);
         Point menuTopLeft = new Point(leftMidPoint.x, leftMidPoint.y - 150);
         Point menuBottomRight = new Point(leftMidPoint.x + 200, leftMidPoint.y + 150);
         if (menuTopLeft.y < 0) {
             menuBottomRight.y -= menuTopLeft.y;
             menuTopLeft.y -= menuTopLeft.y;
         }
-        if (menuBottomRight.y > GraphicsPanel.HEIGHT) {
-            menuTopLeft.y -= menuBottomRight.y - GraphicsPanel.HEIGHT;
-            menuBottomRight.y -= menuBottomRight.y - GraphicsPanel.HEIGHT;
+        if (menuBottomRight.y > gp.getHeight()) {
+            menuTopLeft.y -= menuBottomRight.y - gp.getHeight();
+            menuBottomRight.y -= menuBottomRight.y - gp.getHeight();
         }
-        if (menuBottomRight.x > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8) {
+        if (menuBottomRight.x > gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8) {
             menuTopLeft.x -= 200 + Screen.convertLengthToScreenLength(1);
             menuBottomRight.x -= 200 + Screen.convertLengthToScreenLength(1);
         }
-        if (menuBottomRight.x > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8) {
-            menuTopLeft.x -= menuBottomRight.x - (GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8);
-            menuBottomRight.x -= menuBottomRight.x - (GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8);
+        if (menuBottomRight.x > gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8) {
+            menuTopLeft.x -= menuBottomRight.x - (gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8);
+            menuBottomRight.x -= menuBottomRight.x - (gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8);
         }
 
         g2d.setColor(new Color(30, 32, 30));
@@ -361,23 +365,29 @@ public class ResourceWellExtractor extends Building {
         g2d.drawString(String.valueOf(nodeType).replace("_", " ").replace("GAS", ""), menuTopLeft.x + 107, menuTopLeft.y + 70);
         g2d.drawImage(itemIcons.get(nodeType), menuTopLeft.x + 87, menuTopLeft.y + 57, 16, 16, null);
 
+        int buttonHeight = (int)((gp.getHeight() * 1.77777777) / 6 * 0.12);
+        int spacing = buttonHeight / 4;
+        int buttonWidth = (int) ((gp.getHeight() * 1.77777777) / 6 - spacing * 2);
+        int imageSize = spacing * 2;
+        int textSize = buttonHeight / 2;
+
         g2d.setColor(new Color(34, 36, 34));
-        g2d.fillRect(GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8, 0, GraphicsPanel.WIDTH / 8, GraphicsPanel.HEIGHT);
+        g2d.fillRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8, 0, (int)(gp.getHeight() * 1.77777777) / 8, gp.getHeight());
         g2d.setColor(displayBackgroundColor);
-        g2d.fillRoundRect(GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10, 10, GraphicsPanel.WIDTH / 8 - 20, 40, 10, 10);
-        g2d.fillRoundRect(GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10, 60, GraphicsPanel.WIDTH / 8 - 20, 40, 10, 10);
-        g2d.fillRoundRect(GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10, 110, GraphicsPanel.WIDTH / 8 - 20, 40, 10, 10);
-        g2d.fillRoundRect(GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 10, 160, GraphicsPanel.WIDTH / 8 - 20, 40, 10, 10);
-        g2d.setFont(new Font("Bahnschrift", Font.PLAIN, 20));
+        g2d.fillRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing, spacing, buttonWidth, buttonHeight, 10, 10);
+        g2d.fillRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing, spacing * 2 + buttonHeight, buttonWidth, buttonHeight, 10, 10);
+        g2d.fillRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing, spacing * 3 + buttonHeight * 2, buttonWidth, buttonHeight, 10, 10);
+        g2d.fillRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing, spacing * 4 + buttonHeight * 3, buttonWidth, buttonHeight, 10, 10);
+        g2d.setFont(new Font("Bahnschrift", Font.PLAIN, textSize));
         g2d.setColor(Color.WHITE);
-        g2d.drawString("UNSET", GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 50, 38);
-        g2d.drawImage(itemIcons.get(NodePossibilities.UNSET), GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 20, 20, 20, 20, null);
-        g2d.drawString("CRUDE OIL", GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 50, 88);
-        g2d.drawImage(itemIcons.get(NodePossibilities.CRUDE_OIL), GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 20, 70, 20, 20, null);
-        g2d.drawString("WATER", GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 50, 138);
-        g2d.drawImage(itemIcons.get(NodePossibilities.WATER), GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 20, 120, 20, 20, null);
-        g2d.drawString("NITROGEN GAS", GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 50, 188);
-        g2d.drawImage(itemIcons.get(NodePossibilities.NITROGEN_GAS), GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 8 + 20, 170, 20, 20, null);
+        g2d.drawString("UNSET", gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 5, spacing + buttonHeight - (int)(spacing * 1.2));
+        g2d.drawImage(itemIcons.get(NodePossibilities.UNSET), gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 2, spacing * 2, imageSize, imageSize, null);
+        g2d.drawString("CRUDE OIL", gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 5, (spacing + buttonHeight) * 2 - (int)(spacing * 1.2));
+        g2d.drawImage(itemIcons.get(NodePossibilities.CRUDE_OIL), gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 2, spacing * 3 + buttonHeight, imageSize, imageSize, null);
+        g2d.drawString("WATER", gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 5, (spacing + buttonHeight) * 3 - (int)(spacing * 1.2));
+        g2d.drawImage(itemIcons.get(NodePossibilities.WATER), gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 2, spacing * 4 + buttonHeight * 2, imageSize, imageSize, null);
+        g2d.drawString("NITROGEN GAS", gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 5, (spacing + buttonHeight) * 4 - (int)(spacing * 1.2));
+        g2d.drawImage(itemIcons.get(NodePossibilities.NITROGEN_GAS), gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8 + spacing * 2, spacing * 5 + buttonHeight * 3, imageSize, imageSize, null);
 
         //purity
         g2d.setFont(new Font("Bahnschrift", Font.BOLD, 16));

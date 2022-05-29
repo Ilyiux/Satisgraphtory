@@ -6,29 +6,29 @@ public class Screen {
     public static PointDouble center;
     public static double zoom = 100;
 
-    public static boolean shoulRenderPoint(PointDouble p) {
-        Point s = convertToScreenPoint(p);
-        return (s.x > -100 && s.x < GraphicsPanel.WIDTH + 100 && s.y > -100 && s.y < GraphicsPanel.HEIGHT + 100);
+    public static boolean shouldRenderPoint(PointDouble p, GraphicsPanel gp) {
+        Point s = convertToScreenPoint(p, gp);
+        return (s.x > -100 && s.x < gp.getWidth() + 100 && s.y > -100 && s.y < gp.getHeight() + 100);
     }
 
-    public static Point convertToScreenPoint(PointDouble p) {
-        return new Point((int) (zoom * (p.x - center.x) + GraphicsPanel.WIDTH / 2), (int) (zoom * (p.y - center.y) + GraphicsPanel.HEIGHT / 2));
+    public static Point convertToScreenPoint(PointDouble p, GraphicsPanel gp) {
+        return new Point((int) (zoom * (p.x - center.x) + gp.getWidth() / 2), (int) (zoom * (p.y - center.y) + gp.getHeight() / 2));
     }
 
-    public static Point convertToWorldPoint(Point p) {
-        return new Point((int) Math.floor((p.x - GraphicsPanel.WIDTH / 2) / zoom + center.x), (int) Math.floor((p.y - GraphicsPanel.HEIGHT / 2) / zoom + center.y));
+    public static Point convertToWorldPoint(Point p, GraphicsPanel gp) {
+        return new Point((int) Math.floor((p.x - gp.getWidth() / 2) / zoom + center.x), (int) Math.floor((p.y - gp.getHeight() / 2) / zoom + center.y));
     }
 
     public static int convertLengthToScreenLength(double l) {
         return (int) (l * zoom);
     }
 
-    public static void zoom(int scrollAmount, int mx, int my) {
+    public static void zoom(int scrollAmount, int mx, int my, GraphicsPanel gp) {
         zoom += -5 * scrollAmount;
         if (zoom < 5) zoom = 5;
         if (zoom > 120) zoom = 120;
-        Point mp = convertToWorldPoint(new Point(mx, my));
-        Point cp = convertToWorldPoint(new Point(GraphicsPanel.WIDTH / 2, GraphicsPanel.HEIGHT / 2));
+        Point mp = convertToWorldPoint(new Point(mx, my), gp);
+        Point cp = convertToWorldPoint(new Point(gp.getWidth() / 2, gp.getHeight() / 2), gp);
         if (scrollAmount < 0 && zoom < 120) {
             center.x -= (mp.x - cp.x) * (1 - 120.0 / (double)zoom) * 0.1;
             center.y -= (mp.y - cp.y) * (1 - 120.0 / (double)zoom) * 0.1;

@@ -96,30 +96,34 @@ public class BottomlessBox extends Building {
     }
 
     public void clicked(GraphicsPanel gp, int mx, int my) {
-        Point leftMidPoint = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + 0.5));
+        Point leftMidPoint = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + 0.5), gp);
         Point menuTopLeft = new Point(leftMidPoint.x, leftMidPoint.y - 150);
         Point menuBottomRight = new Point(leftMidPoint.x + 200, leftMidPoint.y + 150);
         if (menuTopLeft.y < 0) {
             menuBottomRight.y -= menuTopLeft.y;
             menuTopLeft.y -= menuTopLeft.y;
         }
-        if (menuBottomRight.y > GraphicsPanel.HEIGHT) {
-            menuTopLeft.y -= menuBottomRight.y - GraphicsPanel.HEIGHT;
-            menuBottomRight.y -= menuBottomRight.y - GraphicsPanel.HEIGHT;
+        if (menuBottomRight.y > gp.getHeight()) {
+            menuTopLeft.y -= menuBottomRight.y - gp.getHeight();
+            menuBottomRight.y -= menuBottomRight.y - gp.getHeight();
         }
-        if (menuBottomRight.x > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6) {
+        if (menuBottomRight.x > gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6) {
             menuTopLeft.x -= 200 + Screen.convertLengthToScreenLength(1);
             menuBottomRight.x -= 200 + Screen.convertLengthToScreenLength(1);
         }
-        if (menuBottomRight.x > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6) {
-            menuTopLeft.x -= menuBottomRight.x - (GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6);
-            menuBottomRight.x -= menuBottomRight.x - (GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6);
+        if (menuBottomRight.x > gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6) {
+            menuTopLeft.x -= menuBottomRight.x - (gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6);
+            menuBottomRight.x -= menuBottomRight.x - (gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6);
         }
+
+        int buttonHeight = (int)((gp.getHeight() * 1.77777777) / 6 * 0.08);
+        int spacing = buttonHeight / 4;
+        int buttonWidth = (int) ((gp.getHeight() * 1.77777777) / 6 - spacing * 2);
 
         if (editingRate) {
             exitRateInput();
         } else {
-            if ((mx < menuTopLeft.x || mx > menuBottomRight.x || my < menuTopLeft.y || my > menuBottomRight.y) && mx < GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6)
+            if ((mx < menuTopLeft.x || mx > menuBottomRight.x || my < menuTopLeft.y || my > menuBottomRight.y) && mx < gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6)
                 gp.closeBuildingMenu();
         }
 
@@ -132,10 +136,10 @@ public class BottomlessBox extends Building {
             gp.addBuilding(new BottomlessBox(position, materialSet, material));
         }
 
-        if (mx > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6 + 10 && mx < GraphicsPanel.WIDTH - 20) {
-            ArrayList<Material> showMaterials = new ArrayList<>(possibleMaterials.subList(materialScroll, Math.min(possibleMaterials.size(), materialScroll + (GraphicsPanel.HEIGHT - 10) / 40)));
+        if (mx > gp.getWidth() - buttonWidth - spacing && mx < gp.getWidth() - spacing) {
+            ArrayList<Material> showMaterials = new ArrayList<>(possibleMaterials.subList(materialScroll, Math.min(possibleMaterials.size(), materialScroll + (gp.getHeight() - spacing) / (spacing + buttonHeight))));
             for (int i = 0; i < showMaterials.size(); i++) {
-                if (my > 10 + i * 40 && my < 40 + i * 40) {
+                if (my > spacing + i * (spacing + buttonHeight) && my < spacing + buttonHeight + i * (spacing + buttonHeight)) {
                     materialSet = true;
                     material = showMaterials.get(i);
                 }
@@ -170,16 +174,19 @@ public class BottomlessBox extends Building {
     }
 
     public void scrolled(GraphicsPanel gp, int scrollAmount) {
-        if (possibleMaterials.size() >= materialScroll + (GraphicsPanel.HEIGHT - 10) / 40) {
+        int buttonHeight = (int)((gp.getHeight() * 1.77777777) / 6 * 0.08);
+        int spacing = buttonHeight / 4;
+
+        if (possibleMaterials.size() >= materialScroll + (gp.getHeight() - spacing) / (buttonHeight + spacing)) {
             materialScroll += scrollAmount;
             if (materialScroll < 0) materialScroll = 0;
-            if (materialScroll + (GraphicsPanel.HEIGHT - 10) / 40 > possibleMaterials.size()) materialScroll = possibleMaterials.size() - (GraphicsPanel.HEIGHT - 10) / 40;
+            if (materialScroll + (gp.getHeight() - spacing) / (spacing + buttonHeight) > possibleMaterials.size()) materialScroll = possibleMaterials.size() - (gp.getHeight() - spacing) / (spacing + buttonHeight);
         }
     }
 
-    public void draw(boolean greyedOut, Graphics2D g2d) {
-        Point start = Screen.convertToScreenPoint(new PointDouble(position.x, position.y));
-        Point end = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + 1));
+    public void draw(boolean greyedOut, Graphics2D g2d, GraphicsPanel gp) {
+        Point start = Screen.convertToScreenPoint(new PointDouble(position.x, position.y), gp);
+        Point end = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + 1), gp);
 
         g2d.drawImage(image, start.x, start.y, end.x - start.x, end.y - start.y, null);
 
@@ -193,22 +200,22 @@ public class BottomlessBox extends Building {
 
         double size = Screen.convertLengthToScreenLength(0.08);
         for (int ic = 0; ic < maxInConveyors; ic++) {
-            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x, position.y + ((double)(ic + 1) / (maxInConveyors + maxInPipes + 1))));
+            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x, position.y + ((double)(ic + 1) / (maxInConveyors + maxInPipes + 1))), gp);
             g2d.setColor(Color.GRAY);
             g2d.fillRect((int) (pos.x - size / 2), (int) (pos.y - size / 2), (int) size, (int) size);
         }
         for (int ip = 0; ip < maxInPipes; ip++) {
-            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x, position.y + ((double)(ip + maxInConveyors + 1) / (maxInConveyors + maxInPipes + 1))));
+            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x, position.y + ((double)(ip + maxInConveyors + 1) / (maxInConveyors + maxInPipes + 1))), gp);
             g2d.setColor(Color.ORANGE);
             g2d.fillOval((int) (pos.x - size / 2), (int) (pos.y - size / 2), (int) size, (int) size);
         }
         for (int oc = 0; oc < maxOutConveyors; oc++) {
-            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + ((double)(oc + 1) / (maxOutConveyors + maxOutPipes + 1))));
+            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + ((double)(oc + 1) / (maxOutConveyors + maxOutPipes + 1))), gp);
             g2d.setColor(Color.GRAY);
             g2d.fillRect((int) (pos.x - size / 2), (int) (pos.y - size / 2), (int) size, (int) size);
         }
         for (int op = 0; op < maxOutPipes; op++) {
-            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + ((double)(op + maxOutConveyors + 1) / (maxOutConveyors + maxOutPipes + 1))));
+            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + ((double)(op + maxOutConveyors + 1) / (maxOutConveyors + maxOutPipes + 1))), gp);
             g2d.setColor(Color.ORANGE);
             g2d.fillOval((int) (pos.x - size / 2), (int) (pos.y - size / 2), (int) size, (int) size);
         }
@@ -216,11 +223,11 @@ public class BottomlessBox extends Building {
         g2d.setColor(Color.WHITE);
         g2d.setFont(new Font("Bahnschrift", Font.PLAIN, Screen.convertLengthToScreenLength(0.15)));
 
-        Point namePos = Screen.convertToScreenPoint(new PointDouble(position.x + 0.05, position.y + 0.15));
+        Point namePos = Screen.convertToScreenPoint(new PointDouble(position.x + 0.05, position.y + 0.15), gp);
         String nameString = "Box";
         g2d.drawString(nameString, namePos.x, namePos.y);
 
-        Point ratePos = Screen.convertToScreenPoint(new PointDouble(position.x + 0.05, position.y + 0.95));
+        Point ratePos = Screen.convertToScreenPoint(new PointDouble(position.x + 0.05, position.y + 0.95), gp);
         if (materialSet) {
             g2d.drawString(rate + "/min", ratePos.x, ratePos.y);
         } else {
@@ -228,35 +235,35 @@ public class BottomlessBox extends Building {
         }
 
         if (materialSet) {
-            Point imageStart = Screen.convertToScreenPoint(new PointDouble(position.x + 0.72, position.y + 0.72));
-            Point imageEnd = Screen.convertToScreenPoint(new PointDouble(position.x + 0.97, position.y + 0.97));
+            Point imageStart = Screen.convertToScreenPoint(new PointDouble(position.x + 0.72, position.y + 0.72), gp);
+            Point imageEnd = Screen.convertToScreenPoint(new PointDouble(position.x + 0.97, position.y + 0.97), gp);
             g2d.drawImage(ImageManager.getMaterialImage(material), imageStart.x, imageStart.y, imageEnd.x - imageStart.x, imageEnd.y - imageStart.y, null);
         }
 
     }
 
-    public void drawMenu(Graphics2D g2d) {
+    public void drawMenu(Graphics2D g2d, GraphicsPanel gp) {
         g2d.setColor(new Color(0, 0, 0, 63));
-        g2d.fillRect(0, 0, GraphicsPanel.WIDTH, GraphicsPanel.HEIGHT);
+        g2d.fillRect(0, 0, gp.getWidth(), gp.getHeight());
 
-        Point leftMidPoint = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + 0.5));
+        Point leftMidPoint = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + 0.5), gp);
         Point menuTopLeft = new Point(leftMidPoint.x, leftMidPoint.y - 150);
         Point menuBottomRight = new Point(leftMidPoint.x + 200, leftMidPoint.y + 150);
         if (menuTopLeft.y < 0) {
             menuBottomRight.y -= menuTopLeft.y;
             menuTopLeft.y -= menuTopLeft.y;
         }
-        if (menuBottomRight.y > GraphicsPanel.HEIGHT) {
-            menuTopLeft.y -= menuBottomRight.y - GraphicsPanel.HEIGHT;
-            menuBottomRight.y -= menuBottomRight.y - GraphicsPanel.HEIGHT;
+        if (menuBottomRight.y > gp.getHeight()) {
+            menuTopLeft.y -= menuBottomRight.y - gp.getHeight();
+            menuBottomRight.y -= menuBottomRight.y - gp.getHeight();
         }
-        if (menuBottomRight.x > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6) {
+        if (menuBottomRight.x > gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6) {
             menuTopLeft.x -= 200 + Screen.convertLengthToScreenLength(1);
             menuBottomRight.x -= 200 + Screen.convertLengthToScreenLength(1);
         }
-        if (menuBottomRight.x > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6) {
-            menuTopLeft.x -= menuBottomRight.x - (GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6);
-            menuBottomRight.x -= menuBottomRight.x - (GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6);
+        if (menuBottomRight.x > gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6) {
+            menuTopLeft.x -= menuBottomRight.x - (gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6);
+            menuBottomRight.x -= menuBottomRight.x - (gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6);
         }
 
         g2d.setColor(new Color(30, 32, 30));
@@ -288,36 +295,43 @@ public class BottomlessBox extends Building {
 
         Color displayBackgroundColor = new Color(20, 22, 20);
 
-        // recipe
+        // material
         g2d.setColor(displayBackgroundColor);
         g2d.fillRoundRect(menuTopLeft.x + 10, menuTopLeft.y + 75, 180, 20, 8, 8);
         if (materialSet) {
             g2d.setColor(Color.WHITE);
             g2d.drawString(String.valueOf(material).replace("_", " "), menuTopLeft.x + 15, menuTopLeft.y + 89);
         }
+
+        int buttonHeight = (int)((gp.getHeight() * 1.77777777) / 6 * 0.08);
+        int spacing = buttonHeight / 4;
+        int buttonWidth = (int) ((gp.getHeight() * 1.77777777) / 6 - spacing * 2);
+        int textSize = buttonHeight / 2;
+
+        g2d.setFont(new Font("Bahnschrift", Font.PLAIN, textSize));
         g2d.setColor(new Color(34, 36, 34));
-        g2d.fillRect(GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6, 0, GraphicsPanel.WIDTH / 6, GraphicsPanel.HEIGHT);
-        ArrayList<Material> showMaterials = new ArrayList<>(possibleMaterials.subList(materialScroll, Math.min(possibleMaterials.size(), materialScroll + (GraphicsPanel.HEIGHT - 10) / 40)));
+        g2d.fillRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6, 0, (int)(gp.getHeight() * 1.77777777) / 6, gp.getHeight());
+        ArrayList<Material> showMaterials = new ArrayList<>(possibleMaterials.subList(materialScroll, Math.min(possibleMaterials.size(), materialScroll + (gp.getHeight() - spacing) / (buttonHeight + spacing))));
         for (Material material : showMaterials) {
             int index = showMaterials.indexOf(material);
 
             g2d.setColor(displayBackgroundColor);
-            g2d.fillRoundRect(GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6 + 10, 10 + index * 40, GraphicsPanel.WIDTH / 6 - 20, 30, 10, 10);
+            g2d.fillRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + spacing, spacing + index * (spacing + buttonHeight), buttonWidth, buttonHeight, 10, 10);
             if (materialSet && material == this.material) {
                 g2d.setColor(new Color(100, 104, 100));
-                g2d.drawRoundRect(GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6 + 10, 10 + index * 40, GraphicsPanel.WIDTH / 6 - 20, 30, 10, 10);
+                g2d.drawRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + spacing, spacing + index * (spacing + buttonHeight), buttonWidth, buttonHeight, 10, 10);
             }
             g2d.setColor(Color.WHITE);
-            g2d.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
-            g2d.drawString(String.valueOf(material).replace("_", " "), GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6 + 60, 30 + index * 40);
-            g2d.drawImage(ImageManager.getMaterialImage(material), GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6 + 20, 12 + index * 40, 26, 26, null);
+            g2d.drawString(String.valueOf(material).replace("_", " "), gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + (buttonHeight - 4) + spacing * 3, spacing * 4 + index * (spacing + buttonHeight));
+            g2d.drawImage(ImageManager.getMaterialImage(material), gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + spacing * 2, spacing + 2 + index * (spacing + buttonHeight), buttonHeight - 4, buttonHeight - 4, null);
         }
-        if (possibleMaterials.size() > (GraphicsPanel.HEIGHT - 10) / 40) {
-            int rHeight = (GraphicsPanel.HEIGHT - 20) / possibleMaterials.size();
+
+        if (possibleMaterials.size() > (gp.getHeight() - 10) / 40) {
+            int rHeight = (gp.getHeight() - spacing * 2) / possibleMaterials.size();
             g2d.setColor(new Color(25, 27, 25));
-            g2d.fillRoundRect(GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6 + 2, 10, 6, possibleMaterials.size() * rHeight, 5, 5);
+            g2d.fillRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + spacing / 4, spacing, spacing / 2, possibleMaterials.size() * rHeight, 5, 5);
             g2d.setColor(new Color(60, 64, 60));
-            g2d.fillRoundRect(GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6 + 2, 10 + rHeight * materialScroll, 6, rHeight * ((GraphicsPanel.HEIGHT - 10) / 40), 5, 5);
+            g2d.fillRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + spacing / 4, spacing + rHeight * materialScroll, spacing / 2, rHeight * ((gp.getHeight() - spacing) / (buttonHeight + spacing)), 5, 5);
         }
 
         // rate

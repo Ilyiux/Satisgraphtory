@@ -154,30 +154,30 @@ public class Constructor extends Building {
     }
 
     public void clicked(GraphicsPanel gp, int mx, int my) {
-        Point leftMidPoint = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + 0.5));
+        Point leftMidPoint = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + 0.5), gp);
         Point menuTopLeft = new Point(leftMidPoint.x, leftMidPoint.y - 150);
         Point menuBottomRight = new Point(leftMidPoint.x + 200, leftMidPoint.y + 150);
         if (menuTopLeft.y < 0) {
             menuBottomRight.y -= menuTopLeft.y;
             menuTopLeft.y -= menuTopLeft.y;
         }
-        if (menuBottomRight.y > GraphicsPanel.HEIGHT) {
-            menuTopLeft.y -= menuBottomRight.y - GraphicsPanel.HEIGHT;
-            menuBottomRight.y -= menuBottomRight.y - GraphicsPanel.HEIGHT;
+        if (menuBottomRight.y > gp.getHeight()) {
+            menuTopLeft.y -= menuBottomRight.y - gp.getHeight();
+            menuBottomRight.y -= menuBottomRight.y - gp.getHeight();
         }
-        if (menuBottomRight.x > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6) {
+        if (menuBottomRight.x > gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6) {
             menuTopLeft.x -= 200 + Screen.convertLengthToScreenLength(1);
             menuBottomRight.x -= 200 + Screen.convertLengthToScreenLength(1);
         }
-        if (menuBottomRight.x > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6) {
-            menuTopLeft.x -= menuBottomRight.x - (GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6);
-            menuBottomRight.x -= menuBottomRight.x - (GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6);
+        if (menuBottomRight.x > gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6) {
+            menuTopLeft.x -= menuBottomRight.x - (gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6);
+            menuBottomRight.x -= menuBottomRight.x - (gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6);
         }
 
         if (editingOverclock) {
             exitClockInput();
         } else {
-            if ((mx < menuTopLeft.x || mx > menuBottomRight.x || my < menuTopLeft.y || my > menuBottomRight.y) && mx < GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6)
+            if ((mx < menuTopLeft.x || mx > menuBottomRight.x || my < menuTopLeft.y || my > menuBottomRight.y) && mx < gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6)
                 gp.closeBuildingMenu();
         }
 
@@ -190,10 +190,14 @@ public class Constructor extends Building {
             gp.addBuilding(new Constructor(position, recipeSet, recipe, overclock));
         }
 
-        if (mx > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6 + 10 && mx < GraphicsPanel.WIDTH - 20) {
-            ArrayList<Recipe> showRecipes = new ArrayList<>(possibleRecipes.subList(recipeScroll, Math.min(possibleRecipes.size(), recipeScroll + (GraphicsPanel.HEIGHT - 10) / 110)));
+        int buttonHeight = (int)((gp.getHeight() * 1.77777777) / 6 * 0.31);
+        int spacing = buttonHeight / 10;
+        int buttonWidth = (int) ((gp.getHeight() * 1.77777777) / 6 - spacing * 2);
+
+        if (mx > gp.getWidth() - buttonWidth - spacing && mx < gp.getWidth() - spacing) {
+            ArrayList<Recipe> showRecipes = new ArrayList<>(possibleRecipes.subList(recipeScroll, Math.min(possibleRecipes.size(), recipeScroll + (gp.getHeight() - spacing) / (buttonHeight + spacing))));
             for (int i = 0; i < showRecipes.size(); i++) {
-                if (my > 10 + i * 110 && my < 110 + i * 110) {
+                if (my > spacing + i * (buttonHeight + spacing) && my < (buttonHeight + spacing) + i * (buttonHeight + spacing)) {
                     recipeSet = true;
                     recipe = showRecipes.get(i);
                 }
@@ -228,16 +232,16 @@ public class Constructor extends Building {
     }
 
     public void scrolled(GraphicsPanel gp, int scrollAmount) {
-        if (possibleRecipes.size() >= recipeScroll + (GraphicsPanel.HEIGHT - 10) / 110) {
+        if (possibleRecipes.size() >= recipeScroll + (gp.getHeight() - 10) / 110) {
             recipeScroll += scrollAmount;
             if (recipeScroll < 0) recipeScroll = 0;
-            if (recipeScroll + (GraphicsPanel.HEIGHT - 10) / 110 > possibleRecipes.size()) recipeScroll = possibleRecipes.size() - (GraphicsPanel.HEIGHT - 10) / 110;
+            if (recipeScroll + (gp.getHeight() - 10) / 110 > possibleRecipes.size()) recipeScroll = possibleRecipes.size() - (gp.getHeight() - 10) / 110;
         }
     }
 
-    public void draw(boolean greyedOut, Graphics2D g2d) {
-        Point start = Screen.convertToScreenPoint(new PointDouble(position.x, position.y));
-        Point end = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + 1));
+    public void draw(boolean greyedOut, Graphics2D g2d, GraphicsPanel gp) {
+        Point start = Screen.convertToScreenPoint(new PointDouble(position.x, position.y), gp);
+        Point end = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + 1), gp);
 
         g2d.drawImage(image, start.x, start.y, end.x - start.x, end.y - start.y, null);
 
@@ -253,22 +257,22 @@ public class Constructor extends Building {
 
         double size = Screen.convertLengthToScreenLength(0.08);
         for (int ic = 0; ic < maxInConveyors; ic++) {
-            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x, position.y + ((double)(ic + 1) / (maxInConveyors + maxInPipes + 1))));
+            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x, position.y + ((double)(ic + 1) / (maxInConveyors + maxInPipes + 1))), gp);
             g2d.setColor(Color.GRAY);
             g2d.fillRect((int) (pos.x - size / 2), (int) (pos.y - size / 2), (int) size, (int) size);
         }
         for (int ip = 0; ip < maxInPipes; ip++) {
-            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x, position.y + ((double)(ip + maxInConveyors + 1) / (maxInConveyors + maxInPipes + 1))));
+            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x, position.y + ((double)(ip + maxInConveyors + 1) / (maxInConveyors + maxInPipes + 1))), gp);
             g2d.setColor(Color.ORANGE);
             g2d.fillOval((int) (pos.x - size / 2), (int) (pos.y - size / 2), (int) size, (int) size);
         }
         for (int oc = 0; oc < maxOutConveyors; oc++) {
-            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + ((double)(oc + 1) / (maxOutConveyors + maxOutPipes + 1))));
+            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + ((double)(oc + 1) / (maxOutConveyors + maxOutPipes + 1))), gp);
             g2d.setColor(Color.GRAY);
             g2d.fillRect((int) (pos.x - size / 2), (int) (pos.y - size / 2), (int) size, (int) size);
         }
         for (int op = 0; op < maxOutPipes; op++) {
-            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + ((double)(op + maxOutConveyors + 1) / (maxOutConveyors + maxOutPipes + 1))));
+            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + ((double)(op + maxOutConveyors + 1) / (maxOutConveyors + maxOutPipes + 1))), gp);
             g2d.setColor(Color.ORANGE);
             g2d.fillOval((int) (pos.x - size / 2), (int) (pos.y - size / 2), (int) size, (int) size);
         }
@@ -276,11 +280,11 @@ public class Constructor extends Building {
         g2d.setColor(Color.WHITE);
         g2d.setFont(new Font("Bahnschrift", Font.PLAIN, Screen.convertLengthToScreenLength(0.15)));
 
-        Point namePos = Screen.convertToScreenPoint(new PointDouble(position.x + 0.05, position.y + 0.15));
+        Point namePos = Screen.convertToScreenPoint(new PointDouble(position.x + 0.05, position.y + 0.15), gp);
         String nameString = "Constructor";
         g2d.drawString(nameString, namePos.x, namePos.y);
 
-        Point ratePos = Screen.convertToScreenPoint(new PointDouble(position.x + 0.05, position.y + 0.95));
+        Point ratePos = Screen.convertToScreenPoint(new PointDouble(position.x + 0.05, position.y + 0.95), gp);
         if (recipeSet) {
             g2d.drawString(rate + "/min", ratePos.x, ratePos.y);
         } else {
@@ -292,36 +296,36 @@ public class Constructor extends Building {
             for (Material m : outMats) {
                 int index = outMats.indexOf(m);
 
-                Point imageStart = Screen.convertToScreenPoint(new PointDouble(position.x + 0.72, position.y + 0.72 - 0.2 * index));
-                Point imageEnd = Screen.convertToScreenPoint(new PointDouble(position.x + 0.97, position.y + 0.97 - 0.2 * index));
+                Point imageStart = Screen.convertToScreenPoint(new PointDouble(position.x + 0.72, position.y + 0.72 - 0.2 * index), gp);
+                Point imageEnd = Screen.convertToScreenPoint(new PointDouble(position.x + 0.97, position.y + 0.97 - 0.2 * index), gp);
                 g2d.drawImage(ImageManager.getMaterialImage(m), imageStart.x, imageStart.y, imageEnd.x - imageStart.x, imageEnd.y - imageStart.y, null);
             }
         }
 
     }
 
-    public void drawMenu(Graphics2D g2d) {
+    public void drawMenu(Graphics2D g2d, GraphicsPanel gp) {
         g2d.setColor(new Color(0, 0, 0, 63));
-        g2d.fillRect(0, 0, GraphicsPanel.WIDTH, GraphicsPanel.HEIGHT);
+        g2d.fillRect(0, 0, gp.getWidth(), gp.getHeight());
 
-        Point leftMidPoint = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + 0.5));
+        Point leftMidPoint = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + 0.5), gp);
         Point menuTopLeft = new Point(leftMidPoint.x, leftMidPoint.y - 150);
         Point menuBottomRight = new Point(leftMidPoint.x + 200, leftMidPoint.y + 150);
         if (menuTopLeft.y < 0) {
             menuBottomRight.y -= menuTopLeft.y;
             menuTopLeft.y -= menuTopLeft.y;
         }
-        if (menuBottomRight.y > GraphicsPanel.HEIGHT) {
-            menuTopLeft.y -= menuBottomRight.y - GraphicsPanel.HEIGHT;
-            menuBottomRight.y -= menuBottomRight.y - GraphicsPanel.HEIGHT;
+        if (menuBottomRight.y > gp.getHeight()) {
+            menuTopLeft.y -= menuBottomRight.y - gp.getHeight();
+            menuBottomRight.y -= menuBottomRight.y - gp.getHeight();
         }
-        if (menuBottomRight.x > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6) {
+        if (menuBottomRight.x > gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6) {
             menuTopLeft.x -= 200 + Screen.convertLengthToScreenLength(1);
             menuBottomRight.x -= 200 + Screen.convertLengthToScreenLength(1);
         }
-        if (menuBottomRight.x > GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6) {
-            menuTopLeft.x -= menuBottomRight.x - (GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6);
-            menuBottomRight.x -= menuBottomRight.x - (GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6);
+        if (menuBottomRight.x > gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6) {
+            menuTopLeft.x -= menuBottomRight.x - (gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6);
+            menuBottomRight.x -= menuBottomRight.x - (gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6);
         }
 
         g2d.setColor(new Color(30, 32, 30));
@@ -362,55 +366,59 @@ public class Constructor extends Building {
             g2d.setColor(Color.WHITE);
             g2d.drawString(recipe.name, menuTopLeft.x + 15, menuTopLeft.y + 89);
         }
+
+        int buttonHeight = (int)((gp.getHeight() * 1.77777777) / 6 * 0.31);
+        int spacing = buttonHeight / 10;
+        int buttonWidth = (int) ((gp.getHeight() * 1.77777777) / 6 - spacing * 2);
+        int textSize = (int) (buttonHeight / 6.25);
+        int imageSize = spacing * 4;
+
+        g2d.setFont(new Font("Bahnschrift", Font.PLAIN, textSize));
         g2d.setColor(new Color(34, 36, 34));
-        g2d.fillRect(GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6, 0, GraphicsPanel.WIDTH / 6, GraphicsPanel.HEIGHT);
-        ArrayList<Recipe> showRecipes = new ArrayList<>(possibleRecipes.subList(recipeScroll, Math.min(possibleRecipes.size(), recipeScroll + (GraphicsPanel.HEIGHT - 10) / 110)));
+        g2d.fillRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6, 0, (int)(gp.getHeight() * 1.77777777) / 6, gp.getHeight());
+        ArrayList<Recipe> showRecipes = new ArrayList<>(possibleRecipes.subList(recipeScroll, Math.min(possibleRecipes.size(), recipeScroll + (gp.getHeight() - spacing) / (spacing + buttonHeight))));
         for (Recipe recipe : showRecipes) {
             int index = showRecipes.indexOf(recipe);
 
             g2d.setColor(!recipe.name.startsWith("Alt:") ? new Color(20, 22, 20) : new Color(32, 15, 15));
-            g2d.fillRoundRect(GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6 + 10, 10 + index * 110, GraphicsPanel.WIDTH / 6 - 20, 100, 10, 10);
+            g2d.fillRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + spacing, spacing + index * (spacing + buttonHeight), buttonWidth, buttonHeight, 10, 10);
             if (recipeSet && recipe == this.recipe) {
                 g2d.setColor(new Color(100, 104, 100));
-                g2d.drawRoundRect(GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6 + 10, 10 + index * 110, GraphicsPanel.WIDTH / 6 - 20, 100, 10, 10);
+                g2d.drawRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + spacing, spacing + index * (spacing + buttonHeight), buttonWidth, buttonHeight, 10, 10);
             }
             g2d.setColor(Color.WHITE);
-            g2d.setFont(new Font("Bahnschrift", Font.PLAIN, 16));
-            g2d.drawString(recipe.name, GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6 + 20, 30 + index * 110);
-            g2d.drawString(60 / recipe.craftTime + "/min", GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6 + 20, 100 + index * 110);
-
-
-            g2d.setFont(new Font("Bahnschrift", Font.BOLD, 16));
+            g2d.drawString(recipe.name, gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + spacing * 2, spacing * 3 + index * (buttonHeight + spacing));
+            g2d.drawString(60 / recipe.craftTime + "/min", gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + spacing * 2, buttonHeight + index * (buttonHeight + spacing));
 
             ArrayList<Material> inMats = new ArrayList<>(recipe.input.keySet());
             for (Material inMat : inMats) {
                 int matIndex = inMats.indexOf(inMat);
                 g2d.setColor(new Color(39, 40, 39));
-                g2d.fillRoundRect(GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6 + 22 + 40 * matIndex, 42 + index * 110, 36, 36, 4, 4);
-                g2d.drawImage(ImageManager.getMaterialImage(inMat), GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6 + 25 + 40 * matIndex, 45 + index * 110, 30, 30, null);
+                g2d.fillRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + spacing * 2 + (imageSize + spacing / 2) * matIndex, (int) (spacing * 4.5 + index * (spacing + buttonHeight)), imageSize, imageSize, 4, 4);
+                g2d.drawImage(ImageManager.getMaterialImage(inMat), gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6  + spacing * 2 + (imageSize + spacing / 2) * matIndex, (int) (spacing * 4.5 + index * (spacing + buttonHeight)), imageSize, imageSize, null);
                 g2d.setColor(Color.WHITE);
-                g2d.drawString(String.valueOf(recipe.input.get(inMat)), GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6 + 50 + 40 * matIndex, 78 + index * 110);
+                g2d.drawString(String.valueOf(recipe.input.get(inMat)), gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + spacing * 5 + (imageSize + spacing / 2) * matIndex, buttonHeight - spacing * 2 + index * (spacing + buttonHeight));
             }
 
             int matOffset = recipe.input.keySet().size();
-            g2d.fillPolygon(new Polygon(new int[]{GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6 + 35 + 40 * matOffset, GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6 + 35 + 40 * matOffset, GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6 + 45 + 40 * matOffset}, new int[]{55 + index * 110, 65 + index * 110, 60 + index * 110}, 3));
+            g2d.fillPolygon(new Polygon(new int[]{gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + (int)(spacing * 3.5) + (imageSize + spacing / 2) * matOffset, gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + (int)(spacing * 3.5) + (imageSize + spacing / 2) * matOffset, gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + (int)(spacing * 4.5) + (imageSize + spacing / 2) * matOffset}, new int[]{(spacing * 6) + index * (spacing + buttonHeight), (spacing * 7) + index * (spacing + buttonHeight), (int)(spacing * 6.5) + index * (spacing + buttonHeight)}, 3));
 
             ArrayList<Material> outMats = new ArrayList<>(recipe.output.keySet());
             for (Material outMat : outMats) {
                 int matIndex = outMats.indexOf(outMat) + matOffset + 1;
                 g2d.setColor(new Color(39, 40, 39));
-                g2d.fillRoundRect(GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6 + 22 + 40 * matIndex, 42 + index * 110, 36, 36, 4, 4);
-                g2d.drawImage(ImageManager.getMaterialImage(outMat), GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6 + 25 + 40 * matIndex, 45 + index * 110, 30, 30, null);
+                g2d.fillRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + spacing * 2 + (imageSize + spacing / 2) * matIndex, (int) (spacing * 4.5 + index * (spacing + buttonHeight)), imageSize, imageSize, 4, 4);
+                g2d.drawImage(ImageManager.getMaterialImage(outMat), gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6  + spacing * 2 + (imageSize + spacing / 2) * matIndex, (int) (spacing * 4.5 + index * (spacing + buttonHeight)), imageSize, imageSize, null);
                 g2d.setColor(Color.WHITE);
-                g2d.drawString(String.valueOf(recipe.output.get(outMat)), GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6 + 50 + 40 * matIndex, 78 + index * 110);
+                g2d.drawString(String.valueOf(recipe.output.get(outMat)), gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + spacing * 5 + (imageSize + spacing / 2) * matIndex, buttonHeight - spacing * 2 + index * (spacing + buttonHeight));
             }
         }
-        if (possibleRecipes.size() > (GraphicsPanel.HEIGHT - 10) / 110) {
-            int rHeight = (GraphicsPanel.HEIGHT - 20) / possibleRecipes.size();
+        if (possibleRecipes.size() > (gp.getHeight() - spacing) / (spacing + buttonHeight)) {
+            int rHeight = (gp.getHeight() - spacing * 2) / possibleRecipes.size();
             g2d.setColor(new Color(25, 27, 25));
-            g2d.fillRoundRect(GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6 + 2, 10, 6, possibleRecipes.size() * rHeight, 5, 5);
+            g2d.fillRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + spacing / 4, spacing, spacing / 2, possibleRecipes.size() * rHeight, 5, 5);
             g2d.setColor(new Color(60, 64, 60));
-            g2d.fillRoundRect(GraphicsPanel.WIDTH - GraphicsPanel.WIDTH / 6 + 2, 10 + rHeight * recipeScroll, 6, rHeight * ((GraphicsPanel.HEIGHT - 10) / 110), 5, 5);
+            g2d.fillRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + spacing / 4, spacing + rHeight * recipeScroll, spacing / 2, rHeight * ((gp.getHeight() - spacing) / (buttonHeight + spacing)), 5, 5);
         }
 
         // overclock
