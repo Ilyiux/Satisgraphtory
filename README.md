@@ -26,6 +26,8 @@ Hold **CTRL** and click on two buildings to form a pipe connection between them.
 
 Press **C** to place the origin at the middle of the view, and press **F** to focus the camera to the origin.
 
+Press **S** to open the save menu, same thing with **L** to open the load menu.
+
 While in a building menu, press **X** to delete the building and press **D** to duplicate the building with the same settings.
 
 For conveyors and pipes, pressing a number key will set their tier directly to the key that was pressed.
