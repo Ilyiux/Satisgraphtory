@@ -38,7 +38,7 @@ public class AwesomeSink extends Building {
         isEfficient = false;
         invalidInput = false;
         for (Conveyor c : inConveyors) {
-            if (!c.invalidState) {
+            if (!c.invalidState && c.type != null) {
                 if (Materials.invalidSinkItems.contains(c.type)) {
                     invalidInput = true;
                     points = 0;

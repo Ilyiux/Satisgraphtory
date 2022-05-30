@@ -91,7 +91,7 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
 
     @Override
     public void run() {
-        int frameTicks = 120;
+        int frameTicks = 60;
         double drawInterval = 1000000000 / (double) frameTicks;
         double delta = 0;
         long lastTime = System.nanoTime();
@@ -853,7 +853,10 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
     }
 
     @Override
-    public void mouseClicked(MouseEvent mouseEvent) {
+    public void mouseClicked(MouseEvent mouseEvent) {}
+
+    @Override
+    public void mousePressed(MouseEvent mouseEvent) {
         Point mousePos = MouseInfo.getPointerInfo().getLocation();
         Point screenPos = getLocationOnScreen();
         int mx = mousePos.x - screenPos.x;
@@ -865,7 +868,7 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
         int textSize = buttonHeight / 2;
 
         if (!inSaveMenu && !inLoadMenu) {
-            if (!shiftDown && !ctrlDown) {
+            if (!inMenuObject && !shiftDown && !ctrlDown) {
                 if (mouseEvent.getButton() == MouseEvent.BUTTON1) {
                     if (mx > spacing && mx < buttonWidth + spacing && my > spacing && my < spacing + buttonHeight) {
                         menuState = MenuState.NEW_GENERATOR;
@@ -1021,17 +1024,6 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
                     }
                 }
             }
-        }
-    }
-
-    @Override
-    public void mousePressed(MouseEvent mouseEvent) {
-        Point mousePos = MouseInfo.getPointerInfo().getLocation();
-        Point screenPos = getLocationOnScreen();
-        int mx = mousePos.x - screenPos.x;
-        int my = mousePos.y - screenPos.y;
-
-        if (!inSaveMenu && !inLoadMenu) {
             if (inMenuObject && !shiftDown && !ctrlDown) {
                 if (mouseEvent.getButton() == MouseEvent.BUTTON1) {
                     menuObject.clicked(this, mx, my);
@@ -1127,36 +1119,38 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
                 }
 
                 if (saveLoadDirValid) {
-                    String[] allSaves = new File(saveLoadDir).list();
-                    ArrayList<String> validSaves = new ArrayList<>();
-                    assert allSaves != null;
-                    for (String s : allSaves) {
-                        String[] split = s.split("\\.");
-                        String[] body = new String[split.length - 1];
-                        System.arraycopy(split, 0, body, 0, split.length - 1);
-                        if (split[split.length - 1].equals("stgs")) validSaves.add(String.join("", body));
-                    }
+                    if (inLoadMenu) {
+                        String[] allSaves = new File(saveLoadDir).list();
+                        ArrayList<String> validSaves = new ArrayList<>();
+                        assert allSaves != null;
+                        for (String s : allSaves) {
+                            String[] split = s.split("\\.");
+                            String[] body = new String[split.length - 1];
+                            System.arraycopy(split, 0, body, 0, split.length - 1);
+                            if (split[split.length - 1].equals("stgs")) validSaves.add(String.join("", body));
+                        }
 
-                    for (int i = 0; i < validSaves.size(); i++) {
-                        if (mx > sc.x - 190 + (i / 4 * 100) && mx < sc.x - 100 + (i / 4 * 100) && my > sc.y - 25 + (i % 4 * 30) && my < sc.y - 5 + (i % 4 * 30)) {
-                            if (saveLoadDir.endsWith("\\")) {
-                                load(saveLoadDir + validSaves.get(i) + ".stgs");
-                            } else {
-                                load(saveLoadDir + "\\" + validSaves.get(i) + ".stgs");
+                        for (int i = 0; i < validSaves.size(); i++) {
+                            if (mx > sc.x - 190 + (i / 4 * 100) && mx < sc.x - 100 + (i / 4 * 100) && my > sc.y - 25 + (i % 4 * 30) && my < sc.y - 5 + (i % 4 * 30)) {
+                                if (saveLoadDir.endsWith("\\")) {
+                                    load(saveLoadDir + validSaves.get(i) + ".stgs");
+                                } else {
+                                    load(saveLoadDir + "\\" + validSaves.get(i) + ".stgs");
+                                }
+                                saveName = validSaves.get(i);
+                                inLoadMenu = false;
+                                break;
                             }
-                            saveName = validSaves.get(i);
-                            inLoadMenu = false;
-                            break;
                         }
-                    }
-
-                    if (inSaveMenu && saveName.length() > 0 && mx > sc.x + 110 && mx < sc.x + 190 && my > sc.y + 60 && my < sc.y + 90) {
-                        if (saveLoadDir.endsWith("\\")) {
-                            save(saveLoadDir + saveName + ".stgs");
-                        } else {
-                            save(saveLoadDir + "\\" + saveName + ".stgs");
+                    } else if (inSaveMenu) {
+                        if (saveName.length() > 0 && mx > sc.x + 110 && mx < sc.x + 190 && my > sc.y + 60 && my < sc.y + 90) {
+                            if (saveLoadDir.endsWith("\\")) {
+                                save(saveLoadDir + saveName + ".stgs");
+                            } else {
+                                save(saveLoadDir + "\\" + saveName + ".stgs");
+                            }
+                            inSaveMenu = false;
                         }
-                        inSaveMenu = false;
                     }
                 }
             } else {
