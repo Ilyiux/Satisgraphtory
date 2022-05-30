@@ -9,7 +9,7 @@ import main.Screen;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
-public class Pipe  extends Connector{
+public class Pipe extends Connector {
     public Pipe(Building start, Building end, int tier) {
         startBuilding = start;
         endBuilding = end;
@@ -18,7 +18,6 @@ public class Pipe  extends Connector{
     }
 
     public void update() {
-        invalidState = false;
         updateRate();
         updateCenter();
     }
@@ -28,6 +27,7 @@ public class Pipe  extends Connector{
     }
 
     private void updateRate() {
+        invalidState = false;
         double getRate = startBuilding.outPipeRate.get(startBuilding.outPipes.indexOf(this));
         if (getRate == -1) {
             rate = 0;
@@ -42,7 +42,17 @@ public class Pipe  extends Connector{
         if (startBuilding.outPipeRate.get(startBuilding.outPipes.indexOf(this)) != -1)
             type = startBuilding.outPipeType.get(startBuilding.outPipes.indexOf(this));
 
-        if (rate > maxRate) invalidState = true;
+        inefficientState = false;
+        if (!invalidState) {
+            if (rate > maxRate) {
+                inefficientState = true;
+                outRate = maxRate;
+            } else {
+                outRate = rate;
+            }
+        } else {
+            outRate = 0;
+        }
     }
 
     public void typed(GraphicsPanel gp, int keyCode) {
@@ -111,13 +121,6 @@ public class Pipe  extends Connector{
         int ex = (int)(startCenter.x * (1 - endP) + endCenter.x * endP);
         int ey = (int)(startCenter.y * (1 - endP) + endCenter.y * endP);
 
-        if (invalidState) {
-            g2d.setStroke(new BasicStroke(3));
-            g2d.setColor(Color.RED);
-            g2d.drawLine(sx, sy, ex, ey);
-        }
-
-        g2d.setStroke(new BasicStroke(1));
         g2d.setColor(Color.ORANGE);
         g2d.drawLine(sx, sy, ex, ey);
 
@@ -125,7 +128,6 @@ public class Pipe  extends Connector{
 
         double arrowSize = 0.075 * Screen.getZoom();
 
-        if (invalidState) g2d.setColor(Color.RED);
         double cosplus = arrowSize * Math.cos(angle + Math.PI / 2);
         double cosminus = arrowSize * Math.cos(angle - Math.PI / 2);
         double sinplus = arrowSize * Math.sin(angle + Math.PI / 2);
@@ -155,12 +157,19 @@ public class Pipe  extends Connector{
         String tierText = "";
         if (tier == 1) tierText = "I";
         if (tier == 2) tierText = "II";
+        if (invalidState) {
+            g2d.setColor(Color.RED);
+        } else if (inefficientState) {
+            g2d.setColor(Color.YELLOW);
+        } else {
+            g2d.setColor(Color.GREEN);
+        }
         String rateText = rate + "/" + maxRate;
         int tierTextWidth = g2d.getFontMetrics().stringWidth(tierText);
         int rateTextWidth = g2d.getFontMetrics().stringWidth(rateText);
         Point textCenter = new Point((int)(sx * (1 - 0.5) + ex * 0.5), (int)(sy * (1 - 0.5) + ey * 0.5));
         g2d.drawString(tierText, textCenter.x - tierTextWidth / 2, textCenter.y - (int)(0.06 * Screen.getZoom()));
-        if (rate == 0) {
+        if (outRate == 0) {
             g2d.drawString(rateText, textCenter.x - rateTextWidth / 2, textCenter.y + (int)(0.14 * Screen.getZoom()));
         } else {
             g2d.drawString(rateText, textCenter.x - rateTextWidth / 2 + textZoomSize / 2, textCenter.y + (int)(0.14 * Screen.getZoom()));

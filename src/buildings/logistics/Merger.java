@@ -50,7 +50,7 @@ public class Merger extends Building {
                 } else if (itemType != c.type) {
                     isValid = false;
                 }
-                itemAmount += c.rate;
+                itemAmount += c.outRate;
             }
         }
         hasValidInput = false;
@@ -117,10 +117,11 @@ public class Merger extends Building {
 
         g2d.drawImage(image, start.x, start.y, end.x - start.x, end.y - start.y, null);
 
-        if (hasValidInput)
-            g2d.setColor(Color.GREEN);
-        else
+        if (!hasValidInput) {
             g2d.setColor(Color.RED);
+        } else {
+            g2d.setColor(Color.GREEN);
+        }
         if (greyedOut) g2d.setColor(Color.GRAY);
         g2d.drawRoundRect(start.x, start.y, end.x - start.x, end.y - start.y, (int) (Screen.getZoom() / 10), (int) (Screen.getZoom() / 10));
 

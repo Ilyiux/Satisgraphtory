@@ -21,6 +21,7 @@ public class Packager extends Building {
     public double rate;
     private int recipeScroll = 0;
 
+    private boolean isValid = false;
     private boolean isEfficient = false;
 
     private final double basePower = 10;
@@ -72,6 +73,7 @@ public class Packager extends Building {
         }
 
         updateEfficiency();
+        updateValidity();
         updateOutItems();
         updatePowerConsumption();
     }
@@ -104,23 +106,27 @@ public class Packager extends Building {
             isEfficient = true;
             for (Material m : recipe.input.keySet()) {
                 double amount = (60 / recipe.craftTime) * recipe.input.get(m) * (overclock / 100);
-                boolean hasItem = false;
+                double hasAmount = 0;
                 for (Conveyor c : inConveyors) {
                     if (!c.invalidState) {
-                        if (c.type == m && c.rate >= amount) hasItem = true;
+                        if (c.type == m) hasAmount += c.outRate;
                     }
                 }
                 for (Pipe p : inPipes) {
                     if (!p.invalidState) {
-                        if (p.type == m && p.rate >= amount) hasItem = true;
+                        if (p.type == m) hasAmount += p.outRate;
                     }
                 }
-                if (!hasItem) {
+                if (hasAmount > amount * 1.01 || hasAmount < amount * 0.99) {
                     isEfficient = false;
                     break;
                 }
             }
         }
+    }
+
+    private void updateValidity() {
+        isValid = recipeSet;
     }
 
     private void updateShownRates() {
@@ -248,10 +254,10 @@ public class Packager extends Building {
 
         g2d.drawImage(image, start.x, start.y, end.x - start.x, end.y - start.y, null);
 
-        if (!recipeSet) {
+        if (!isValid) {
             g2d.setColor(Color.RED);
         } else if (!isEfficient) {
-            g2d.setColor(Color.RED);
+            g2d.setColor(Color.YELLOW);
         } else {
             g2d.setColor(Color.GREEN);
         }

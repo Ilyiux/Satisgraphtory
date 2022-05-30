@@ -17,6 +17,8 @@ public class Junction extends Building {
 
     private boolean hasValidInput = false;
 
+    private boolean isEfficient = true;
+
     public Junction(Point position) {
         this.position = position;
         maxInConveyors = 0;
@@ -35,35 +37,75 @@ public class Junction extends Building {
     }
 
     private void updateOutItems() {
+        outConveyorRate.clear();
+        outConveyorType.clear();
         outPipeRate.clear();
         outPipeType.clear();
 
-        double itemAmount = 0;
+        for (int c = 0; c < maxOutConveyors; c++) {
+            outConveyorRate.add(-1.0);
+            outConveyorType.add(null);
+        }
+        for (int p = 0; p < maxOutPipes; p++) {
+            outPipeRate.add(-1.0);
+            outPipeType.add(null);
+        }
+
+        hasValidInput = true;
         Material itemType = null;
-        boolean isValid = true;
         for (Pipe p : inPipes) {
             if (!p.invalidState) {
                 if (itemType == null) {
                     itemType = p.type;
                 } else if (itemType != p.type) {
-                    isValid = false;
+                    hasValidInput = false;
                 }
-                itemAmount += p.rate;
-            }
-        }
-        hasValidInput = false;
-        if (isValid) {
-            hasValidInput = true;
-            for (int i = 0; i < outPipes.size(); i++) {
-                outPipeRate.add(itemAmount / outPipes.size());
-                outPipeType.add(itemType);
             }
         }
 
-        for (int c = outConveyorRate.size(); c < maxOutConveyors; c++)
-            outConveyorRate.add(-1.0);
-        for (int p = outPipeRate.size(); p < maxOutPipes; p++)
-            outPipeRate.add(-1.0);
+        if (hasValidInput) {
+            double amount = 0;
+            Material type = null;
+            for (Pipe p : inPipes) {
+                if (!p.invalidState) {
+                    type = p.type;
+                    amount += p.outRate;
+                }
+            }
+
+            double totalOut = 0;
+            isEfficient = true;
+            for (Pipe p : outPipes) {
+                totalOut += p.maxRate;
+            }
+            if (amount > totalOut) isEfficient = false;
+
+            int full = 0;
+            do {
+                boolean anyFull = false;
+                double maxPer = amount / (outPipes.size() - full);
+                for (int i = 0; i < outPipes.size(); i++) {
+                    if (outPipes.get(i).maxRate < maxPer && outPipeRate.get(i) == -1) {
+                        anyFull = true;
+                        full++;
+                        amount -= outPipes.get(i).maxRate;
+                        outPipeRate.set(i, (double) outPipes.get(i).maxRate);
+                        outPipeType.set(i, type);
+                    }
+                }
+
+                if (!anyFull) {
+                    double remainderPer = amount / (outPipes.size() - full);
+                    for (int i = 0; i < outPipes.size(); i++) {
+                        if (outPipeRate.get(i) == -1) {
+                            full++;
+                            outPipeRate.set(i, remainderPer);
+                            outPipeType.set(i, type);
+                        }
+                    }
+                }
+            } while (amount > 0 && full < outConveyors.size());
+        }
     }
 
     public void clicked(GraphicsPanel gp, int mx, int my) {
@@ -117,10 +159,13 @@ public class Junction extends Building {
 
         g2d.drawImage(image, start.x, start.y, end.x - start.x, end.y - start.y, null);
 
-        if (hasValidInput)
-            g2d.setColor(Color.GREEN);
-        else
+        if (!hasValidInput) {
             g2d.setColor(Color.RED);
+        } else if (!isEfficient) {
+            g2d.setColor(Color.YELLOW);
+        } else {
+            g2d.setColor(Color.GREEN);
+        }
         if (greyedOut) g2d.setColor(Color.GRAY);
         g2d.drawRoundRect(start.x, start.y, end.x - start.x, end.y - start.y, (int) (Screen.getZoom() / 10), (int) (Screen.getZoom() / 10));
 

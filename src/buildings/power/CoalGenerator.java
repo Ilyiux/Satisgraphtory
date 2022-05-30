@@ -3,7 +3,6 @@ package buildings.power;
 import buildings.Building;
 import buildings.logistics.Conveyor;
 import buildings.logistics.Pipe;
-import buildings.producers.Miner;
 import main.Main;
 import recipes.Material;
 import main.GraphicsPanel;
@@ -24,6 +23,7 @@ public class CoalGenerator extends Building {
     public double baseWaterRate = 45;
     public double waterRate;
 
+    private boolean isValid = false;
     public boolean isEfficient = false;
 
     public double overclock = 100;
@@ -114,23 +114,28 @@ public class CoalGenerator extends Building {
         isEfficient = false;
         if (fuelType != FuelPossibilities.UNSET) {
             double totalWater = 0;
-            for (Pipe p : inPipes) if (!p.invalidState && p.type == Material.WATER) totalWater += p.rate;
+            for (Pipe p : inPipes) if (!p.invalidState && p.type == Material.WATER) totalWater += p.outRate;
             double totalItems = 0;
             for (Conveyor c : inConveyors) {
                 if (!c.invalidState) {
-                    if (c.type == Material.COAL && fuelType == FuelPossibilities.COAL) totalItems += c.rate;
-                    if (c.type == Material.COMPACTED_COAL && fuelType == FuelPossibilities.COMPACTED_COAL) totalItems += c.rate;
-                    if (c.type == Material.PETROLEUM_COKE && fuelType == FuelPossibilities.PETROLEUM_COKE) totalItems += c.rate;
+                    if (c.type == Material.COAL && fuelType == FuelPossibilities.COAL) totalItems += c.outRate;
+                    if (c.type == Material.COMPACTED_COAL && fuelType == FuelPossibilities.COMPACTED_COAL) totalItems += c.outRate;
+                    if (c.type == Material.PETROLEUM_COKE && fuelType == FuelPossibilities.PETROLEUM_COKE) totalItems += c.outRate;
                 }
             }
             if (totalWater >= waterRate && totalItems >= itemRate) isEfficient = true;
         }
     }
 
+    private void updateValidity() {
+        isValid = fuelType != FuelPossibilities.UNSET;
+    }
+
     public void update() {
         updateItemRate();
         updatePowerConsumption();
         updateEfficiency();
+        updateValidity();
         if (!editingItems && !editingOverclock) updateShownRates();
     }
 
@@ -265,10 +270,12 @@ public class CoalGenerator extends Building {
 
         g2d.drawImage(image, start.x, start.y, end.x - start.x, end.y - start.y, null);
 
-        if (isEfficient) {
-            g2d.setColor(Color.GREEN);
-        } else {
+        if (!isValid) {
             g2d.setColor(Color.RED);
+        } else if (!isEfficient) {
+            g2d.setColor(Color.YELLOW);
+        } else {
+            g2d.setColor(Color.GREEN);
         }
         if (greyedOut) g2d.setColor(Color.GRAY);
         g2d.drawRoundRect(start.x, start.y, end.x - start.x, end.y - start.y, (int) (Screen.getZoom() / 10), (int) (Screen.getZoom() / 10));

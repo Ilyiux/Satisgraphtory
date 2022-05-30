@@ -2,7 +2,6 @@ package buildings.power;
 
 import buildings.Building;
 import buildings.logistics.Pipe;
-import buildings.producers.Miner;
 import main.Main;
 import recipes.Material;
 import main.GraphicsPanel;
@@ -21,6 +20,7 @@ public class FuelGenerator extends Building {
     public double baseItemRate;
     public double itemRate;
 
+    private boolean isValid = false;
     public boolean isEfficient = false;
 
     public double overclock = 100;
@@ -107,18 +107,23 @@ public class FuelGenerator extends Building {
             double totalItems = 0;
             for (Pipe p : inPipes) {
                 if (!p.invalidState) {
-                    if (p.type == Material.FUEL && fuelType == FuelPossibilities.FUEL) totalItems += p.rate;
-                    if (p.type == Material.TURBOFUEL && fuelType == FuelPossibilities.TURBOFUEL) totalItems += p.rate;
+                    if (p.type == Material.FUEL && fuelType == FuelPossibilities.FUEL) totalItems += p.outRate;
+                    if (p.type == Material.TURBOFUEL && fuelType == FuelPossibilities.TURBOFUEL) totalItems += p.outRate;
                 }
             }
             if (totalItems >= itemRate) isEfficient = true;
         }
     }
 
+    private void updateValidity() {
+        isValid = fuelType != FuelPossibilities.UNSET;
+    }
+
     public void update() {
         updateItemRate();
         updatePowerConsumption();
         updateEfficiency();
+        updateValidity();
         if (!editingItems && !editingOverclock) updateShownRates();
     }
 
@@ -252,10 +257,12 @@ public class FuelGenerator extends Building {
 
         g2d.drawImage(image, start.x, start.y, end.x - start.x, end.y - start.y, null);
 
-        if (isEfficient) {
-            g2d.setColor(Color.GREEN);
-        } else {
+        if (!isValid) {
             g2d.setColor(Color.RED);
+        } else if (!isEfficient) {
+            g2d.setColor(Color.YELLOW);
+        } else {
+            g2d.setColor(Color.GREEN);
         }
         if (greyedOut) g2d.setColor(Color.GRAY);
         g2d.drawRoundRect(start.x, start.y, end.x - start.x, end.y - start.y, (int) (Screen.getZoom() / 10), (int) (Screen.getZoom() / 10));

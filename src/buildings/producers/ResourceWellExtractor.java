@@ -21,6 +21,8 @@ public class ResourceWellExtractor extends Building {
     public double baseItemRate;
     public double itemRate;
 
+    private boolean isValid = false;
+
     public double overclock = 100;
     private String overclockString = "";
     private boolean editingOverclock = false;
@@ -85,6 +87,10 @@ public class ResourceWellExtractor extends Building {
         itemRate = (double)Math.round(itemRate * 10000) / 10000;
     }
 
+    private void updateValidity() {
+        isValid = nodeType != NodePossibilities.UNSET;
+    }
+
     public void updatePowerConsumption() {
         if (overclock <= 100) powerSlugs = 0;
         if (overclock > 100 && overclock <= 150) powerSlugs = 1;
@@ -94,6 +100,7 @@ public class ResourceWellExtractor extends Building {
 
     public void update() {
         updateItemRate();
+        updateValidity();
         updatePowerConsumption();
         if (!editingItems && !editingOverclock) updateShownRates();
 
@@ -254,10 +261,10 @@ public class ResourceWellExtractor extends Building {
 
         g2d.drawImage(image, start.x, start.y, end.x - start.x, end.y - start.y, null);
 
-        if (nodeType != NodePossibilities.UNSET) {
-            g2d.setColor(Color.GREEN);
-        } else {
+        if (!isValid) {
             g2d.setColor(Color.RED);
+        } else {
+            g2d.setColor(Color.GREEN);
         }
         if (greyedOut) g2d.setColor(Color.GRAY);
         g2d.drawRoundRect(start.x, start.y, end.x - start.x, end.y - start.y, (int) (Screen.getZoom() / 10), (int) (Screen.getZoom() / 10));

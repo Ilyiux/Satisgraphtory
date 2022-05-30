@@ -1,8 +1,8 @@
 package buildings.power;
 
 import buildings.Building;
+import buildings.logistics.Conveyor;
 import buildings.logistics.Pipe;
-import buildings.producers.Miner;
 import main.Main;
 import recipes.Material;
 import main.GraphicsPanel;
@@ -23,6 +23,7 @@ public class NuclearPowerPlant extends Building {
     public double baseWaterRate = 300;
     public double waterRate;
 
+    private boolean isValid = false;
     public boolean isEfficient = false;
 
     public double overclock = 100;
@@ -110,16 +111,20 @@ public class NuclearPowerPlant extends Building {
         isEfficient = false;
         if (fuelType != FuelPossibilities.UNSET) {
             double totalWater = 0;
-            for (Pipe p : inPipes) if (!p.invalidState && p.type == Material.WATER) totalWater += p.rate;
+            for (Pipe p : inPipes) if (!p.invalidState && p.type == Material.WATER) totalWater += p.outRate;
             double totalItems = 0;
-            for (Pipe p : inPipes) {
-                if (!p.invalidState) {
-                    if (p.type == Material.URANIUM_FUEL_ROD && fuelType == FuelPossibilities.URANIUM_FUEL_ROD) totalItems += p.rate;
-                    if (p.type == Material.PLUTONIUM_FUEL_ROD && fuelType == FuelPossibilities.PLUTONIUM_FUEL_ROD) totalItems += p.rate;
+            for (Conveyor c : inConveyors) {
+                if (!c.invalidState) {
+                    if (c.type == Material.URANIUM_FUEL_ROD && fuelType == FuelPossibilities.URANIUM_FUEL_ROD) totalItems += c.outRate;
+                    if (c.type == Material.PLUTONIUM_FUEL_ROD && fuelType == FuelPossibilities.PLUTONIUM_FUEL_ROD) totalItems += c.outRate;
                 }
             }
-            if (totalWater >= waterRate && totalItems >= itemRate) isEfficient = true;
+            if (totalWater > waterRate * 0.99 && totalWater < waterRate * 1.01 && totalItems > itemRate * 0.99 && totalItems < itemRate * 1.01) isEfficient = true;
         }
+    }
+
+    private void updateValidity() {
+        isValid = fuelType != FuelPossibilities.UNSET;
     }
 
     public void updateOutItems() {
@@ -147,6 +152,7 @@ public class NuclearPowerPlant extends Building {
         updateItemRate();
         updatePowerConsumption();
         updateEfficiency();
+        updateValidity();
         updateOutItems();
         if (!editingItems && !editingOverclock) updateShownRates();
     }
@@ -281,10 +287,12 @@ public class NuclearPowerPlant extends Building {
 
         g2d.drawImage(image, start.x, start.y, end.x - start.x, end.y - start.y, null);
 
-        if (isEfficient) {
-            g2d.setColor(Color.GREEN);
-        } else {
+        if (!isValid) {
             g2d.setColor(Color.RED);
+        } else if (!isEfficient) {
+            g2d.setColor(Color.YELLOW);
+        } else {
+            g2d.setColor(Color.GREEN);
         }
         if (greyedOut) g2d.setColor(Color.GRAY);
         g2d.drawRoundRect(start.x, start.y, end.x - start.x, end.y - start.y, (int) (Screen.getZoom() / 10), (int) (Screen.getZoom() / 10));
@@ -375,6 +383,7 @@ public class NuclearPowerPlant extends Building {
 
         g2d.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
         g2d.setColor(new Color(90, 95, 90));
+        g2d.drawString("Water Consumption: " + waterRate + "m3/min", menuTopLeft.x + 10, menuTopLeft.y + 215);
         g2d.drawString("Power Slugs: " + powerSlugs, menuTopLeft.x + 10, menuTopLeft.y + 230);
         g2d.drawString("Power Production: " + powerProduction + "MW", menuTopLeft.x + 10, menuTopLeft.y + 245);
 

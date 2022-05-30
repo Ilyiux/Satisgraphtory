@@ -17,6 +17,8 @@ public class OilExtractor extends Building {
     public double baseItemRate;
     public double itemRate;
 
+    private boolean isValid = false;
+
     public double overclock = 100;
     private String overclockString = "";
     private boolean editingOverclock = false;
@@ -79,6 +81,10 @@ public class OilExtractor extends Building {
         itemRate = (double)Math.round(itemRate * 10000) / 10000;
     }
 
+    private void updateValidity() {
+        isValid = true;
+    }
+
     public void updatePowerConsumption() {
         powerConsumption = basePower * Math.pow((overclock / 100), 1.6);
         // round to 5 decimal places
@@ -94,6 +100,7 @@ public class OilExtractor extends Building {
 
     public void update() {
         updateItemRate();
+        updateValidity();
         updatePowerConsumption();
         if (!editingItems && !editingOverclock) updateShownRates();
 
@@ -238,7 +245,11 @@ public class OilExtractor extends Building {
 
         g2d.drawImage(image, start.x, start.y, end.x - start.x, end.y - start.y, null);
 
-        g2d.setColor(Color.GREEN);
+        if (!isValid) {
+            g2d.setColor(Color.RED);
+        } else {
+            g2d.setColor(Color.GREEN);
+        }
         if (greyedOut) g2d.setColor(Color.GRAY);
         g2d.drawRoundRect(start.x, start.y, end.x - start.x, end.y - start.y, (int) (Screen.getZoom() / 10), (int) (Screen.getZoom() / 10));
 

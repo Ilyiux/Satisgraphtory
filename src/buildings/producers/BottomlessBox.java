@@ -33,10 +33,11 @@ public class BottomlessBox extends Building {
         initializeRecipes();
     }
 
-    public BottomlessBox(Point position, boolean materialSet, Material material) {
+    public BottomlessBox(Point position, boolean materialSet, Material material, double rate) {
         this.position = position;
         this.materialSet = materialSet;
         this.material = material;
+        this.rate = rate;
         maxInConveyors = 0;
         maxOutConveyors = 1;
         maxInPipes = 0;
@@ -133,7 +134,7 @@ public class BottomlessBox extends Building {
         }
         if (mx > menuTopLeft.x + 10 && mx < menuTopLeft.x + 95 && my > menuTopLeft.y + 260 && my < menuTopLeft.y + 290) {
             gp.closeBuildingMenu();
-            gp.addBuilding(new BottomlessBox(position, materialSet, material));
+            gp.addBuilding(new BottomlessBox(position, materialSet, material, rate));
         }
 
         if (mx > gp.getWidth() - buttonWidth - spacing && mx < gp.getWidth() - spacing) {
@@ -158,7 +159,7 @@ public class BottomlessBox extends Building {
         }
         if (keyCode == KeyEvent.VK_D) {
             gp.closeBuildingMenu();
-            gp.addBuilding(new BottomlessBox(position, materialSet, material));
+            gp.addBuilding(new BottomlessBox(position, materialSet, material, rate));
         }
         if (editingRate) {
             if (keyCode == KeyEvent.VK_BACK_SPACE || keyCode == KeyEvent.VK_DELETE) {

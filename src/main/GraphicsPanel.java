@@ -287,7 +287,7 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
                 data += (((NuclearPowerPlant) b).overclock + " " + Arrays.asList(NuclearPowerPlant.FuelPossibilities.values()).indexOf(((NuclearPowerPlant) b).fuelType));
             } else if (b instanceof BottomlessBox) {
                 data += ("box " + b.position.x + " " + b.position.y + " ");
-                data += (((BottomlessBox) b).materialSet + " " + Arrays.asList(Material.values()).indexOf(((BottomlessBox) b).material));
+                data += (((BottomlessBox) b).materialSet + " " + Arrays.asList(Material.values()).indexOf(((BottomlessBox) b).material) + " " + (((BottomlessBox) b).materialSet ? ((BottomlessBox) b).rate : -1));
             } else if (b instanceof Miner) {
                 data += ("min " + b.position.x + " " + b.position.y + " ");
                 data += (((Miner) b).overclock + " " + ((Miner) b).tier + " " + Arrays.asList(Purity.values()).indexOf(((Miner) b).purity) + " " + Arrays.asList(Miner.NodePossibilities.values()).indexOf(((Miner) b).nodeType));
@@ -428,7 +428,8 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
             } else if (id.equals("box")) { // bottomless box
                 boolean materialSet = Boolean.parseBoolean(data[2]);
                 Material material = !materialSet ? null : Material.values()[Integer.parseInt(data[3])];
-                bu = new BottomlessBox(new Point(posX, posY), materialSet, material);
+                double rate = Double.parseDouble(data[4]);
+                bu = new BottomlessBox(new Point(posX, posY), materialSet, material, rate);
             } else if (id.equals("min")) { // miner
                 double overclock = Double.parseDouble(data[2]);
                 int tier = Integer.parseInt(data[3]);
@@ -1143,6 +1144,7 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
                             } else {
                                 load(saveLoadDir + "\\" + validSaves.get(i) + ".stgs");
                             }
+                            saveName = validSaves.get(i);
                             inLoadMenu = false;
                             break;
                         }

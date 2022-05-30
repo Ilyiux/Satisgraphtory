@@ -54,7 +54,7 @@ public class Splitter extends Building {
         for (Conveyor c : inConveyors) {
             if (!c.invalidState) {
                 type = c.type;
-                amount += c.rate;
+                amount += c.outRate;
             }
         }
 
@@ -143,10 +143,10 @@ public class Splitter extends Building {
 
         g2d.drawImage(image, start.x, start.y, end.x - start.x, end.y - start.y, null);
 
-        if (isEfficient) {
-            g2d.setColor(Color.GREEN);
+        if (!isEfficient) {
+            g2d.setColor(Color.YELLOW);
         } else {
-            g2d.setColor(Color.RED);
+            g2d.setColor(Color.GREEN);
         }
         if (greyedOut) g2d.setColor(Color.GRAY);
         g2d.drawRoundRect(start.x, start.y, end.x - start.x, end.y - start.y, (int) (Screen.getZoom() / 10), (int) (Screen.getZoom() / 10));
