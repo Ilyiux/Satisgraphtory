@@ -29,8 +29,8 @@ public class NuclearPowerPlant extends Building {
     public double overclock = 100;
     private String overclockString = "";
     private boolean editingOverclock = false;
-    private String itemString = "";
-    private boolean editingItems = false;
+    private String powerString = "";
+    private boolean editingPower = false;
 
     private final double basePower = 2500;
     public double powerProduction;
@@ -66,7 +66,7 @@ public class NuclearPowerPlant extends Building {
     }
 
     private void updateShownRates() {
-        itemString = String.valueOf(baseItemRate * overclock / 100);
+        powerString = String.valueOf(basePower * Math.pow(overclock / 100, 0.75647085166));
         overclockString = String.valueOf(overclock);
     }
 
@@ -88,15 +88,15 @@ public class NuclearPowerPlant extends Building {
                 yield 0.1;
         };
 
-        itemRate = baseItemRate * (overclock / 100);
+        itemRate = baseItemRate * Math.pow(overclock / 100, 0.75647085166);
         itemRate = (double)Math.round(itemRate * 10000) / 10000;
 
-        waterRate = baseWaterRate * (overclock / 100);
+        waterRate = baseWaterRate * Math.pow(overclock / 100, 0.75647085166);
         waterRate = (double)Math.round(waterRate * 10000) / 10000;
     }
 
     public void updatePowerConsumption() {
-        powerProduction = basePower * (overclock / 100);
+        powerProduction = basePower * Math.pow(overclock / 100, 0.75647085166);
         powerProduction = (double)Math.round(powerProduction * 10000) / 10000;
 
         if (overclock <= 100) powerSlugs = 0;
@@ -134,11 +134,11 @@ public class NuclearPowerPlant extends Building {
         outPipeType.clear();
         if (fuelType != FuelPossibilities.UNSET) {
             if (fuelType == FuelPossibilities.URANIUM_FUEL_ROD) {
-                outConveyorRate.add(10.0);
+                outConveyorRate.add(10.0 * Math.pow(overclock / 100, 0.75647085166));
                 outConveyorType.add(Material.URANIUM_WASTE);
             }
             if (fuelType == FuelPossibilities.PLUTONIUM_FUEL_ROD) {
-                outConveyorRate.add(1.0);
+                outConveyorRate.add(Math.pow(overclock / 100, 0.75647085166));
                 outConveyorType.add(Material.PLUTONIUM_WASTE);
             }
         }
@@ -154,39 +154,43 @@ public class NuclearPowerPlant extends Building {
         updateEfficiency();
         updateValidity();
         updateOutItems();
-        if (!editingItems && !editingOverclock) updateShownRates();
+        if (!editingPower && !editingOverclock) updateShownRates();
     }
 
     private void exitClockInput() {
-        if (editingItems) {
-            editingItems = false;
+        if (editingPower) {
+            editingPower = false;
+            
+            if (powerString.length() < 1) powerString = "0";
 
-            double items = Double.parseDouble(itemString);
-            double minItems = baseItemRate * 0.01;
-            double maxItems = baseItemRate * 2.5;
-            if (items < minItems) items = minItems;
-            if (items > maxItems) items = maxItems;
-            overclock = items / baseItemRate * 100;
+            double power = Double.parseDouble(powerString);
+            double minPower = basePower * 0.01;
+            double maxPower = basePower * 2.5;
+            if (power < minPower) power = minPower;
+            if (power > maxPower) power = maxPower;
+            overclock = 100 * Math.pow(power / basePower, 1.321928);
 
-            overclock = (double)Math.round(overclock * 100) / 100;
-            items = (double)Math.round(items * 100) / 100;
+            overclock = (double)Math.round(overclock * 10000) / 10000;
+            power = (double)Math.round(power * 10000) / 10000;
 
-            itemString = "" + items;
+            powerString = "" + power;
             overclockString = "" + overclock;
         }
         if (editingOverclock) {
             editingOverclock = false;
+            
+            if (overclockString.length() < 1) overclockString = "0";
 
             overclock = Double.parseDouble(overclockString);
             if (overclock > 250) overclock = 250;
             if (overclock < 1) overclock = 1;
 
-            double items = (baseItemRate * overclock / 100);
+            double power = basePower * Math.pow(overclock / 100, 0.75647085166);
 
-            items = (double)Math.round(items * 100) / 100;
-            overclock = (double)Math.round(overclock * 100) / 100;
+            power = (double)Math.round(power * 10000) / 10000;
+            overclock = (double)Math.round(overclock * 10000) / 10000;
 
-            itemString = "" + items;
+            powerString = "" + power;
             overclockString = "" + overclock;
         }
     }
@@ -212,7 +216,7 @@ public class NuclearPowerPlant extends Building {
             menuBottomRight.x -= menuBottomRight.x - (gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8);
         }
 
-        if (editingOverclock || editingItems) {
+        if (editingOverclock || editingPower) {
             exitClockInput();
         } else {
             if ((mx < menuTopLeft.x || mx > menuBottomRight.x || my < menuTopLeft.y || my > menuBottomRight.y) && mx < gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 8)
@@ -240,10 +244,10 @@ public class NuclearPowerPlant extends Building {
         // overclock
         if (mx > menuTopLeft.x + 10 && mx < menuTopLeft.x + 60 && my > menuTopLeft.y + 105 && my < menuTopLeft.y + 125) {
             editingOverclock = true;
-            editingItems = false;
+            editingPower = false;
         }
         if (mx > menuTopLeft.x + 85 && mx < menuTopLeft.x + 155 && my > menuTopLeft.y + 105 && my < menuTopLeft.y + 125) {
-            editingItems = true;
+            editingPower = true;
             editingOverclock = false;
         }
     }
@@ -268,14 +272,14 @@ public class NuclearPowerPlant extends Building {
             }
             if (keyCode == KeyEvent.VK_ENTER) exitClockInput();
         }
-        if (editingItems) {
+        if (editingPower) {
             if (keyCode == KeyEvent.VK_BACK_SPACE || keyCode == KeyEvent.VK_DELETE) {
-                if (itemString.length() > 0)
-                    itemString = itemString.substring(0, itemString.length() - 1);
+                if (powerString.length() > 0)
+                    powerString = powerString.substring(0, powerString.length() - 1);
             } else if (keyCode == KeyEvent.VK_PERIOD) {
                 overclockString = overclockString + ".";
             } else if (keyCode >= KeyEvent.VK_0 && keyCode <= KeyEvent.VK_9){
-                itemString = itemString + (keyCode - 48);
+                powerString = powerString + (keyCode - 48);
             }
             if (keyCode == KeyEvent.VK_ENTER) exitClockInput();
         }
@@ -385,7 +389,7 @@ public class NuclearPowerPlant extends Building {
         g2d.setColor(new Color(90, 95, 90));
         g2d.drawString("Water Consumption: " + waterRate + "m3/min", menuTopLeft.x + 10, menuTopLeft.y + 215);
         g2d.drawString("Power Slugs: " + powerSlugs, menuTopLeft.x + 10, menuTopLeft.y + 230);
-        g2d.drawString("Power Production: " + powerProduction + "MW", menuTopLeft.x + 10, menuTopLeft.y + 245);
+        g2d.drawString("Item Rate: " + itemRate + "/min", menuTopLeft.x + 10, menuTopLeft.y + 245);
 
         Color displayBackgroundColor = new Color(20, 22, 20);
 
@@ -440,14 +444,14 @@ public class NuclearPowerPlant extends Building {
 
         g2d.setColor(displayBackgroundColor);
         g2d.fillRoundRect(menuTopLeft.x + 85, menuTopLeft.y + 105, 70, 20, 8, 8);
-        if (editingItems) {
+        if (editingPower) {
             g2d.setColor(new Color(100, 104, 100));
             g2d.drawRoundRect(menuTopLeft.x + 85, menuTopLeft.y + 105, 70, 20, 8, 8);
         }
         g2d.setColor(Color.WHITE);
-        boolean showItemCursor = ((int)(System.currentTimeMillis() / 500) % 2) == 0 && editingItems;
-        g2d.drawString(itemString + (showItemCursor ? "|" : ""), menuTopLeft.x + 90, menuTopLeft.y + 120);
-        g2d.drawString("/min", menuTopLeft.x + 160, menuTopLeft.y + 120);
+        boolean showItemCursor = ((int)(System.currentTimeMillis() / 500) % 2) == 0 && editingPower;
+        g2d.drawString(powerString + (showItemCursor ? "|" : ""), menuTopLeft.x + 90, menuTopLeft.y + 120);
+        g2d.drawString("mw", menuTopLeft.x + 160, menuTopLeft.y + 120);
     }
 
     public enum FuelPossibilities {

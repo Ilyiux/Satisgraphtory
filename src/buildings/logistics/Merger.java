@@ -107,7 +107,7 @@ public class Merger extends Building {
         }
         if (keyCode == KeyEvent.VK_D) {
             gp.closeBuildingMenu();
-            gp.addBuilding(new Splitter(position));
+            gp.addBuilding(new Merger(position));
         }
     }
 

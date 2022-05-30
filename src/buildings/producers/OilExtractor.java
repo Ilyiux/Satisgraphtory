@@ -113,6 +113,8 @@ public class OilExtractor extends Building {
     private void exitClockInput() {
         if (editingItems) {
             editingItems = false;
+            
+            if (itemString.length() < 1) itemString = "0";
 
             double items = Double.parseDouble(itemString);
             double minItems = baseItemRate * 0.01;
@@ -129,6 +131,8 @@ public class OilExtractor extends Building {
         }
         if (editingOverclock) {
             editingOverclock = false;
+            
+            if (overclockString.length() < 1) overclockString = "0";
 
             overclock = Double.parseDouble(overclockString);
             if (overclock > 250) overclock = 250;
