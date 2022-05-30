@@ -13,6 +13,9 @@ public class Recipes {
     public static ArrayList<Recipe> recipes = new ArrayList<>();
 
     public static void constructRecipes() {
+        ArrayList<Recipe> altRecipes = new ArrayList<>();
+        ArrayList<Recipe> regularRecipes = new ArrayList<>();
+
         String text = Main.getFileFromResources("/files/recipes.json");
         JSONArray allRecipes = new JSONArray(text);
         for (int i = 0; i < allRecipes.length(); i++) {
@@ -39,8 +42,14 @@ public class Recipes {
                 output.put(m.getEnum(Material.class, "item"), m.getInt("amount"));
             }
 
-            recipes.add(new Recipe(name, buildings, input, output, time));
+            if (name.startsWith("Alt: "))
+                altRecipes.add(new Recipe(name, buildings, input, output, time));
+            else
+                regularRecipes.add(new Recipe(name, buildings, input, output, time));
         }
+
+        recipes.addAll(regularRecipes);
+        recipes.addAll(altRecipes);
     }
 
     public static ArrayList<Recipe> getRecipeByBuilding(BuildingType building) {

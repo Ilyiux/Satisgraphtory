@@ -190,7 +190,7 @@ public class Foundry extends Building {
             gp.addBuilding(new Foundry(position, recipeSet, recipe, overclock));
         }
 
-        int buttonHeight = (int)((gp.getHeight() * 1.77777777) / 6 * 0.31);
+        int buttonHeight = (int)((gp.getHeight() * 1.77777777) / 6 * 0.25);
         int spacing = buttonHeight / 10;
         int buttonWidth = (int) ((gp.getHeight() * 1.77777777) / 6 - spacing * 2);
 
@@ -232,10 +232,13 @@ public class Foundry extends Building {
     }
 
     public void scrolled(GraphicsPanel gp, int scrollAmount) {
-        if (possibleRecipes.size() >= recipeScroll + (gp.getHeight() - 10) / 110) {
+        int buttonHeight = (int)((gp.getHeight() * 1.77777777) / 6 * 0.25);
+        int spacing = buttonHeight / 10;
+
+        if (possibleRecipes.size() >= recipeScroll + (gp.getHeight() - spacing) / (spacing + buttonHeight)) {
             recipeScroll += scrollAmount;
             if (recipeScroll < 0) recipeScroll = 0;
-            if (recipeScroll + (gp.getHeight() - 10) / 110 > possibleRecipes.size()) recipeScroll = possibleRecipes.size() - (gp.getHeight() - 10) / 110;
+            if (recipeScroll + (gp.getHeight() - spacing) / (spacing + buttonHeight) > possibleRecipes.size()) recipeScroll = possibleRecipes.size() - (gp.getHeight() - spacing) / (spacing + buttonHeight);
         }
     }
 
@@ -367,10 +370,10 @@ public class Foundry extends Building {
             g2d.drawString(recipe.name, menuTopLeft.x + 15, menuTopLeft.y + 89);
         }
 
-        int buttonHeight = (int)((gp.getHeight() * 1.77777777) / 6 * 0.31);
+        int buttonHeight = (int)((gp.getHeight() * 1.77777777) / 6 * 0.25);
         int spacing = buttonHeight / 10;
         int buttonWidth = (int) ((gp.getHeight() * 1.77777777) / 6 - spacing * 2);
-        int textSize = (int) (buttonHeight / 6.25);
+        int textSize = (int) (buttonHeight / 5);
         int imageSize = spacing * 4;
 
         g2d.setFont(new Font("Bahnschrift", Font.PLAIN, textSize));
@@ -387,17 +390,17 @@ public class Foundry extends Building {
                 g2d.drawRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + spacing, spacing + index * (spacing + buttonHeight), buttonWidth, buttonHeight, 10, 10);
             }
             g2d.setColor(Color.WHITE);
-            g2d.drawString(recipe.name, gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + spacing * 2, spacing * 3 + index * (buttonHeight + spacing));
+            g2d.drawString(recipe.name, gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + spacing * 2, spacing * 4 + index * (buttonHeight + spacing));
             g2d.drawString(60 / recipe.craftTime + "/min", gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + spacing * 2, buttonHeight + index * (buttonHeight + spacing));
 
             ArrayList<Material> inMats = new ArrayList<>(recipe.input.keySet());
             for (Material inMat : inMats) {
                 int matIndex = inMats.indexOf(inMat);
                 g2d.setColor(new Color(39, 40, 39));
-                g2d.fillRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + spacing * 2 + (imageSize + spacing / 2) * matIndex, (int) (spacing * 4.5 + index * (spacing + buttonHeight)), imageSize, imageSize, 4, 4);
-                g2d.drawImage(ImageManager.getMaterialImage(inMat), gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6  + spacing * 2 + (imageSize + spacing / 2) * matIndex, (int) (spacing * 4.5 + index * (spacing + buttonHeight)), imageSize, imageSize, null);
+                g2d.fillRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + spacing * 2 + (imageSize + spacing / 2) * matIndex, (int) (spacing * 5.5 + index * (spacing + buttonHeight)), imageSize, imageSize, 4, 4);
+                g2d.drawImage(ImageManager.getMaterialImage(inMat), gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6  + spacing * 2 + (imageSize + spacing / 2) * matIndex, (int) (spacing * 5.5 + index * (spacing + buttonHeight)), imageSize, imageSize, null);
                 g2d.setColor(Color.WHITE);
-                g2d.drawString(String.valueOf(recipe.input.get(inMat)), gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + spacing * 5 + (imageSize + spacing / 2) * matIndex, buttonHeight - spacing * 2 + index * (spacing + buttonHeight));
+                g2d.drawString(String.valueOf(recipe.input.get(inMat) * (60 / recipe.craftTime)), gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + spacing * 2 + (imageSize + spacing / 2) * matIndex, buttonHeight - spacing + index * (spacing + buttonHeight));
             }
 
             int matOffset = recipe.input.keySet().size();
@@ -407,10 +410,10 @@ public class Foundry extends Building {
             for (Material outMat : outMats) {
                 int matIndex = outMats.indexOf(outMat) + matOffset + 1;
                 g2d.setColor(new Color(39, 40, 39));
-                g2d.fillRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + spacing * 2 + (imageSize + spacing / 2) * matIndex, (int) (spacing * 4.5 + index * (spacing + buttonHeight)), imageSize, imageSize, 4, 4);
-                g2d.drawImage(ImageManager.getMaterialImage(outMat), gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6  + spacing * 2 + (imageSize + spacing / 2) * matIndex, (int) (spacing * 4.5 + index * (spacing + buttonHeight)), imageSize, imageSize, null);
+                g2d.fillRoundRect(gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + spacing * 2 + (imageSize + spacing / 2) * matIndex, (int) (spacing * 5.5 + index * (spacing + buttonHeight)), imageSize, imageSize, 4, 4);
+                g2d.drawImage(ImageManager.getMaterialImage(outMat), gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6  + spacing * 2 + (imageSize + spacing / 2) * matIndex, (int) (spacing * 5.5 + index * (spacing + buttonHeight)), imageSize, imageSize, null);
                 g2d.setColor(Color.WHITE);
-                g2d.drawString(String.valueOf(recipe.output.get(outMat)), gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + spacing * 5 + (imageSize + spacing / 2) * matIndex, buttonHeight - spacing * 2 + index * (spacing + buttonHeight));
+                g2d.drawString(String.valueOf(recipe.output.get(outMat) * (60 / recipe.craftTime)), gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + spacing * 2 + (imageSize + spacing / 2) * matIndex, buttonHeight - spacing + index * (spacing + buttonHeight));
             }
         }
         if (possibleRecipes.size() > (gp.getHeight() - spacing) / (spacing + buttonHeight)) {
