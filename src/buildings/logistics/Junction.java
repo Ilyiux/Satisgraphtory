@@ -34,6 +34,20 @@ public class Junction extends Building {
 
     public void update() {
         updateOutItems();
+        updateInItems();
+    }
+
+    private void updateInItems() {
+        inItems.clear();
+        double amount = 0;
+        Material type = null;
+        for (Pipe p : outPipes) {
+            if (!p.invalidState) {
+                type = p.type;
+                amount += p.outMaxRate;
+            }
+        }
+        inItems.put(type, amount);
     }
 
     private void updateOutItems() {
@@ -76,7 +90,7 @@ public class Junction extends Building {
             double totalOut = 0;
             isEfficient = true;
             for (Pipe p : outPipes) {
-                totalOut += p.maxRate;
+                totalOut += p.outMaxRate;
             }
             if (amount > totalOut) isEfficient = false;
 
@@ -85,11 +99,11 @@ public class Junction extends Building {
                 boolean anyFull = false;
                 double maxPer = amount / (outPipes.size() - full);
                 for (int i = 0; i < outPipes.size(); i++) {
-                    if (outPipes.get(i).maxRate < maxPer && outPipeRate.get(i) == -1) {
+                    if (outPipes.get(i).outMaxRate < maxPer && outPipeRate.get(i) == -1) {
                         anyFull = true;
                         full++;
-                        amount -= outPipes.get(i).maxRate;
-                        outPipeRate.set(i, (double) outPipes.get(i).maxRate);
+                        amount -= outPipes.get(i).outMaxRate;
+                        outPipeRate.set(i, outPipes.get(i).outMaxRate);
                         outPipeType.set(i, type);
                     }
                 }
@@ -104,7 +118,7 @@ public class Junction extends Building {
                         }
                     }
                 }
-            } while (amount > 0 && full < outConveyors.size());
+            } while (amount > 0 && full < outPipes.size());
         }
     }
 

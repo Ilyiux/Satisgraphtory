@@ -8,13 +8,18 @@ import main.PointDouble;
 public class Connector extends WorldObject {
     public int tier;
 
+    public boolean editingRateCap = false;
+    public String rateCapString;
+    public double rateCap = -1;
+
     public PointDouble lineCenter;
 
     public double rate;
     public double outRate;
-    public int maxRate;
+    public double maxRate;
+    public double outMaxRate;
 
-    public Material type;
+    public Material type = null;
 
     public boolean invalidState = false;
     public boolean inefficientState = false;

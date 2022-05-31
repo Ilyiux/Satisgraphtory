@@ -10,6 +10,8 @@ import recipes.Material;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Splitter extends Building {
 
@@ -32,6 +34,20 @@ public class Splitter extends Building {
 
     public void update() {
         updateOutItems();
+        updateInItems();
+    }
+
+    private void updateInItems() {
+        inItems.clear();
+        double amount = 0;
+        Material type = null;
+        for (Conveyor c : outConveyors) {
+            if (!c.invalidState) {
+                type = c.type;
+                amount += c.outMaxRate;
+            }
+        }
+        inItems.put(type, amount);
     }
 
     private void updateOutItems() {
@@ -61,7 +77,7 @@ public class Splitter extends Building {
         double totalOut = 0;
         isEfficient = true;
         for (Conveyor c : outConveyors) {
-            totalOut += c.maxRate;
+            totalOut += c.outMaxRate;
         }
         if (amount > totalOut) isEfficient = false;
 
@@ -70,11 +86,11 @@ public class Splitter extends Building {
             boolean anyFull = false;
             double maxPer = amount / (outConveyors.size() - full);
             for (int i = 0; i < outConveyors.size(); i++) {
-                if (outConveyors.get(i).maxRate < maxPer && outConveyorRate.get(i) == -1) {
+                if (outConveyors.get(i).outMaxRate < maxPer && outConveyorRate.get(i) == -1) {
                     anyFull = true;
                     full++;
-                    amount -= outConveyors.get(i).maxRate;
-                    outConveyorRate.set(i, (double) outConveyors.get(i).maxRate);
+                    amount -= outConveyors.get(i).outMaxRate;
+                    outConveyorRate.set(i, outConveyors.get(i).outMaxRate);
                     outConveyorType.set(i, type);
                 }
             }

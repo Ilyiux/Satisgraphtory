@@ -78,6 +78,24 @@ public class CoalGenerator extends Building {
         }
     }
 
+    private void updateInItems() {
+        inItems.clear();
+        if (fuelType != FuelPossibilities.UNSET) {
+            Material type = switch (fuelType) {
+                case COAL:
+                    yield Material.COAL;
+                case COMPACTED_COAL:
+                    yield Material.COMPACTED_COAL;
+                case PETROLEUM_COKE:
+                    yield Material.PETROLEUM_COKE;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + fuelType);
+            };
+            inItems.put(type, itemRate);
+            inItems.put(Material.WATER, waterRate);
+        }
+    }
+
     private void updateItemRate() {
         baseItemRate = switch (fuelType) {
             case UNSET:
@@ -134,6 +152,7 @@ public class CoalGenerator extends Building {
     public void update() {
         updateItemRate();
         updatePowerConsumption();
+        updateInItems();
         updateEfficiency();
         updateValidity();
         if (!editingPower && !editingOverclock) updateShownRates();

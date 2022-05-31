@@ -71,11 +71,27 @@ public class NuclearPowerPlant extends Building {
     }
 
     private void getImages() {
-            image = Main.getImageFromResources("/images/buildings/nuclear_power_plant.png");
+        image = Main.getImageFromResources("/images/buildings/nuclear_power_plant.png");
 
-            for (FuelPossibilities f : FuelPossibilities.values()) {
-                itemIcons.put(f, Main.getImageFromResources("/images/items/" + String.valueOf(f).toLowerCase() + ".png"));
-            }
+        for (FuelPossibilities f : FuelPossibilities.values()) {
+            itemIcons.put(f, Main.getImageFromResources("/images/items/" + String.valueOf(f).toLowerCase() + ".png"));
+        }
+    }
+
+    private void updateInItems() {
+        inItems.clear();
+        if (fuelType != FuelPossibilities.UNSET) {
+            Material type = switch (fuelType) {
+                case URANIUM_FUEL_ROD:
+                    yield Material.URANIUM_FUEL_ROD;
+                case PLUTONIUM_FUEL_ROD:
+                    yield Material.PLUTONIUM_FUEL_ROD;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + fuelType);
+            };
+            inItems.put(type, itemRate);
+            inItems.put(Material.WATER, waterRate);
+        }
     }
 
     private void updateItemRate() {
@@ -152,6 +168,7 @@ public class NuclearPowerPlant extends Building {
         updateItemRate();
         updatePowerConsumption();
         updateEfficiency();
+        updateInItems();
         updateValidity();
         updateOutItems();
         if (!editingPower && !editingOverclock) updateShownRates();

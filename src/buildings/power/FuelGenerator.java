@@ -75,6 +75,21 @@ public class FuelGenerator extends Building {
         }
     }
 
+    private void updateInItems() {
+        inItems.clear();
+        if (fuelType != FuelPossibilities.UNSET) {
+            Material type = switch (fuelType) {
+                case FUEL:
+                    yield Material.FUEL;
+                case TURBOFUEL:
+                    yield Material.TURBOFUEL;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + fuelType);
+            };
+            inItems.put(type, itemRate);
+        }
+    }
+
     private void updateItemRate() {
         baseItemRate = switch (fuelType) {
             case UNSET:
@@ -123,6 +138,7 @@ public class FuelGenerator extends Building {
         updateItemRate();
         updatePowerConsumption();
         updateEfficiency();
+        updateInItems();
         updateValidity();
         if (!editingPower && !editingOverclock) updateShownRates();
     }

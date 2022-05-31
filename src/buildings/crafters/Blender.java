@@ -73,9 +73,19 @@ public class Blender extends Building {
         }
 
         updateEfficiency();
+        updateInItems();
         updateValidity();
         updateOutItems();
         updatePowerConsumption();
+    }
+
+    private void updateInItems() {
+        inItems.clear();
+        if (recipeSet) {
+            for (Material m : recipe.input.keySet()) {
+                inItems.put(m, recipe.input.get(m) * (overclock / 100) * (60 / recipe.craftTime));
+            }
+        }
     }
 
     private void updateOutItems() {

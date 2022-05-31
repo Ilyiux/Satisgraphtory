@@ -6,9 +6,13 @@ import recipes.Material;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Building extends WorldObject {
     public Point position;
+
+    public Map<Material, Double> inItems = new HashMap<>();
 
     public int maxInConveyors;
     public ArrayList<Conveyor> inConveyors = new ArrayList<>();

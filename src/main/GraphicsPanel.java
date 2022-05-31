@@ -309,9 +309,9 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
         for (Connector c : connectors) {
             String data = "c ";
             if (c instanceof Conveyor) {
-                data += ("cov " + buildings.indexOf(c.startBuilding) + " " + buildings.indexOf(c.endBuilding) + " " + c.tier);
+                data += ("cov " + buildings.indexOf(c.startBuilding) + " " + buildings.indexOf(c.endBuilding) + " " + c.tier + " " + c.rateCap);
             } else if (c instanceof Pipe) {
-                data += ("pip " + buildings.indexOf(c.startBuilding) + " " + buildings.indexOf(c.endBuilding) + " " + c.tier);
+                data += ("pip " + buildings.indexOf(c.startBuilding) + " " + buildings.indexOf(c.endBuilding) + " " + c.tier + " " + c.rateCap);
             } else {
                 data += ("invalid");
             }
@@ -464,14 +464,15 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
             Building s = buildings.get(Integer.parseInt(data[0]));
             Building e = buildings.get(Integer.parseInt(data[1]));
             int tier = Integer.parseInt(data[2]);
+            double cap = Double.parseDouble(data[3]);
 
             if (id.equals("cov")) { // conveyor
-                Conveyor ct = new Conveyor(s, e, tier);
+                Conveyor ct = new Conveyor(s, e, tier, cap);
                 s.outConveyors.add(ct);
                 e.inConveyors.add(ct);
                 connectors.add(ct);
             } else if (id.equals("pip")) { // pipe
-                Pipe pt = new Pipe(s, e, tier);
+                Pipe pt = new Pipe(s, e, tier, cap);
                 s.outPipes.add(pt);
                 e.inPipes.add(pt);
                 connectors.add(pt);
@@ -1066,7 +1067,7 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
                     } else {
                         if (buildings.get(bIndex).inConveyors.size() < buildings.get(bIndex).maxInConveyors && buildings.get(bIndex) != tempConnectionStart) {
                             firstConnection = true;
-                            Conveyor newConveyor = new Conveyor(tempConnectionStart, buildings.get(bIndex), defaultConveyorTier);
+                            Conveyor newConveyor = new Conveyor(tempConnectionStart, buildings.get(bIndex), defaultConveyorTier, -1);
 
                             tempConnectionStart.outConveyors.add(newConveyor);
                             buildings.get(bIndex).inConveyors.add(newConveyor);
@@ -1088,7 +1089,7 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
                     } else {
                         if (buildings.get(bIndex).inPipes.size() < buildings.get(bIndex).maxInPipes && buildings.get(bIndex) != tempConnectionStart) {
                             firstConnection = true;
-                            Pipe newPipe = new Pipe(tempConnectionStart, buildings.get(bIndex), defaultPipeTier);
+                            Pipe newPipe = new Pipe(tempConnectionStart, buildings.get(bIndex), defaultPipeTier, -1);
 
                             tempConnectionStart.outPipes.add(newPipe);
                             buildings.get(bIndex).inPipes.add(newPipe);
