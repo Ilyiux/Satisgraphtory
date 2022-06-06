@@ -1,10 +1,7 @@
 package buildings.logistics;
 
 import buildings.Building;
-import main.GraphicsPanel;
-import main.ImageManager;
-import main.PointDouble;
-import main.Screen;
+import main.*;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -221,11 +218,11 @@ public class Pipe extends Connector {
         if (tier == 1) tierText = "I";
         if (tier == 2) tierText = "II";
         if (invalidState) {
-            g2d.setColor(Color.RED);
+            g2d.setColor(ColorManager.getColor("invalid"));
         } else if (inefficientState) {
-            g2d.setColor(Color.YELLOW);
+            g2d.setColor(ColorManager.getColor("inefficient"));
         } else {
-            g2d.setColor(Color.GREEN);
+            g2d.setColor(ColorManager.getColor("valid"));
         }
         String rateText = rate + "/" + outMaxRate + " " + (maxRate == outMaxRate ? "" : "(" + maxRate + ")");
         int tierTextWidth = g2d.getFontMetrics().stringWidth(tierText);

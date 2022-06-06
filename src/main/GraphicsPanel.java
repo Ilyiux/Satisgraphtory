@@ -122,6 +122,7 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
         Recipes.constructRecipes();
         Materials.constructSink();
         ImageManager.loadMaterialImages();
+        ColorManager.initializeColors();
 
         emptyClickList();
         saveLoadDir = System.getProperty("user.dir");

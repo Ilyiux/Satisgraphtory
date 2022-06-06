@@ -2,11 +2,8 @@ package buildings.power;
 
 import buildings.Building;
 import buildings.logistics.Pipe;
-import main.Main;
+import main.*;
 import recipes.Material;
-import main.GraphicsPanel;
-import main.PointDouble;
-import main.Screen;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -278,11 +275,11 @@ public class FuelGenerator extends Building {
         g2d.drawImage(image, start.x, start.y, end.x - start.x, end.y - start.y, null);
 
         if (!isValid) {
-            g2d.setColor(Color.RED);
+            g2d.setColor(ColorManager.getColor("invalid"));
         } else if (!isEfficient) {
-            g2d.setColor(Color.YELLOW);
+            g2d.setColor(ColorManager.getColor("inefficient"));
         } else {
-            g2d.setColor(Color.GREEN);
+            g2d.setColor(ColorManager.getColor("valid"));
         }
         if (greyedOut) g2d.setColor(Color.GRAY);
         g2d.drawRoundRect(start.x, start.y, end.x - start.x, end.y - start.y, (int) (Screen.getZoom() / 10), (int) (Screen.getZoom() / 10));

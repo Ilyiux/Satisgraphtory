@@ -1,11 +1,8 @@
 package buildings.logistics;
 
 import buildings.Building;
-import main.Main;
+import main.*;
 import recipes.Materials;
-import main.GraphicsPanel;
-import main.PointDouble;
-import main.Screen;
 
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -108,9 +105,9 @@ public class AwesomeSink extends Building {
         g2d.drawImage(image, start.x, start.y, end.x - start.x, end.y - start.y, null);
 
         if (!isEfficient || invalidInput) {
-            g2d.setColor(Color.RED);
+            g2d.setColor(ColorManager.getColor("invalid"));
         } else {
-            g2d.setColor(Color.GREEN);
+            g2d.setColor(ColorManager.getColor("valid"));
         }
         if (greyedOut) g2d.setColor(Color.GRAY);
         g2d.drawRoundRect(start.x, start.y, end.x - start.x, end.y - start.y, (int) (Screen.getZoom() / 10), (int) (Screen.getZoom() / 10));
@@ -203,7 +200,7 @@ public class AwesomeSink extends Building {
         g2d.drawString("Power Consumption: " + basePower + "MW", menuTopLeft.x + 10, menuTopLeft.y + 245);
 
         if (invalidInput) {
-            g2d.setColor(Color.RED);
+            g2d.setColor(ColorManager.getColor("invalid"));
             g2d.setFont(new Font("Bahnschrift", Font.PLAIN, 12));
             for (int i = 0; i < 10; i++) {
                 g2d.drawString("Ficsit Inc. Does Not Waste", menuTopLeft.x + 30, menuTopLeft.y + 70 + 15 * i);
