@@ -34,20 +34,6 @@ public class Junction extends Building {
 
     public void update() {
         updateOutItems();
-        updateInItems();
-    }
-
-    private void updateInItems() {
-        inItems.clear();
-        double amount = 0;
-        Material type = null;
-        for (Pipe p : outPipes) {
-            if (!p.invalidState) {
-                type = p.type;
-                amount += p.outMaxRate;
-            }
-        }
-        inItems.put(type, amount);
     }
 
     private void updateOutItems() {

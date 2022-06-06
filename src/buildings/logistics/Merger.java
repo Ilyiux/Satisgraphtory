@@ -32,21 +32,6 @@ public class Merger extends Building {
 
     public void update() {
         updateOutItems();
-        updateInItems();
-    }
-
-
-    private void updateInItems() {
-        inItems.clear();
-        double amount = 0;
-        Material type = null;
-        for (Conveyor c : outConveyors) {
-            if (!c.invalidState) {
-                type = c.type;
-                amount += c.outMaxRate;
-            }
-        }
-        inItems.put(type, amount);
     }
 
     private void updateOutItems() {

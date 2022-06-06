@@ -38,14 +38,11 @@ public class Pipe extends Connector {
     private void updateMaxRate() {
         maxRate = getMax(tier);
 
-        /*
         if (type != null && endBuilding.inItems.containsKey(type)) {
             outMaxRate = endBuilding.inItems.get(type);
         } else {
-            outMaxRate = maxRate;
+            outMaxRate = Math.min(maxRate, rateCap);
         }
-         */
-        outMaxRate = Math.min(maxRate, rateCap);
     }
 
     private int getMax(int tier) {
