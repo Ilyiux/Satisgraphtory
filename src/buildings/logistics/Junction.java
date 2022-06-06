@@ -34,6 +34,8 @@ public class Junction extends Building {
 
     public void update() {
         updateOutItems();
+
+        if (inPipes.size() + outPipes.size() > 4) hasValidInput = false;
     }
 
     private void updateOutItems() {
