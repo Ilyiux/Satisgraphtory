@@ -468,5 +468,28 @@ public class Manufacturer extends Building {
             g2d.setColor(Color.WHITE);
             g2d.drawLine(menuTopLeft.x + 10, menuTopLeft.y + 145, menuTopLeft.x + 100, menuTopLeft.y + 145);
         }
+
+        // item requirements
+        if (recipeSet) {
+            int height = (int) ((gp.getHeight() * 1.777777) / 80);
+            int offset = (int) (gp.getHeight() * 1.777777 / 8 + height);
+
+            g2d.setColor(Color.WHITE);
+
+            ArrayList<Material> inMats = new ArrayList<>(recipe.input.keySet());
+            for (Material m : inMats) {
+                int index = inMats.indexOf(m);
+
+                double total = recipe.input.get(m) * (60 / recipe.craftTime);
+                double amount = 0;
+                for (Conveyor c : inConveyors) if (c.type == m) amount += c.rate;
+                for (Pipe p : inPipes) if (p.type == m) amount += p.rate;
+
+                g2d.setFont(new Font("Bahnschrift", amount > total * 0.99 && amount < total * 1.01 ? Font.PLAIN : Font.BOLD, (int) (height * 0.8)));
+
+                g2d.drawImage(ImageManager.getMaterialImage(m), offset, height * (index + 1), (int)(height * 0.8), (int)(height * 0.8), null);
+                g2d.drawString(amount + "/" + total, offset + height, height * (index + 1) + (int)(height * 0.8));
+            }
+        }
     }
 }

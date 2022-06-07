@@ -1,6 +1,7 @@
 package buildings.power;
 
 import buildings.Building;
+import buildings.logistics.Conveyor;
 import buildings.logistics.Pipe;
 import main.*;
 import recipes.Material;
@@ -440,6 +441,21 @@ public class FuelGenerator extends Building {
         boolean showItemCursor = ((int)(System.currentTimeMillis() / 500) % 2) == 0 && editingPower;
         g2d.drawString(powerString + (showItemCursor ? "|" : ""), menuTopLeft.x + 90, menuTopLeft.y + 120);
         g2d.drawString("mw", menuTopLeft.x + 160, menuTopLeft.y + 120);
+
+        // item requirements
+        if (fuelType != FuelPossibilities.UNSET) {
+            int height = (int) ((gp.getHeight() * 1.777777) / 80);
+            int offset = (int) (gp.getHeight() * 1.777777 / 8 + height);
+
+            g2d.setColor(Color.WHITE);
+
+            double itemAmount = 0;
+            for (Conveyor c : inConveyors) if (c.type.toString().equals(fuelType.toString())) itemAmount += c.rate;
+
+            g2d.setFont(new Font("Bahnschrift", itemAmount > itemRate * 0.99 && itemAmount < itemRate * 1.01 ? Font.PLAIN : Font.BOLD, (int) (height * 0.8)));
+            g2d.drawImage(itemIcons.get(fuelType), offset, height, (int)(height * 0.8), (int)(height * 0.8), null);
+            g2d.drawString(itemAmount + "/" + itemRate, offset + height, height + (int)(height * 0.8));
+        }
     }
 
     public enum FuelPossibilities {
