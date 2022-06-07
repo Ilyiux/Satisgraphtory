@@ -337,7 +337,7 @@ public class CoalGenerator extends Building {
         g2d.setColor(Color.WHITE);
         g2d.setFont(new Font("Bahnschrift", Font.PLAIN, Screen.convertLengthToScreenLength(0.15)));
         Point ratePos = Screen.convertToScreenPoint(new PointDouble(position.x + 0.05, position.y + 0.95), gp);
-        g2d.drawString(powerProduction + "mw", ratePos.x, ratePos.y);
+        g2d.drawString(powerProduction + "MW", ratePos.x, ratePos.y);
 
         Point imageStart = Screen.convertToScreenPoint(new PointDouble(position.x + 0.72, position.y + 0.72), gp);
         Point imageEnd = Screen.convertToScreenPoint(new PointDouble(position.x + 0.97, position.y + 0.97), gp);
@@ -460,7 +460,7 @@ public class CoalGenerator extends Building {
         g2d.setColor(Color.WHITE);
         boolean showItemCursor = ((int)(System.currentTimeMillis() / 500) % 2) == 0 && editingPower;
         g2d.drawString(powerString + (showItemCursor ? "|" : ""), menuTopLeft.x + 90, menuTopLeft.y + 120);
-        g2d.drawString("mw", menuTopLeft.x + 160, menuTopLeft.y + 120);
+        g2d.drawString("MW", menuTopLeft.x + 160, menuTopLeft.y + 120);
 
         // item requirements
         if (fuelType != FuelPossibilities.UNSET) {
