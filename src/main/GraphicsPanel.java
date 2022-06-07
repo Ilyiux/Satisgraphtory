@@ -666,7 +666,7 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
         g2d.drawRoundRect(spacing + buttonWidth / 2, getHeight() - buttonHeight - spacing, buttonWidth / 2, buttonHeight, 10, 10);
         g2d.drawString("Load", (int) (spacing * 2.5) + buttonWidth / 2, (int) (getHeight() - buttonHeight + spacing * 1.8));
 
-        g2d.drawString(Math.abs((double)(int)(totalPower * 10000) / 10000) + "mw " + (totalPower <= 0 ? "consumption" : "production"), (int) ((getHeight() * 1.77777777) / 8 + spacing * 2), getHeight() - spacing * 2);
+        g2d.drawString(Math.abs((double)(int)(totalPower * 10000) / 10000) + " MW " + (totalPower <= 0 ? "consumption" : "production"), (int) ((getHeight() * 1.77777777) / 8 + spacing * 2), getHeight() - spacing * 2);
 
         Point sc = new Point(getWidth() / 2, getHeight() / 2);
         g2d.setFont(new Font("Bahnschrift", Font.PLAIN, 16));

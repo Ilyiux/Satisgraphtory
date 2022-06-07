@@ -276,51 +276,54 @@ public class Packager extends Building {
 
         double size = Screen.convertLengthToScreenLength(0.08);
         for (int ic = 0; ic < maxInConveyors; ic++) {
-            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x, position.y + ((double)(ic + 1) / (maxInConveyors + maxInPipes + 1))), gp);
+            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x, position.y + ((double) (ic + 1) / (maxInConveyors + maxInPipes + 1))), gp);
             g2d.setColor(Color.GRAY);
             g2d.fillRect((int) (pos.x - size / 2), (int) (pos.y - size / 2), (int) size, (int) size);
         }
         for (int ip = 0; ip < maxInPipes; ip++) {
-            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x, position.y + ((double)(ip + maxInConveyors + 1) / (maxInConveyors + maxInPipes + 1))), gp);
+            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x, position.y + ((double) (ip + maxInConveyors + 1) / (maxInConveyors + maxInPipes + 1))), gp);
             g2d.setColor(Color.ORANGE);
             g2d.fillOval((int) (pos.x - size / 2), (int) (pos.y - size / 2), (int) size, (int) size);
         }
         for (int oc = 0; oc < maxOutConveyors; oc++) {
-            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + ((double)(oc + 1) / (maxOutConveyors + maxOutPipes + 1))), gp);
+            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + ((double) (oc + 1) / (maxOutConveyors + maxOutPipes + 1))), gp);
             g2d.setColor(Color.GRAY);
             g2d.fillRect((int) (pos.x - size / 2), (int) (pos.y - size / 2), (int) size, (int) size);
         }
         for (int op = 0; op < maxOutPipes; op++) {
-            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + ((double)(op + maxOutConveyors + 1) / (maxOutConveyors + maxOutPipes + 1))), gp);
+            Point pos = Screen.convertToScreenPoint(new PointDouble(position.x + 1, position.y + ((double) (op + maxOutConveyors + 1) / (maxOutConveyors + maxOutPipes + 1))), gp);
             g2d.setColor(Color.ORANGE);
             g2d.fillOval((int) (pos.x - size / 2), (int) (pos.y - size / 2), (int) size, (int) size);
         }
 
         g2d.setColor(Color.WHITE);
         g2d.setFont(new Font("Bahnschrift", Font.PLAIN, Screen.convertLengthToScreenLength(0.15)));
-
         Point namePos = Screen.convertToScreenPoint(new PointDouble(position.x + 0.05, position.y + 0.15), gp);
         String nameString = "Packager";
         g2d.drawString(nameString, namePos.x, namePos.y);
 
-        Point ratePos = Screen.convertToScreenPoint(new PointDouble(position.x + 0.05, position.y + 0.95), gp);
-        if (recipeSet) {
-            g2d.drawString(rate + "/min", ratePos.x, ratePos.y);
-        } else {
-            g2d.drawString("-/min", ratePos.x, ratePos.y);
-        }
+        g2d.setColor(Color.GRAY);
+        g2d.setFont(new Font("Bahnschrift", Font.PLAIN, Screen.convertLengthToScreenLength(0.08)));
+        Point ocPoint = Screen.convertToScreenPoint(new PointDouble(position.x + 0.05, position.y + 0.25), gp);
+        g2d.drawString(overclock + "%", ocPoint.x, ocPoint.y);
 
+        g2d.setColor(Color.WHITE);
+        g2d.setFont(new Font("Bahnschrift", Font.PLAIN, Screen.convertLengthToScreenLength(0.15)));
+        Point ratePos = Screen.convertToScreenPoint(new PointDouble(position.x + 0.05, position.y + 0.95), gp);
         if (recipeSet) {
             ArrayList<Material> outMats = new ArrayList<>(recipe.output.keySet());
             for (Material m : outMats) {
                 int index = outMats.indexOf(m);
 
+                g2d.drawString(recipe.output.get(m) * (60 / recipe.craftTime) * (overclock / 100) + "/min", ratePos.x, ratePos.y - Screen.convertLengthToScreenLength(0.2) * index);
+
                 Point imageStart = Screen.convertToScreenPoint(new PointDouble(position.x + 0.72, position.y + 0.72 - 0.2 * index), gp);
                 Point imageEnd = Screen.convertToScreenPoint(new PointDouble(position.x + 0.97, position.y + 0.97 - 0.2 * index), gp);
                 g2d.drawImage(ImageManager.getMaterialImage(m), imageStart.x, imageStart.y, imageEnd.x - imageStart.x, imageEnd.y - imageStart.y, null);
             }
+        } else {
+            g2d.drawString("-/min", ratePos.x, ratePos.y);
         }
-
     }
 
     public void drawMenu(Graphics2D g2d, GraphicsPanel gp) {

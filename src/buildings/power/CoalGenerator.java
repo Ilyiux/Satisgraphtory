@@ -324,11 +324,17 @@ public class CoalGenerator extends Building {
 
         g2d.setColor(Color.WHITE);
         g2d.setFont(new Font("Bahnschrift", Font.PLAIN, Screen.convertLengthToScreenLength(0.15)));
-
         Point namePos = Screen.convertToScreenPoint(new PointDouble(position.x + 0.05, position.y + 0.15), gp);
         String nameString = "Coal Gen.";
         g2d.drawString(nameString, namePos.x, namePos.y);
 
+        g2d.setColor(Color.GRAY);
+        g2d.setFont(new Font("Bahnschrift", Font.PLAIN, Screen.convertLengthToScreenLength(0.08)));
+        Point ocPoint = Screen.convertToScreenPoint(new PointDouble(position.x + 0.05, position.y + 0.25), gp);
+        g2d.drawString(overclock + "%", ocPoint.x, ocPoint.y);
+
+        g2d.setColor(Color.WHITE);
+        g2d.setFont(new Font("Bahnschrift", Font.PLAIN, Screen.convertLengthToScreenLength(0.15)));
         Point ratePos = Screen.convertToScreenPoint(new PointDouble(position.x + 0.05, position.y + 0.95), gp);
         g2d.drawString(powerProduction + "mw", ratePos.x, ratePos.y);
 

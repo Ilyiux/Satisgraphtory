@@ -26,12 +26,12 @@ public class Screen {
     public static void zoom(int scrollAmount, int mx, int my, GraphicsPanel gp) {
         zoom += -5 * scrollAmount;
         if (zoom < 5) zoom = 5;
-        if (zoom > 120) zoom = 120;
+        if (zoom > 200) zoom = 200;
         Point mp = convertToWorldPoint(new Point(mx, my), gp);
         Point cp = convertToWorldPoint(new Point(gp.getWidth() / 2, gp.getHeight() / 2), gp);
-        if (scrollAmount < 0 && zoom < 120) {
-            center.x -= (mp.x - cp.x) * (1 - 120.0 / (double)zoom) * 0.1;
-            center.y -= (mp.y - cp.y) * (1 - 120.0 / (double)zoom) * 0.1;
+        if (scrollAmount < 0 && zoom < 200) {
+            center.x -= (mp.x - cp.x) * (1 - 200.0 / (double)zoom) * 0.1;
+            center.y -= (mp.y - cp.y) * (1 - 200.0 / (double)zoom) * 0.1;
         }
     }
 
