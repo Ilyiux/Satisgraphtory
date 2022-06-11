@@ -61,6 +61,8 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
     String saveName = "";
     boolean editingSaveName = false;
 
+    boolean saveLoadWorking = false;
+
     private int defaultConveyorTier = 1;
     private int defaultPipeTier = 1;
 
@@ -148,11 +150,13 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
             dragBuilding.position = Screen.convertToWorldPoint(new Point(mx, my), this);
         }
 
-        for (Building building : buildings) building.menuOpen = false;
-        if (inMenuObject) menuObject.menuOpen = true;
+        if (!saveLoadWorking) {
+            for (Building building : buildings) building.menuOpen = false;
+            if (inMenuObject) menuObject.menuOpen = true;
 
-        for (Connector connector : connectors) connector.update();
-        for (Building building : buildings) building.update();
+            for (Connector connector : connectors) connector.update();
+            for (Building building : buildings) building.update();
+        }
 
         updateTotalPower();
     }
@@ -238,6 +242,7 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
     }
 
     private void save(String location) {
+        saveLoadWorking = true;
         StringBuilder saveData = new StringBuilder();
 
         for (Building b : buildings) {
@@ -326,9 +331,11 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
         } catch (IOException e) {
             e.printStackTrace();
         }
+        saveLoadWorking = false;
     }
 
     private void load(String location) {
+        saveLoadWorking = true;
         ArrayList<String> buildingLines = new ArrayList<>();
         ArrayList<String> connectorLines = new ArrayList<>();
 
@@ -481,6 +488,7 @@ public class GraphicsPanel extends JPanel implements Runnable, MouseListener, Ke
                 System.out.println("Error reading save '" + location + "' ");
             }
         }
+        saveLoadWorking = false;
     }
 
     // called on draw

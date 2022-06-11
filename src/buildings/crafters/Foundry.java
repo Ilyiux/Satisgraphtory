@@ -74,6 +74,7 @@ public class Foundry extends Building {
 
         updateEfficiency();
         updateValidity();
+        updateInItems();
         updateOutItems();
         updatePowerConsumption();
     }
@@ -412,7 +413,6 @@ public class Foundry extends Building {
             }
             g2d.setColor(Color.WHITE);
             g2d.drawString(recipe.name, gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + spacing * 2, spacing * 4 + index * (buttonHeight + spacing));
-            g2d.drawString(60 / recipe.craftTime + "/min", gp.getWidth() - (int)(gp.getHeight() * 1.77777777) / 6 + spacing * 2, buttonHeight + index * (buttonHeight + spacing));
 
             ArrayList<Material> inMats = new ArrayList<>(recipe.input.keySet());
             for (Material inMat : inMats) {
