@@ -477,7 +477,7 @@ public class Assembler extends Building {
             for (Material m : inMats) {
                 int index = inMats.indexOf(m);
 
-                double total = recipe.input.get(m) * (60 / recipe.craftTime);
+                double total = recipe.input.get(m) * (60 / recipe.craftTime) * (overclock / 100);
                 double amount = 0;
                 for (Conveyor c : inConveyors) if (c.type == m) amount += c.rate;
                 for (Pipe p : inPipes) if (p.type == m) amount += p.rate;
