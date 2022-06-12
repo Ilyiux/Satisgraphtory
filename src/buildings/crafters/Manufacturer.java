@@ -311,22 +311,19 @@ public class Manufacturer extends Building {
         g2d.setFont(new Font("Bahnschrift", Font.PLAIN, Screen.convertLengthToScreenLength(0.15)));
         Point ratePos = Screen.convertToScreenPoint(new PointDouble(position.x + 0.05, position.y + 0.95), gp);
         if (recipeSet) {
-            g2d.drawString(rate + "/min", ratePos.x, ratePos.y);
-        } else {
-            g2d.drawString("-/min", ratePos.x, ratePos.y);
-        }
-
-        if (recipeSet) {
             ArrayList<Material> outMats = new ArrayList<>(recipe.output.keySet());
             for (Material m : outMats) {
                 int index = outMats.indexOf(m);
+
+                g2d.drawString(recipe.output.get(m) * (60 / recipe.craftTime) * (overclock / 100) + "/min", ratePos.x, ratePos.y - Screen.convertLengthToScreenLength(0.2) * index);
 
                 Point imageStart = Screen.convertToScreenPoint(new PointDouble(position.x + 0.72, position.y + 0.72 - 0.2 * index), gp);
                 Point imageEnd = Screen.convertToScreenPoint(new PointDouble(position.x + 0.97, position.y + 0.97 - 0.2 * index), gp);
                 g2d.drawImage(ImageManager.getMaterialImage(m), imageStart.x, imageStart.y, imageEnd.x - imageStart.x, imageEnd.y - imageStart.y, null);
             }
+        } else {
+            g2d.drawString("-/min", ratePos.x, ratePos.y);
         }
-
     }
 
     public void drawMenu(Graphics2D g2d, GraphicsPanel gp) {
